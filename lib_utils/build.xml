@@ -44,8 +44,8 @@
 
 	<!-- make temporary and distribution directories -->
 	<target name="prepare">
-		<mkdir dir="${dir.classes}" />
 		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.classes}" />
 	</target>
 
 	<target name="compile" depends="prepare">

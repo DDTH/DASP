@@ -1,8 +1,8 @@
-<project name="WFP - Bundle: Framework" basedir="." default="build-development">
+<project name="DASP - Bundle: Framework" basedir="." default="build-development">
 	<property name="dir.src" value="src" />
-	<property name="dir.classes" value="classes" />
-	<property name="dir.lib" value="lib" />
 	<property name="dir.build" value="build" />
+	<property name="dir.classes" value="${dir.build}/classes" />
+	<property name="dir.lib" value="lib" />
 	<property name="dir.META-INF" value="META-INF" />
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.lib_utils" value="../lib_utils" />
@@ -13,7 +13,7 @@
 		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.wfp.framework" />
-	<property name="product.version" value="1.0" />
+	<property name="product.version" value="0.1" />
 	<property name="product.version.micro" value="1.0.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -50,11 +50,13 @@
 	</path>
 
 	<target name="clean">
+		<!--
 		<delete>
 			<fileset dir="${dir.classes}">
 				<include name="**/*.*" />
 			</fileset>
 		</delete>
+		-->
 		<delete>
 			<fileset dir="${dir.build}">
 				<include name="**/*.*" />
@@ -64,8 +66,8 @@
 
 	<!-- make temporary and distribution directories -->
 	<target name="prepare">
-		<mkdir dir="${dir.classes}" />
 		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.classes}" />
 	</target>
 
 	<target name="compile" depends="prepare">
