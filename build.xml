@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ant build file for DASP project -->
+<project name="WFP" default="build-development">
+	<property name="dir.bundle_framework" value="bundle_framework" />
+	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
+	<property name="dir.bundle_log4j" value="bundle_log4j" />
+	<property name="dir.bundle_log4j.build" value="${dir.bundle_log4j}/build" />
+	<property name="dir.bundle_services" value="bundle_services" />
+	<property name="dir.bundle_services.build" value="${dir.bundle_services}/build" />
+	<property name="dir.servlet" value="servlet" />
+	<property name="dir.servlet.build" value="${dir.servlet}/build" />
+	<property name="dir.lib_utils" value="lib_utils" />
+	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
+
+	<target name="clean">
+		<echo>CLEANING SUB-PROJECT [lib-utils]...</echo>
+		<ant dir="${dir.lib_utils}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-framework]...</echo>
+		<ant dir="${dir.bundle_framework}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
+		<ant dir="${dir.servlet}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-log4j]...</echo>
+		<ant dir="${dir.bundle_log4j}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-services]...</echo>
+		<ant dir="${dir.bundle_services}" target="clean" />
+	</target>
+
+	<target name="build-development">
+		<echo>BUILDING SUB-PROJECT [lib-utils]...</echo>
+		<ant inheritall="false" dir="${dir.lib_utils}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_framework}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
+		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_log4j}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_services}" target="build-development" />
+
+		<antcall target="post-build" />
+	</target>
+
+	<target name="build-production" depends="clean">
+		<echo>BUILDING SUB-PROJECT [lib-utils]...</echo>
+		<ant dir="${dir.lib_utils}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
+		<ant dir="${dir.bundle_framework}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
+		<ant dir="${dir.servlet}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
+		<ant dir="${dir.bundle_log4j}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
+		<ant dir="${dir.bundle_services}" target="build-development" />
+
+		<antcall target="post-build" />
+	</target>
+
+	<target name="post-build">
+		<copy todir="${dir.servlet.build}/web/WEB-INF/lib">
+			<fileset dir="${dir.lib_utils.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/log">
+			<fileset dir="${dir.bundle_log4j.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
+			<fileset dir="${dir.bundle_framework.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
+			<fileset dir="${dir.bundle_services.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+	</target>
+</project>
