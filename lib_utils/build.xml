@@ -1,7 +1,7 @@
 <project name="DASP - Library: Utilities" basedir="." default="build-development">
 	<property name="dir.src" value="src" />
 	<property name="dir.build" value="build" />
-	<property name="dir.classes" value="${dir.build}/classes" />
+	<property name="dir.classes" value="classes" />
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.platform" value="../servlet" />
 	<property name="dir.platform_libs" value="${dir.platform}/web/WEB-INF/lib" />
@@ -28,13 +28,8 @@
 	</path>
 
 	<target name="clean">
-		<!--
-		<delete>
-			<fileset dir="${dir.classes}">
-				<include name="**/*.*" />
-			</fileset>
+		<delete dir="${dir.classes}">
 		</delete>
-		-->
 		<delete>
 			<fileset dir="${dir.build}">
 				<include name="**/*.*" />
