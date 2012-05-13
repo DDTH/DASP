@@ -1,26 +1,26 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: WFP Framework
-Bundle-SymbolicName: ddth.wfp.framework
+Bundle-Name: DASP Framework
+Bundle-SymbolicName: ddth.dasp.framework
 Bundle-Version: 1.0.0
-Export-Package: ddth.wfp.framework,
- ddth.wfp.framework.bo,
- ddth.wfp.framework.dbc,
- ddth.wfp.framework.logging,
- ddth.wfp.framework.logging.async,
- ddth.wfp.framework.logging.base,
- ddth.wfp.framework.logging.db,
- ddth.wfp.framework.logging.fs,
- ddth.wfp.framework.osgi,
- ddth.wfp.framework.stats,
- ddth.wfp.framework.utils
+Export-Package: ddth.dasp.framework,
+ ddth.dasp.framework.bo,
+ ddth.dasp.framework.dbc,
+ ddth.dasp.framework.logging,
+ ddth.dasp.framework.logging.async,
+ ddth.dasp.framework.logging.base,
+ ddth.dasp.framework.logging.db,
+ ddth.dasp.framework.logging.fs,
+ ddth.dasp.framework.osgi,
+ ddth.dasp.framework.stats,
+ ddth.dasp.framework.utils
 Bundle-ClassPath: .,
  jdbc-mssql.jar,
  jdbc-mysql-3.1.10.jar,
  jdbc-postgresql-9.0-801.jar,
  jdbc-oracle6.jar,
- guava-10.0.1.jar
-Import-Package: ddth.wfp.utils,
+ guava-12.0.jar
+Import-Package: ddth.dasp.utils,
  javax.sql,
  org.apache.commons.codec.binary,
  org.apache.commons.dbcp,
