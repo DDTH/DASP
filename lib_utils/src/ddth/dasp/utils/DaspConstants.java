@@ -1,7 +1,7 @@
-package ddth.wfp.utils;
+package ddth.dasp.utils;
 
-public class WfpConstants {
-    public final static String SESSION_USER_ID = "WFP_USER_ID";
+public class DaspConstants {
+    public final static String SESSION_USER_ID = "DASP_USER_ID";
     public final static String URL_SUFFIX = ".html";
 
     public final static String URL_PARAM_FORM = "f";
