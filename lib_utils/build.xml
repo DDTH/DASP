@@ -10,7 +10,7 @@
 	</tstamp>
 	<property name="product.name" value="DASP-Utils" />
 	<property name="product.version" value="0.1" />
-	<property name="product.version.micro" value="1.0.${MICROSTAMP}" />
+	<property name="product.version.micro" value="0.1.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
