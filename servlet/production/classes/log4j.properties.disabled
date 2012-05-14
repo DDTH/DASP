@@ -1,0 +1,11 @@
+log4j.rootLogger=WARN
+
+log4j.appender.file=org.apache.log4j.FileAppender
+log4j.appender.file.File=${catalina.home}/logs/serviceplatform.log
+log4j.appender.file.layout=org.apache.log4j.PatternLayout 
+log4j.appender.file.layout.ConversionPattern=%d{ISO8601} %-5p %x%n  LoggingClass: %c/%C%n  LogMessage: %m%n  %l%n  %L%n
+
+log4j.logger.ddth=WARN, file
+log4j.logger.net=WARN, file
+log4j.logger.com=WARN, file
+log4j.logger.org=WARN, file

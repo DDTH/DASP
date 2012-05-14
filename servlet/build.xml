@@ -1,0 +1,115 @@
+<project name="DASP-Servlet" basedir="." default="build-development">
+	<property name="dir.src" value="src" />
+	<property name="dir.classes" value="classes" />
+	<property name="dir.build" value="build" />
+	<property name="dir.build.web" value="${dir.build}/web" />
+	<property name="dir.web" value="web" />
+	<property name="dir.web.WEB_INF" value="${dir.web}/WEB-INF" />
+	<property name="dir.resources" value="../resources" />
+	<property name="dir.release" value="release" />
+	<property name="dir.lib_utils" value="../lib_utils" />
+	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
+	<tstamp>
+		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+	</tstamp>
+	<property name="product.name" value="DASP" />
+	<property name="product.version" value="0.1" />
+	<property name="product.version.micro" value="0.1.${MICROSTAMP}" />
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${dir.resources}/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<path id="path.lib">
+		<fileset dir="${dir.web.WEB_INF}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/spring">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/springdm">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/apachecommons">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.resources}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.lib_utils.build}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${dir.classes}">
+		</delete>
+		<delete>
+			<fileset dir="${dir.build}">
+				<include name="**/*.*" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.classes}" />
+	</target>
+
+	<target name="compile" depends="prepare">
+		<javac includeantruntime="false" srcdir="${dir.src}/ddth" destdir="${dir.classes}" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
+			<classpath>
+				<path refid="path.lib" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<delete quiet="true" includeemptydirs="true">
+			<fileset dir="${dir.build}">
+			</fileset>
+		</delete>
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.build.web}" />
+		<copy todir="${dir.build.web}" overwrite="true">
+			<fileset dir="${dir.web}">
+			</fileset>
+		</copy>
+		<jar jarfile="${dir.build.web}/WEB-INF/lib/${product.name}-${product.version}.jar" basedir="${dir.classes}" duplicate="add">
+		</jar>
+	</target>
+
+	<target name="build-base" depends="jar">
+	</target>
+
+	<target name="build-development" depends="build-base">
+		<copy file="development/web.xml" tofile="${dir.build.web}/WEB-INF/web.xml" overwrite="true" />
+		<copy todir="${dir.build.web}/WEB-INF/classes" overwrite="true">
+			<fileset dir="development/classes">
+			</fileset>
+		</copy>
+		<copy todir="${dir.build.web}/WEB-INF/spring" overwrite="true">
+			<fileset dir="development/spring">
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build-production" depends="build-base">
+		<copy file="production/web.xml" tofile="${dir.build.web}/WEB-INF/web.xml" overwrite="true" />
+		<copy todir="${dir.build.web}/WEB-INF/classes" overwrite="true">
+			<fileset dir="production/classes">
+			</fileset>
+		</copy>
+		<copy todir="${dir.build.web}/WEB-INF/spring" overwrite="true">
+			<fileset dir="production/spring">
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="release" depends="build-production">
+		<copy file="${dir.build.web}/WEB-INF/lib/${product.name}-${product.version}.jar" todir="${dir.release}">
+		</copy>
+	</target>
+</project>
