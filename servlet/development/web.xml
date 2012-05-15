@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_ID" version="2.4"
-	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app id="DASP" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-	<display-name>ESB - Service Platform</display-name>
+	<display-name>DDTH Application Service Platform</display-name>
 
 	<!--
 		Note: Spring's ContextLoaderListener should be loaded and initialized
@@ -13,24 +13,48 @@
 	</listener>
 
 	<listener>
-		<listener-class>ddth.wfp.servlet.listener.PlatformLanguagesListener</listener-class>
+		<listener-class>ddth.dasp.servlet.listener.ContextTempDirListener</listener-class>
+	</listener>
+	<!--
+	<listener>
+		<listener-class>ddth.dasp.servlet.listener.SessionTempDirListener</listener-class>
+	</listener>
+	-->
+	<listener>
+		<listener-class>ddth.dasp.servlet.listener.DaspRequestListener</listener-class>
 	</listener>
 
 	<context-param>
 		<description>Used by Spring's ContextLoader</description>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/esbbackend.xml</param-value>
+		<param-value>/WEB-INF/spring/beans-dasp.xml</param-value>
 	</context-param>
 
 	<filter>
-		<filter-name>struts2</filter-name>
-		<filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
 	</filter>
 
 	<filter-mapping>
-		<filter-name>struts2</filter-name>
+		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+	<servlet>
+		<description>Spring's Dispatcher servlet. It will load a bean configuration file /WEB-INF/springDasp-servlet.xml</description>
+		<servlet-name>springDasp</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>springDasp</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
