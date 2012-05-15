@@ -7,6 +7,7 @@ public class DaspConstants {
 	public final static String REQ_ATTR_CONTEXT_TEMP_DIR = "CTX_TMP_DIR";
 	public final static String REQ_ATTR_REQUEST_TEMP_DIR = "REQ_TMP_DIR";
 	public final static String REQ_ATTR_SESSION_TEMP_DIR = "SES_TMP_DIR";
+	public final static String REQ_ATTR_REQUEST_PARSER = "REQUEST_PARSER";
 
 	// public final static String URL_SUFFIX = ".html";
 	//
