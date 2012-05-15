@@ -26,6 +26,7 @@
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="clean" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-log4j]...</echo>
@@ -35,6 +36,7 @@
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-services]...</echo>
 		<ant dir="${dir.bundle_services}" target="clean" />
+		-->
 	</target>
 
 	<target name="build-development">
@@ -51,6 +53,7 @@
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
@@ -60,6 +63,7 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_services}" target="build-development" />
+		-->
 
 		<antcall target="post-build" />
 	</target>
@@ -78,6 +82,7 @@
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="build-production" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
@@ -87,6 +92,7 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
 		<ant dir="${dir.bundle_services}" target="build-development" />
+		-->
 
 		<antcall target="post-build" />
 	</target>
@@ -98,6 +104,7 @@
 			</fileset>
 		</copy>
 
+		<!--
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/log">
 			<fileset dir="${dir.bundle_log4j.build}">
 				<include name="**/*.jar" />
@@ -115,5 +122,6 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
+		-->
 	</target>
 </project>
