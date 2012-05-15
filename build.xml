@@ -26,12 +26,12 @@
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="clean" />
 
-		<!--
 		<echo>
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant dir="${dir.bundle_log4j}" target="clean" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-services]...</echo>
@@ -53,12 +53,12 @@
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
 
-		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_log4j}" target="build-development" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
@@ -82,12 +82,12 @@
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="build-production" />
 
-		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant dir="${dir.bundle_log4j}" target="build-production" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-services]...</echo>
@@ -104,13 +104,13 @@
 			</fileset>
 		</copy>
 
-		<!--
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/log">
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
 			<fileset dir="${dir.bundle_log4j.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
 
+		<!--
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
 			<fileset dir="${dir.bundle_framework.build}">
 				<include name="**/*.jar" />
