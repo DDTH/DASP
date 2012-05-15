@@ -41,6 +41,15 @@ public interface IOsgiBootstrap {
 			BundleException;
 
 	/**
+	 * Starts an installed bundle.
+	 * 
+	 * @param bundle
+	 *            Bundle
+	 * @throws BundleException
+	 */
+	public void startBundle(Bundle bundle) throws BundleException;
+
+	/**
 	 * Gets the {@link BundleContext} instance.
 	 * 
 	 * @return BundleContext
@@ -136,4 +145,15 @@ public interface IOsgiBootstrap {
 	 * @return T
 	 */
 	public <T> T getService(ServiceReference sref, Class<T> clazz);
+
+	/**
+	 * Gets an OSGi service. This method unregisters the
+	 * {@link ServiceReference} so caller does not need to do it.
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 *            Class<T>
+	 * @return TO
+	 */
+	public <T> T getService(Class<T> clazz);
 }

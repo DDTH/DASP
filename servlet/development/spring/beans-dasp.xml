@@ -11,11 +11,9 @@
 	-->
 	<bean id="_springApplicationContextProvider" class="ddth.dasp.servlet.spring.ApplicationContextProvider" />
 
-	<!--
-		<bean id="IOsgiBootstrap"
-		class="ddth.wfp.servlet.osgi.FelixOsgiBootstrap" init-method="init"
-		destroy-method="destroy"> <property name="remoteShellListenIp"
-		value="127.0.0.1" /> <property name="remoteShellListenPort"
-		value="16666" /> </bean>
-	-->
+	<bean id="IOsgiBootstrap" class="ddth.dasp.servlet.osgi.FelixOsgiBootstrap"
+		init-method="init" destroy-method="destroy">
+		<property name="remoteShellListenIp" value="127.0.0.1" />
+		<property name="remoteShellListenPort" value="16666" />
+	</bean>
 </beans>

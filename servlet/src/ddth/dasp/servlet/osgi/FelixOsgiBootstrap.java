@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.felix.framework.util.Util;
 import org.apache.felix.main.AutoProcessor;
 import org.osgi.framework.Bundle;
@@ -126,7 +127,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 	 *            Bundle
 	 * @throws BundleException
 	 */
-	protected void startBundle(Bundle bundle) throws BundleException {
+	public void startBundle(Bundle bundle) throws BundleException {
 		if (bundle == null) {
 			LOGGER.warn("Null argument!");
 			return;
@@ -186,11 +187,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 			}
 			return bundle;
 		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
-			}
+			IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -198,8 +195,8 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference getServiceReference(String name) {
-		return getServiceReference(name, (String) null);
+	public ServiceReference getServiceReference(String clazz) {
+		return OsgiUtils.getServiceReference(getBundleContext(), clazz);
 	}
 
 	/**
@@ -225,24 +222,6 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 	@Override
 	public ServiceReference[] getServiceReferences(String clazz, String query) {
 		return OsgiUtils.getServiceReferences(getBundleContext(), clazz, query);
-		// if (query == null) {
-		// ServiceReference serviceRef =
-		// framework.getBundleContext().getServiceReference(clazz);
-		// return serviceRef != null ? new ServiceReference[] { serviceRef }
-		// : new ServiceReference[0];
-		// } else {
-		// try {
-		// ServiceReference[] serviceRefs =
-		// framework.getBundleContext().getServiceReferences(
-		// clazz, query);
-		// return serviceRefs != null ? serviceRefs : new ServiceReference[0];
-		// } catch (InvalidSyntaxException e) {
-		// LOGGER.error("Can not get service reference [" + clazz + "/" + query
-		// + "]: "
-		// + e.getMessage(), e);
-		// return null;
-		// }
-		// }
 	}
 
 	/**
@@ -258,27 +237,33 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void ungetServiceReference(ServiceReference sref) {
-		framework.getBundleContext().ungetService(sref);
+		OsgiUtils.ungetServiceReference(getBundleContext(), sref);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getService(ServiceReference sref) {
-		return framework.getBundleContext().getService(sref);
+		return OsgiUtils.getService(getBundleContext(), sref);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
 	public <T> T getService(ServiceReference sref, Class<T> clazz) {
-		Object service = getService(sref);
-		if (service != null && clazz.isAssignableFrom(service.getClass())) {
-			return (T) service;
-		}
-		return null;
+		return OsgiUtils.getService(getBundleContext(), sref, clazz);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> T getService(Class<T> clazz) {
+		return OsgiUtils.getService(getBundleContext(), clazz);
 	}
 
 	private File renderOsgContainerLocation() {
@@ -299,13 +284,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 			LOGGER.error(FATAL, e.getMessage());
 			throw new RuntimeException(e);
 		} finally {
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-			} catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
-			}
+			IOUtils.closeQuietly(fis);
 		}
 		// perform variables substitution for system properties.
 		for (Enumeration<?> e = configProps.propertyNames(); e
@@ -405,9 +384,8 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 
 	private void initFelixFramework() throws BundleException {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER
-					.debug("Initialzing Apache Felix Framework with OSGi container ["
-							+ osgiContainerLocation + "]...");
+			LOGGER.debug("Initialzing Apache Felix Framework, OSGi container ["
+					+ osgiContainerLocation + "]...");
 		}
 		Properties configProps = loadConfigProperties();
 		Map<String, String> config = new HashMap<String, String>();
@@ -428,40 +406,44 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 		}
 		Bundle[] bundles = framework.getBundleContext().getBundles();
 		for (Bundle bundle : bundles) {
-			LOGGER.debug("Before Start: " + bundle.getBundleId() + ":"
-					+ bundle.getState() + "/" + bundle.getSymbolicName());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Before Start: " + bundle.getBundleId() + ":"
+						+ bundle.getState() + "/" + bundle.getSymbolicName());
+			}
 			try {
 				startBundle(bundle);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
-			LOGGER.debug("After Start: " + bundle.getBundleId() + ":"
-					+ bundle.getState() + "/" + bundle.getSymbolicName());
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private void deployCustomBundles() {
-		File dir = new File(renderOsgContainerLocation(), "/mybundles");
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Starting all bundles from [" + dir.getAbsolutePath()
-					+ "]...");
-		}
-		for (File file : dir.listFiles()) {
-			if (file.isFile() && file.getName().endsWith(".jar")) {
-				try {
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Deploying custom bundle [" + file
-								+ "]...");
-					}
-					Bundle bundle = deployBundle(file.getName(), file);
-					startBundle(bundle);
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage(), e);
-				}
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("After Start: " + bundle.getBundleId() + ":"
+						+ bundle.getState() + "/" + bundle.getSymbolicName());
 			}
 		}
 	}
+
+	// @SuppressWarnings("unused")
+	// private void deployCustomBundles() {
+	// File dir = new File(renderOsgContainerLocation(), "/mybundles");
+	// if (LOGGER.isDebugEnabled()) {
+	// LOGGER.debug("Starting all bundles from [" + dir.getAbsolutePath()
+	// + "]...");
+	// }
+	// for (File file : dir.listFiles()) {
+	// if (file.isFile() && file.getName().endsWith(".jar")) {
+	// try {
+	// if (LOGGER.isDebugEnabled()) {
+	// LOGGER.debug("Deploying custom bundle [" + file
+	// + "]...");
+	// }
+	// Bundle bundle = deployBundle(file.getName(), file);
+	// startBundle(bundle);
+	// } catch (Exception e) {
+	// LOGGER.error(e.getMessage(), e);
+	// }
+	// }
+	// }
+	// }
 
 	public void init() throws Exception {
 		initFelixFramework();
@@ -481,7 +463,6 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 			}
 		} catch (Exception e) {
 			LOGGER.error(FATAL, e.getMessage(), e);
-			// throw new RuntimeException(e);
 		}
 	}
 
