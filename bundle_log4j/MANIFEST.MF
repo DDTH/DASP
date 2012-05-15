@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: WFP Log4j Configuration
-Bundle-SymbolicName: ddth.wfp.osgi.log4jfrag
-Bundle-Version: 1.0.0
+Bundle-Name: DASP Log4j Configuration
+Bundle-SymbolicName: ddth.dasp.osgi.log4jfrag
+Bundle-Version: 0.1.0
 Fragment-Host: com.springsource.org.apache.log4j
