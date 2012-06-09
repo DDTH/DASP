@@ -266,6 +266,22 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 		return OsgiUtils.getService(getBundleContext(), clazz);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> T getService(Class<T> clazz, Map<String, String> filter) {
+		return OsgiUtils.getService(getBundleContext(), clazz, filter);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> T getService(Class<T> clazz, String query) {
+		return OsgiUtils.getService(getBundleContext(), clazz, query);
+	}
+
 	private File renderOsgContainerLocation() {
 		ServletContext sc = wac.getServletContext();
 		String root = sc.getRealPath("");

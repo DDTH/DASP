@@ -70,42 +70,33 @@ public class HttpRequestParser extends AbstractRequestParser {
 	}
 
 	/**
-	 * Gets all form fields.
-	 * 
-	 * @return
+	 * {@inheritDoc}
 	 */
+	@Override
 	public Map<String, Object> getFormFields() {
 		return Collections.unmodifiableMap(formFields);
 	}
 
 	/**
-	 * Gets a form field by name.
-	 * 
-	 * 
-	 * 
-	 * @param name
-	 * @return
+	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getFormField(String name) {
 		return formFields.get(name);
 	}
 
 	/**
-	 * Gets all URL parameters.
-	 * 
-	 * @return Map<String, String>
+	 * {@inheritDoc}
 	 */
+	@Override
 	public Map<String, String> getUrlParameters() {
 		return Collections.unmodifiableMap(urlParams);
 	}
 
 	/**
-	 * Gets an URL parameter by its name.
-	 * 
-	 * @param name
-	 *            String
-	 * @return String
+	 * {@inheritDoc}
 	 */
+	@Override
 	public String getUrlParameter(String name) {
 		return urlParams.get(name);
 	}
@@ -163,25 +154,17 @@ public class HttpRequestParser extends AbstractRequestParser {
 	}
 
 	/**
-	 * Gets all virtual parameters.
-	 * 
-	 * @return String[]
+	 * {@inheritDoc}
 	 */
+	@Override
 	public String[] getVirtualParameters() {
 		return virtualPathParams;
 	}
 
 	/**
-	 * Gets a virtual parameter by its index.
-	 * <p>
-	 * The first param (index [0]) is reserved for the module name, and the
-	 * second one (index [1]) is reserved for the action name.
-	 * </p>
-	 * 
-	 * @param index
-	 *            int
-	 * @return String
+	 * {@inheritDoc}
 	 */
+	@Override
 	public String getVirtualParameter(int index) {
 		try {
 			return this.virtualPathParams[index];

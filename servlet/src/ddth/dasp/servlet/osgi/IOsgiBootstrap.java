@@ -153,7 +153,33 @@ public interface IOsgiBootstrap {
 	 * @param <T>
 	 * @param clazz
 	 *            Class<T>
-	 * @return TO
+	 * @return T
 	 */
 	public <T> T getService(Class<T> clazz);
+
+	/**
+	 * Gets an OSGi service. This method unregisters the
+	 * {@link ServiceReference} so caller does not need to do it.
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 *            Class<T>
+	 * @param filter
+	 *            Map<String, String>
+	 * @return T
+	 */
+	public <T> T getService(Class<T> clazz, Map<String, String> filter);
+
+	/**
+	 * Gets an OSGi service that matches the query. This method unregisters the
+	 * {@link ServiceReference} so caller does not need to do it.
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 *            Class<T>
+	 * @param query
+	 *            String
+	 * @return T
+	 */
+	public <T> T getService(Class<T> clazz, String query);
 }
