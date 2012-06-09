@@ -2,6 +2,11 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="DASP">
         <wb-resource deploy-path="/" source-path="/servlet/web"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/servlet/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/lib_utils/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_framework/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_services/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_log4j/src"/>
         <property name="context-root" value="DASP"/>
         <property name="java-output-path" value="/DASP/servlet/build/classes"/>
     </wb-module>
