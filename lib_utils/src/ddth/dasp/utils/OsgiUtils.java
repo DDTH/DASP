@@ -41,12 +41,15 @@ public class OsgiUtils {
 	}
 
 	/**
-	 * Obtains Btains an OSGi service reference.
+	 * Obtains an OSGi service reference.
 	 * 
 	 * @param bundleContext
+	 *            BundleContext
 	 * @param clazz
+	 *            String
 	 * @param filter
-	 * @return
+	 *            Map<String, String>
+	 * @return ServiceReference
 	 */
 	public static ServiceReference getServiceReference(
 			BundleContext bundleContext, String clazz,
@@ -82,14 +85,18 @@ public class OsgiUtils {
 				query);
 		ServiceReference ref = (refs != null && refs.length > 0) ? refs[0]
 				: null;
-		if (refs != null) {
-			for (ServiceReference temp : refs) {
-				Object v1 = ref.getProperty("Version");
-				Object v2 = temp.getProperty("Version");
-				if (VersionUtils.compareVersions(v1 != null ? v1.toString()
-						: null, v2 != null ? v2.toString() : null) < 0) {
-					ref = temp;
-				}
+		for (int i = 1, n = refs != null ? refs.length : 0; i < n; i++) {
+			ServiceReference temp = refs[i];
+			Object v1 = ref.getProperty("Version");
+			Object v2 = temp.getProperty("Version");
+			if (VersionUtils.compareVersions(v1 != null ? v1.toString() : null,
+					v2 != null ? v2.toString() : null) < 0) {
+				// unget unmatched service reference
+				ungetServiceReference(bundleContext, ref);
+				ref = temp;
+			} else {
+				// unget unmatched service reference
+				ungetServiceReference(bundleContext, temp);
 			}
 		}
 		return ref;
@@ -99,9 +106,12 @@ public class OsgiUtils {
 	 * Obtains all OSGi service references by filter.
 	 * 
 	 * @param bundleContext
+	 *            BundleContext
 	 * @param clazz
+	 *            String
 	 * @param filter
-	 * @return
+	 *            Map<String, String>
+	 * @return ServiceReference
 	 */
 	public static ServiceReference[] getServiceReferences(
 			BundleContext bundleContext, String clazz,
@@ -128,7 +138,7 @@ public class OsgiUtils {
 	 * @param clazz
 	 *            String
 	 * @param query
-	 *            Stirng
+	 *            String
 	 * @return ServiceReference[]
 	 */
 	public static ServiceReference[] getServiceReferences(
@@ -212,12 +222,68 @@ public class OsgiUtils {
 	 * 
 	 * @param <T>
 	 * @param bundleContext
+	 *            BundleContext
 	 * @param clazz
-	 * @return
+	 *            Class<T>
+	 * @return T
 	 */
 	public static <T> T getService(BundleContext bundleContext, Class<T> clazz) {
 		ServiceReference sref = OsgiUtils.getServiceReference(bundleContext,
 				clazz.getName());
+		if (sref != null) {
+			try {
+				return getService(bundleContext, sref, clazz);
+			} finally {
+				ungetServiceReference(bundleContext, sref);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets an OSGi service. This method unregisters the
+	 * {@link ServiceReference} so caller does not need to do it.
+	 * 
+	 * @param <T>
+	 * @param bundleContext
+	 *            BundleContext
+	 * @param clazz
+	 *            Class<T>
+	 * @param filter
+	 *            Map<String, String>
+	 * @return T
+	 */
+	public static <T> T getService(BundleContext bundleContext, Class<T> clazz,
+			Map<String, String> filter) {
+		ServiceReference sref = OsgiUtils.getServiceReference(bundleContext,
+				clazz.getName(), filter);
+		if (sref != null) {
+			try {
+				return getService(bundleContext, sref, clazz);
+			} finally {
+				ungetServiceReference(bundleContext, sref);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets an OSGi service. This method unregisters the
+	 * {@link ServiceReference} so caller does not need to do it.
+	 * 
+	 * @param <T>
+	 * @param bundleContext
+	 *            BundleContext
+	 * @param clazz
+	 *            Class<T>
+	 * @param query
+	 *            String
+	 * @return T
+	 */
+	public static <T> T getService(BundleContext bundleContext, Class<T> clazz,
+			String query) {
+		ServiceReference sref = OsgiUtils.getServiceReference(bundleContext,
+				clazz.getName(), query);
 		if (sref != null) {
 			try {
 				return getService(bundleContext, sref, clazz);
