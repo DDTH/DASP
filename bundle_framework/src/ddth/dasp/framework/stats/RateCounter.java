@@ -20,6 +20,7 @@ public class RateCounter {
 	private int numSlotsReturns;
 	private int slotMask;
 	private Timer timer;
+	private TimerTask task;
 
 	/*
 	 * Resolution is best to be power of 2 (e.g. 2, 4, 8, 16, etc)
@@ -68,7 +69,10 @@ public class RateCounter {
 	}
 
 	public void destroy() {
-		// EMPTY
+		if (task != null) {
+			task.cancel();
+			task = null;
+		}
 	}
 
 	/**
@@ -136,7 +140,7 @@ public class RateCounter {
 
 		if (timer != null) {
 			long delay = (numSlots / 4) * slotResolution;
-			TimerTask task = new IdleUpdateTask(this);
+			task = new IdleUpdateTask(this);
 			timer.scheduleAtFixedRate(task, delay, delay);
 		}
 	}

@@ -4,6 +4,7 @@ Bundle-Name: DASP Framework
 Bundle-SymbolicName: ddth.dasp.framework
 Bundle-Version: 0.1.0
 Export-Package: ddth.dasp.framework,
+ ddth.dasp.framework.api,
  ddth.dasp.framework.bo,
  ddth.dasp.framework.dbc,
  ddth.dasp.framework.logging,
