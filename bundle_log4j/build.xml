@@ -9,8 +9,8 @@
 		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.osgi.log4jfrag" />
-	<property name="product.version" value="0.1" />
-	<property name="product.version.micro" value="0.1.${MICROSTAMP}" />
+	<property name="product.version" value="0.1.0" />
+	<property name="product.version.micro" value="0.1.0.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
