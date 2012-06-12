@@ -1,6 +1,11 @@
 package ddth.dasp.utils;
 
 public class DaspConstants {
+
+	public final static int PARAM_INDEX_MODULE = 0;
+	public final static int PARAM_INDEX_ACTION = 1;
+	public final static int PARAM_INDEX_AUTHKEY = 2;
+
 	public final static String SESSION_USER_ID = "DASP_USER_ID";
 	public final static String SESSION_SESSION_TEMP_DIR = "SES_TMP_DIR";
 
