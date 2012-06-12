@@ -46,13 +46,13 @@
 
 		<echo>
 		</echo>
-		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
-		<ant inheritall="false" dir="${dir.bundle_framework}" target="build-development" />
+		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
+		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
 
 		<echo>
 		</echo>
-		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
-		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
+		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_framework}" target="build-development" />
 
 		<echo>
 		</echo>
@@ -73,13 +73,13 @@
 
 		<echo>
 		</echo>
-		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
-		<ant dir="${dir.bundle_framework}" target="build-production" />
+		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
+		<ant dir="${dir.servlet}" target="build-production" />
 
 		<echo>
 		</echo>
-		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
-		<ant dir="${dir.servlet}" target="build-production" />
+		<echo>BUILDING SUB-PROJECT [bundle-framework]...</echo>
+		<ant dir="${dir.bundle_framework}" target="build-production" />
 
 		<echo>
 		</echo>
@@ -107,7 +107,7 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/dasp">
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_id.build}">
 				<include name="**/*.jar" />
 			</fileset>
