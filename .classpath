@@ -11,19 +11,26 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="resources/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="resources/lib/guava-12.0.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-cli-1.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-dbcp-1.4.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-fileupload-1.2.2.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-io-2.0.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-pool-1.5.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/log/com.springsource.org.apache.log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/log/com.springsource.slf4j.api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/log/com.springsource.slf4j.log4j-1.5.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/log/com.springsource.slf4j.nop-1.5.6.jar.disabled"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/log/com.springsource.slf4j.org.apache.commons.logging-1.5.6.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-compress-1.4.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-configuration-1.8.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-dbutils-1.4.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-email-1.2.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-fileupload-1.2.2.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-io-2.3.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-math3-3.0.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-net-3.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-pool-1.6.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-transaction-1.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

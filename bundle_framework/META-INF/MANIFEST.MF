@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DASP Framework
 Bundle-SymbolicName: ddth.dasp.framework
-Bundle-Version: 0.1.0.1206120614
+Bundle-Version: 0.1.0.1206120632
 Export-Package: ddth.dasp.framework,
  ddth.dasp.framework.api,
  ddth.dasp.framework.bo,
@@ -20,8 +20,14 @@ Bundle-ClassPath: .,
  jdbc-mysql-3.1.10.jar,
  jdbc-postgresql-9.0-801.jar,
  jdbc-oracle6.jar,
- guava-12.0.jar
-Import-Package: ddth.dasp.utils,
+ guava-12.0.jar,
+ jackson-core-lgpl-1.8.2.jar,
+ jackson-mapper-lgpl-1.8.2.jar
+Import-Package: ddth.dasp.servlet,
+ ddth.dasp.servlet.rp,
+ ddth.dasp.utils,
+ javax.servlet,
+ javax.servlet.http,
  javax.sql,
  org.apache.commons.codec.binary,
  org.apache.commons.dbcp,
@@ -32,4 +38,7 @@ Import-Package: ddth.dasp.utils,
  org.slf4j,
  org.springframework.context,
  org.springframework.osgi.context,
- org.springframework.osgi.context.support
+ org.springframework.osgi.context.support,
+ org.springframework.web,
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.mvc
