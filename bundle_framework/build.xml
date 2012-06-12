@@ -7,8 +7,8 @@
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.lib_utils" value="../lib_utils" />
 	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
-	<property name="dir.platform_bundles" value="../servlet/web/WEB-INF/osgi-container/bundles" />
-	<property name="dir.platform_libs" value="../servlet/web/WEB-INF/lib" />
+	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
+	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
 		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
 	</tstamp>

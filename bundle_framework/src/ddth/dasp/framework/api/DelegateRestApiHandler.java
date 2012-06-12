@@ -16,10 +16,18 @@ import ddth.dasp.utils.DaspConstants;
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
-public abstract class RestApiHandler extends AbstractApiHandler implements
-		Controller {
+public abstract class DelegateRestApiHandler extends DelegateApiHandler
+		implements Controller {
 
-	private Logger LOGGER = LoggerFactory.getLogger(RestApiHandler.class);
+	private Logger LOGGER = LoggerFactory
+			.getLogger(DelegateRestApiHandler.class);
+
+	public DelegateRestApiHandler() {
+	}
+
+	public DelegateRestApiHandler(IApiHandler apiHandler) {
+		super(apiHandler);
+	}
 
 	/**
 	 * Extracts the authKey from the request.
