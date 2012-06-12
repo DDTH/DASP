@@ -3,8 +3,8 @@ package ddth.dasp.framework.logging;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * This class represents an application log entry.

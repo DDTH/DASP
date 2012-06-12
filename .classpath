@@ -19,8 +19,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-compress-1.4.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-configuration-1.8.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-dbcp-1.4.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-dbutils-1.4.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-email-1.2.jar"/>

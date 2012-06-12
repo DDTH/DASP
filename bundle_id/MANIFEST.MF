@@ -6,21 +6,13 @@ Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.id.osgi.DaspBundleActivator
 Export-Package: ddth.dasp.id
 Bundle-ClassPath: .
-Import-Package: ddth.dasp.common,
- ddth.dasp.common.osgi,
+Import-Package: ddth.dasp.common.osgi,
  ddth.dasp.common.spring,
- ddth.dasp.framework,
  ddth.dasp.framework.api,
  ddth.dasp.framework.stats,
  ddth.dasp.servlet.rp,
- ddth.dasp.utils,
- org.apache.commons.codec.binary,
- org.apache.commons.dbcp,
- org.apache.commons.lang,
- org.apache.commons.lang.builder,
- org.apache.log4j,
+ javax.servlet.http,
  org.osgi.framework,
- org.slf4j,
- org.springframework.context,
- org.springframework.osgi.context,
- org.springframework.osgi.context.support
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.handler,
+ org.springframework.web.servlet.mvc
