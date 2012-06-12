@@ -59,13 +59,13 @@ public class IdGenerator {
 	public static void disposeInstance(IdGenerator idGen) {
 		if (idGen != null) {
 			synchronized (cache) {
-				idGen.destroy();
+				// idGen.destroy();
 				long nodeId = idGen.nodeId;
 				IdGenerator temp = cache.get(nodeId);
 				if (temp != null) {
-					if (temp != idGen) {
-						temp.destroy();
-					}
+					// if (temp != idGen) {
+					temp.destroy();
+					// }
 					cache.remove(nodeId);
 				}
 			}

@@ -3,9 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DASP Id Service
 Bundle-SymbolicName: ddth.dasp.id
 Bundle-Version: 0.1.0
+Bundle-Activator: ddth.dasp.id.osgi.DaspBundleActivator
 Export-Package: ddth.dasp.id
 Bundle-ClassPath: .
-Import-Package: ddth.dasp.utils,
+Import-Package: ddth.dasp.common,
+ ddth.dasp.common.osgi,
+ ddth.dasp.common.spring,
+ ddth.dasp.servlet.rp,
+ ddth.dasp.utils,
  org.apache.commons.codec.binary,
  org.apache.commons.dbcp,
  org.apache.commons.lang,
