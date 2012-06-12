@@ -27,6 +27,8 @@ public abstract class BaseBundleActivator implements BundleActivator {
 	/**
 	 * Gets name of the associated bundle.
 	 * 
+	 * This method returns the bundle's symbolic name.
+	 * 
 	 * @return
 	 */
 	public String getBundleName() {
@@ -69,10 +71,16 @@ public abstract class BaseBundleActivator implements BundleActivator {
 		String version = (String) bundle.getHeaders().get(
 				Constants.BUNDLE_VERSION);
 		props.put("Version", version);
+		String moduleName = getModuleName();
+		if (!StringUtils.isEmpty(moduleName)) {
+			props.put("Module", moduleName);
+		}
 		setProperties(props);
 
+		registerSpringMvcHandlerMapping();
+		registerSpringMvcViewResolver();
+
 		registerServices();
-		registerModule();
 	}
 
 	/**
@@ -80,15 +88,39 @@ public abstract class BaseBundleActivator implements BundleActivator {
 	 */
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
-		unregisterModule();
 		unregisterServices();
+	}
+
+	/**
+	 * Registers module's Spring's {@link HandlerMapping}.
+	 */
+	protected void registerSpringMvcHandlerMapping() {
+		String moduleName = getModuleName();
+		HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
+		if (StringUtils.isEmpty(moduleName) || handlerMapping == null) {
+			return;
+		}
+		registerService(HandlerMapping.class.getName(), handlerMapping,
+				getProperties());
+	}
+
+	/**
+	 * Registers module's Spring's {@link ViewResolver}.
+	 */
+	protected void registerSpringMvcViewResolver() {
+		String moduleName = getModuleName();
+		ViewResolver viewResolver = getSpringMvcViewResolver();
+		if (StringUtils.isEmpty(moduleName) || viewResolver == null) {
+			return;
+		}
+		registerService(ViewResolver.class.getName(), viewResolver,
+				getProperties());
 	}
 
 	/**
 	 * Gets the module's name.
 	 * 
-	 * Returns <code>null</code> if the bundle does not wish to register for a
-	 * module.
+	 * This method simply returns <code>null</code>.
 	 * 
 	 * @return
 	 */
@@ -99,8 +131,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
 	/**
 	 * Gets the module's SpringMVC's {@link HandlerMapping}.
 	 * 
-	 * Returns <code>null</code> if the bundle does not wish to register for a
-	 * module.
+	 * This method simply returns <code>null</code>.
 	 * 
 	 * @return
 	 */
@@ -111,8 +142,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
 	/**
 	 * Gets the module's SpringMVC's {@link ViewResolver}.
 	 * 
-	 * Returns <code>null</code> if the bundle does not wish to register for a
-	 * {@link ViewResolver}.
+	 * This method simply returns <code>null</code>.
 	 * 
 	 * @return
 	 */
@@ -120,43 +150,23 @@ public abstract class BaseBundleActivator implements BundleActivator {
 		return null;
 	}
 
-	/**
-	 * Register the application module.
-	 */
-	protected void registerModule() {
-		String moduleName = getModuleName();
-		HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
-		if (!StringUtils.isEmpty(moduleName) && handlerMapping != null) {
-			Properties props = new Properties();
-			props.putAll(getProperties());
-			props.put("Module", moduleName);
-
-			registerService(HandlerMapping.class.getName(), handlerMapping,
-					props);
-
-			ViewResolver viewResolver = getSpringMvcViewResolver();
-			if (viewResolver != null) {
-				registerService(ViewResolver.class.getName(), handlerMapping,
-						props);
-			}
-		}
-	}
-
-	/**
-	 * Unregister the application module.
-	 */
-	protected void unregisterModule() {
-		// EMPTY
+	protected List<Object[]> getServiceInfoList() {
+		return null;
 	}
 
 	/**
 	 * Registers OSGi services provided by this module.
-	 * 
-	 * This method does nothing. Sub-class overrides this method to register its
-	 * own services.
 	 */
 	protected void registerServices() {
-		// EMPTY
+		List<Object[]> serviceInfoList = getServiceInfoList();
+		if (serviceInfoList == null) {
+			return;
+		}
+		for (Object[] serviceInfo : serviceInfoList) {
+			String serviceName = serviceInfo[0].toString();
+			Object serviceObj = serviceInfo[1];
+			registerService(serviceName, serviceObj, getProperties());
+		}
 	}
 
 	/**
@@ -173,9 +183,14 @@ public abstract class BaseBundleActivator implements BundleActivator {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Unregistering service [" + sr + "]...");
 				}
-				sr.unregister();
+				Object service = bundleContext.getService(sr.getReference());
+				if (service instanceof IRequireCleanupService) {
+					((IRequireCleanupService) service).destroy();
+				}
 			} catch (Exception e) {
 				LOGGER.warn(e.getMessage(), e);
+			} finally {
+				sr.unregister();
 			}
 		}
 	}

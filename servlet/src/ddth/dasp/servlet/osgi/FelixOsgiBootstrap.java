@@ -282,14 +282,14 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 		return OsgiUtils.getService(getBundleContext(), clazz, query);
 	}
 
-	private File renderOsgContainerLocation() {
+	private File renderOsgiContainerLocation() {
 		ServletContext sc = wac.getServletContext();
 		String root = sc.getRealPath("");
 		return new File(root, osgiContainerLocation);
 	}
 
 	private Properties loadConfigProperties() {
-		File configFile = new File(renderOsgContainerLocation(),
+		File configFile = new File(renderOsgiContainerLocation(),
 				OSGI_CONFIG_FILE);
 		Properties configProps = new Properties();
 		FileInputStream fis = null;
@@ -319,7 +319,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 					+ AutoProcessor.AUTO_DEPLOY_DIR_PROPERY + "] in file "
 					+ configFile.getAbsolutePath());
 		}
-		File fAutoDeployDir = new File(renderOsgContainerLocation(),
+		File fAutoDeployDir = new File(renderOsgiContainerLocation(),
 				sAutoDeployDir);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY + ": "
@@ -345,7 +345,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 		// configure Felix's File Install watch directory
 		String sMonitorDir = configProps.getProperty("felix.fileinstall.dir");
 		if (sMonitorDir != null) {
-			File fMonitorDir = new File(renderOsgContainerLocation(),
+			File fMonitorDir = new File(renderOsgiContainerLocation(),
 					sMonitorDir);
 			configProps.setProperty("felix.fileinstall.dir", fMonitorDir
 					.getAbsolutePath());
