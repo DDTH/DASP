@@ -8,6 +8,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_services/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_log4j/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_id/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test/src"/>
         <property name="context-root" value="DASP"/>
         <property name="java-output-path" value="/DASP/servlet/build/classes"/>
     </wb-module>

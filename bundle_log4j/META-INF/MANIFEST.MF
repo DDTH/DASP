@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DASP Log4j Configuration
 Bundle-SymbolicName: ddth.dasp.osgi.log4jfrag
-Bundle-Version: 0.1.0.1206121139
+Bundle-Version: 0.1.0.1206191204
 Fragment-Host: com.springsource.org.apache.log4j
