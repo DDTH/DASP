@@ -1,6 +1,8 @@
-package ddth.dasp.id.spring;
+package ddth.dasp.id.api;
 
-import ddth.dasp.id.IdGenerator;
+import java.util.Map;
+
+import ddth.dasp.common.id.IdGenerator;
 
 public class Id64HexApihandler extends AbstractIdApiHandler {
 
@@ -18,8 +20,13 @@ public class Id64HexApihandler extends AbstractIdApiHandler {
 			throws Exception {
 		long id = getIdGenerator().generateId64();
 		StringBuffer hex = new StringBuffer(Long.toHexString(id));
-		while (hex.length() < PADDING) {
-			hex.insert(0, '0');
+		if (params instanceof Map<?, ?>) {
+			Map<?, ?> tempMap = (Map<?, ?>) params;
+			if (tempMap.get("padding") != null) {
+				while (hex.length() < PADDING) {
+					hex.insert(0, '0');
+				}
+			}
 		}
 		return hex.toString();
 	}

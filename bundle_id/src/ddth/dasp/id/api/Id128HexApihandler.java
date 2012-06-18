@@ -1,8 +1,9 @@
-package ddth.dasp.id.spring;
+package ddth.dasp.id.api;
 
 import java.math.BigInteger;
+import java.util.Map;
 
-import ddth.dasp.id.IdGenerator;
+import ddth.dasp.common.id.IdGenerator;
 
 public class Id128HexApihandler extends AbstractIdApiHandler {
 
@@ -20,8 +21,13 @@ public class Id128HexApihandler extends AbstractIdApiHandler {
 			throws Exception {
 		BigInteger id = getIdGenerator().generateId128();
 		StringBuffer hex = new StringBuffer(id.toString(16));
-		while (hex.length() < PADDING) {
-			hex.insert(0, '0');
+		if (params instanceof Map<?, ?>) {
+			Map<?, ?> tempMap = (Map<?, ?>) params;
+			if (tempMap.get("padding") != null) {
+				while (hex.length() < PADDING) {
+					hex.insert(0, '0');
+				}
+			}
 		}
 		return hex.toString();
 	}

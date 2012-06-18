@@ -1,6 +1,6 @@
-package ddth.dasp.id.spring;
+package ddth.dasp.id.api;
 
-import ddth.dasp.id.IdGenerator;
+import ddth.dasp.common.id.IdGenerator;
 
 public class Id64Apihandler extends AbstractIdApiHandler {
 

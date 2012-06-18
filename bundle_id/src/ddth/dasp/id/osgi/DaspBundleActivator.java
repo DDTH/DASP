@@ -3,15 +3,15 @@ package ddth.dasp.id.osgi;
 import org.osgi.framework.BundleContext;
 import org.springframework.web.servlet.HandlerMapping;
 
+import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.osgi.BaseBundleActivator;
-import ddth.dasp.id.IdGenerator;
-import ddth.dasp.id.spring.IdServiceHandlerMapping;
+import ddth.dasp.id.api.IdServiceHandlerMapping;
 
 public class DaspBundleActivator extends BaseBundleActivator {
 
 	private IdGenerator idGen = IdGenerator.getInstance(IdGenerator
 			.getMacAddr());
-	private IdServiceHandlerMapping idServiceHandlerMapping = new IdServiceHandlerMapping();
+	private IdServiceHandlerMapping idServiceHandlerMapping = new IdServiceHandlerMapping(idGen);
 
 	/**
 	 * {@inheritDoc}
