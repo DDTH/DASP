@@ -5,6 +5,7 @@
 	<property name="dir.lib" value="lib" />
 	<property name="dir.META-INF" value="META-INF" />
 	<property name="dir.resources" value="../resources" />
+	<property name="dir.skins" value="skins" />
 	<property name="dir.bundle_framework" value="../bundle_framework" />
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
 	<property name="dir.lib_utils" value="../lib_utils" />
@@ -55,11 +56,16 @@
 	</path>
 
 	<target name="clean">
-		<delete dir="${dir.classes}">
+		<delete dir="${dir.classes}" includeemptydirs="true" quiet="true">
 		</delete>
-		<delete>
+		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${dir.build}">
-				<include name="**/*.*" />
+				<include name="**/*" />
+			</fileset>
+		</delete>
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${dir.META-INF}">
+				<include name="**/*" />
 			</fileset>
 		</delete>
 	</target>
@@ -99,6 +105,12 @@
 		</delete>
 		<copy todir="${dir.classes}" overwrite="true">
 			<fileset dir="${dir.lib}">
+			</fileset>
+		</copy>
+		<copy todir="${dir.META-INF}" overwrite="true">
+			<!-- copy the directory, including itself -->
+			<fileset dir="${dir.skins}/..">
+				<include name="${dir.skins}/**" />
 			</fileset>
 		</copy>
 		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF" overwrite="true" />
