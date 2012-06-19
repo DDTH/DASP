@@ -50,11 +50,11 @@
 	</path>
 
 	<target name="clean">
-		<delete dir="${dir.classes}">
+		<delete dir="${dir.classes}" includeemptydirs="true" quiet="true">
 		</delete>
-		<delete>
+		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${dir.build}">
-				<include name="**/*.*" />
+				<include name="**/*" />
 			</fileset>
 		</delete>
 	</target>

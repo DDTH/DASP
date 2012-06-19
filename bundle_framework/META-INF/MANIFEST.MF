@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DASP Framework
 Bundle-SymbolicName: ddth.dasp.framework
-Bundle-Version: 0.1.0.1206190211
+Bundle-Version: 0.1.0.1206190232
 Export-Package: ddth.dasp.framework,
  ddth.dasp.framework.api,
  ddth.dasp.framework.bo,
