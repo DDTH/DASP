@@ -3,12 +3,10 @@ package ddth.dasp.id.spring;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.web.servlet.mvc.Controller;
 
 import ddth.dasp.common.id.IdGenerator;
-import ddth.dasp.common.spring.AbstractHandlerMapping;
+import ddth.dasp.common.spring.SimpleHandlerMapping;
 import ddth.dasp.framework.api.DelegateJsonRestApiHandler;
 import ddth.dasp.id.api.AbstractIdApiHandler;
 import ddth.dasp.id.api.Id128Apihandler;
@@ -16,13 +14,11 @@ import ddth.dasp.id.api.Id128HexApihandler;
 import ddth.dasp.id.api.Id64Apihandler;
 import ddth.dasp.id.api.Id64HexApihandler;
 
-public class IdServiceHandlerMapping extends AbstractHandlerMapping {
+public class IdServiceHandlerMapping extends SimpleHandlerMapping {
 
-	private Map<String, Controller> handlerMapping;
+	private Map<String, Controller> handlerMapping = new HashMap<String, Controller>();
 
 	public IdServiceHandlerMapping(IdGenerator idGen) {
-		handlerMapping = new HashMap<String, Controller>();
-
 		AbstractIdApiHandler id64 = new Id64Apihandler(idGen);
 		handlerMapping.put("id64", new DelegateJsonRestApiHandler(id64));
 
@@ -41,8 +37,7 @@ public class IdServiceHandlerMapping extends AbstractHandlerMapping {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Object getHandlerInternal(HttpServletRequest request,
-			String actionName) throws Exception {
-		return handlerMapping.get(actionName);
+	protected Map<String, Controller> getHandlerMapping() {
+		return handlerMapping;
 	}
 }
