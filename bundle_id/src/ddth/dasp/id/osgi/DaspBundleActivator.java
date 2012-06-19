@@ -5,6 +5,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.osgi.BaseBundleActivator;
+import ddth.dasp.id.DaspBundleConstants;
 import ddth.dasp.id.spring.IdServiceHandlerMapping;
 
 public class DaspBundleActivator extends BaseBundleActivator {
@@ -28,7 +29,7 @@ public class DaspBundleActivator extends BaseBundleActivator {
 	 */
 	@Override
 	protected String getModuleName() {
-		return "ids";
+		return DaspBundleConstants.MODULE_NAME;
 	}
 
 	/**
