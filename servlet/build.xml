@@ -44,9 +44,10 @@
 	</path>
 
 	<target name="clean">
-		<delete dir="${dir.classes}" quiet="true" includeemptydirs="true" />
-		<delete quiet="true" includeemptydirs="true">
+		<delete dir="${dir.classes}" includeemptydirs="true" quiet="true" />
+		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${dir.build}">
+				<include name="**/*" />
 			</fileset>
 		</delete>
 	</target>
