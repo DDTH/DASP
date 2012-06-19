@@ -9,6 +9,8 @@
 	<property name="dir.bundle_services.build" value="${dir.bundle_services}/build" />
 	<property name="dir.bundle_id" value="bundle_id" />
 	<property name="dir.bundle_id.build" value="${dir.bundle_id}/build" />
+	<property name="dir.bundle_status" value="bundle_status" />
+	<property name="dir.bundle_status.build" value="${dir.bundle_status}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
 	<property name="dir.lib_utils" value="lib_utils" />
@@ -28,6 +30,10 @@
 		<echo>CLEANING SUB-PROJECT [bundle-id]...</echo>
 		<ant dir="${dir.bundle_id}" target="clean" />
 
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-status]...</echo>
+		<ant dir="${dir.bundle_status}" target="clean" />
 
 		<echo>
 		</echo>
@@ -64,6 +70,11 @@
 		<echo>BUILDING SUB-PROJECT [bundle-id]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_id}" target="build-development" />
 
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-status]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_status}" target="build-development" />
+
 		<antcall target="post-build" />
 	</target>
 
@@ -91,6 +102,11 @@
 		<echo>BUILDING SUB-PROJECT [bundle-id]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_id}" target="build-development" />
 
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-status]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_status}" target="build-development" />
+
 		<antcall target="post-build" />
 	</target>
 
@@ -109,6 +125,12 @@
 
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_id.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
+			<fileset dir="${dir.bundle_status.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
