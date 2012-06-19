@@ -1,4 +1,4 @@
-<project name="DASP - Bundle: IdService" basedir="." default="build-development">
+<project name="DASP - Bundle: Status" basedir="." default="build-development">
 	<property name="dir.src" value="src" />
 	<property name="dir.build" value="build" />
 	<property name="dir.classes" value="classes" />
@@ -14,7 +14,7 @@
 	<tstamp>
 		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
 	</tstamp>
-	<property name="product.name" value="ddth.dasp.id" />
+	<property name="product.name" value="ddth.dasp.status" />
 	<property name="product.version" value="0.1.0" />
 	<property name="product.version.micro" value="0.1.0.${MICROSTAMP}" />
 

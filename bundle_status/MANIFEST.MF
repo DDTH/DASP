@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DASP Status Service
+Bundle-SymbolicName: ddth.dasp.status
+Bundle-Version: 0.1.0
+Bundle-Activator: ddth.dasp.status.osgi.DaspBundleActivator
+Bundle-ClassPath: .
+Import-Package: ddth.dasp.common.id,
+ ddth.dasp.common.osgi,
+ ddth.dasp.common.spring,
+ ddth.dasp.framework.api,
+ ddth.dasp.framework.stats,
+ ddth.dasp.servlet.rp,
+ javax.servlet.http,
+ org.osgi.framework,
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.handler,
+ org.springframework.web.servlet.mvc

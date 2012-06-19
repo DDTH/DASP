@@ -32,7 +32,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-pool-1.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/apachecommons/commons-transaction-1.2.jar"/>
 	<classpathentry kind="lib" path="resources/lib/metrics-core-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.apache.felix.main-2.0.0.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.springframework.aop-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.springframework.asm-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.springframework.aspects-3.1.1.RELEASE.jar"/>
@@ -59,5 +58,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/spring-osgi-core-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/spring-osgi-extender-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/spring-osgi-io-2.0.0.M1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.apache.felix.main-4.0.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

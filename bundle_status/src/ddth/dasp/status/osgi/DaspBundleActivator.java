@@ -1,4 +1,4 @@
-package ddth.dasp.id.osgi;
+package ddth.dasp.status.osgi;
 
 import org.osgi.framework.BundleContext;
 import org.springframework.web.servlet.HandlerMapping;
@@ -11,8 +11,7 @@ public class DaspBundleActivator extends BaseBundleActivator {
 
 	private IdGenerator idGen = IdGenerator.getInstance(IdGenerator
 			.getMacAddr());
-	private IdServiceHandlerMapping idServiceHandlerMapping = new IdServiceHandlerMapping(
-			idGen);
+	private IdServiceHandlerMapping idServiceHandlerMapping = new IdServiceHandlerMapping(idGen);
 
 	/**
 	 * {@inheritDoc}

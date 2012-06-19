@@ -46,6 +46,7 @@ public class ContextTempDirListener implements ServletContextListener {
 		String randomStr = "CTX_" + RandomStringUtils.randomAlphanumeric(16);
 		CTX_TMP_DIR = new File(systemTempDir, randomStr);
 		CTX_TMP_DIR.mkdirs();
+		// TempDirUtils.setTempDir(CTX_TMP_DIR);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Created context temp dir [" + CTX_TMP_DIR + "].");
 		}
