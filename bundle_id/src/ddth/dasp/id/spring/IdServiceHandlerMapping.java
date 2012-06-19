@@ -1,4 +1,4 @@
-package ddth.dasp.id.api;
+package ddth.dasp.id.spring;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +10,11 @@ import org.springframework.web.servlet.mvc.Controller;
 import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.spring.AbstractHandlerMapping;
 import ddth.dasp.framework.api.DelegateJsonRestApiHandler;
+import ddth.dasp.id.api.AbstractIdApiHandler;
+import ddth.dasp.id.api.Id128Apihandler;
+import ddth.dasp.id.api.Id128HexApihandler;
+import ddth.dasp.id.api.Id64Apihandler;
+import ddth.dasp.id.api.Id64HexApihandler;
 
 public class IdServiceHandlerMapping extends AbstractHandlerMapping {
 

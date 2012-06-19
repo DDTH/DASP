@@ -5,7 +5,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.osgi.BaseBundleActivator;
-import ddth.dasp.id.api.IdServiceHandlerMapping;
+import ddth.dasp.id.spring.IdServiceHandlerMapping;
 
 public class DaspBundleActivator extends BaseBundleActivator {
 
