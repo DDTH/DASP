@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Spring Configurations for bundle ddth.dasp.status
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<bean id="handlerMapping" class="ddth.dasp.status.spring.StatusBundleHandlerMapping"
+		lazy-init="false" scope="singleton">
+		<property name="handlerMapping">
+			<map>
+				<entry key="*" value-ref="controllerHome" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="viewResolver" class="ddth.dasp.status.spring.StatusBundleViewResolver"
+		lazy-init="false" scope="singleton"></bean>
+
+	<bean id="controllerHome" class="ddth.dasp.status.controller.HomeController"
+		scope="singleton" lazy-init="true"></bean>
+</beans>

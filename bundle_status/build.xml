@@ -4,6 +4,7 @@
 	<property name="dir.classes" value="classes" />
 	<property name="dir.lib" value="lib" />
 	<property name="dir.META-INF" value="META-INF" />
+	<property name="dir.META-INF.osgispring" value="${dir.META-INF}/osgispring" />
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.skins" value="skins" />
 	<property name="dir.bundle_framework" value="../bundle_framework" />
@@ -90,10 +91,30 @@
 	</target>
 
 	<target name="build-development">
+		<copy todir="${dir.META-INF.osgispring}">
+			<fileset dir="spring-development">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${dir.META-INF.osgispring}">
+			<fileset dir="spring-common">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
 		<antcall target="jar" inheritall="false" />
 	</target>
 
 	<target name="build-production">
+		<copy todir="${dir.META-INF.osgispring}">
+			<fileset dir="spring-production">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${dir.META-INF.osgispring}">
+			<fileset dir="spring-common">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
 		<antcall target="jar" inheritall="false" />
 	</target>
 

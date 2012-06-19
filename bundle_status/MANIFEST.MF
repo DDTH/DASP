@@ -4,7 +4,8 @@ Bundle-Name: DASP Status Service
 Bundle-SymbolicName: ddth.dasp.status
 Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.status.osgi.DaspBundleActivator
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ freemarker-2.3.19.jar
 Import-Package: ddth.dasp.common.id,
  ddth.dasp.common.osgi,
  ddth.dasp.common.spring,
@@ -15,4 +16,6 @@ Import-Package: ddth.dasp.common.id,
  org.osgi.framework,
  org.springframework.web.servlet,
  org.springframework.web.servlet.handler,
- org.springframework.web.servlet.mvc
+ org.springframework.web.servlet.mvc,
+ org.springframework.web.servlet.view,
+ org.springframework.web.servlet.view.freemarker
