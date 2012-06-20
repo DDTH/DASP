@@ -3,7 +3,7 @@ package ddth.dasp.status.osgi;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ViewResolver;
 
-import ddth.dasp.common.osgi.BaseSpringBundleActivator;
+import ddth.dasp.framework.osgi.BaseSpringBundleActivator;
 import ddth.dasp.status.DaspBundleConstants;
 
 public class DaspBundleActivator extends BaseSpringBundleActivator {
