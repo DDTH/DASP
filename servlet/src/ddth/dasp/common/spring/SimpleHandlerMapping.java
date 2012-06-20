@@ -13,13 +13,23 @@ import org.springframework.web.servlet.mvc.Controller;
  * This {@link HandlerMapping} obtains a Map&lt;String, Controller&gt; and
  * simply looks up the handler from the map.
  * 
+ * A handler named '*' is will catch all mappings if the specific handler is not
+ * mapped.
+ * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
-public abstract class SimpleHandlerMapping extends AbstractHandlerMapping {
+public class SimpleHandlerMapping extends AbstractHandlerMapping {
 
 	private Logger LOGGER = LoggerFactory.getLogger(SimpleHandlerMapping.class);
+	private Map<String, Controller> handlerMapping;
 
-	protected abstract Map<String, Controller> getHandlerMapping();
+	protected Map<String, Controller> getHandlerMapping() {
+		return handlerMapping;
+	}
+
+	public void setHandlerMapping(Map<String, Controller> handlerMapping) {
+		this.handlerMapping = handlerMapping;
+	}
 
 	/**
 	 * {@inheritDoc}
