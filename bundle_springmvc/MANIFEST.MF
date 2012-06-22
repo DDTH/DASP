@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DASP SpringMVC Reqest Handler
+Bundle-SymbolicName: ddth.dasp.springmvc
+Bundle-Version: 0.1.0
+Bundle-Activator: ddth.dasp.springmvc.osgi.DaspBundleActivator
+Bundle-ClassPath: .
+Import-Package: ddth.dasp.common,
+ ddth.dasp.common.osgi,
+ ddth.dasp.common.rp,
+ ddth.dasp.framework.osgi,
+ javax.servlet,
+ javax.servlet.http,
+ org.apache.commons.lang3,
+ org.osgi.framework,
+ org.slf4j,
+ org.springframework.context,
+ org.springframework.web,
+ org.springframework.web.context,
+ org.springframework.web.context.support,
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.handler,
+ org.springframework.web.servlet.view
