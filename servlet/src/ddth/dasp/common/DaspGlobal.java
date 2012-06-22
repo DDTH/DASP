@@ -2,14 +2,17 @@ package ddth.dasp.common;
 
 import java.util.Timer;
 
+import javax.servlet.ServletContext;
+
+import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.tempdir.TempDir;
-import ddth.dasp.servlet.osgi.IOsgiBootstrap;
 
 public class DaspGlobal {
 	private static IOsgiBootstrap osgiBootstrap;
 	private static TempDir contextTempDir;
 	private static Timer contextTimer = new Timer(DaspGlobal.class.getName(),
 			true);
+	private static ServletContext servletContext;
 
 	protected void setOsgiBootstrap(IOsgiBootstrap osgiBootstrap) {
 		if (DaspGlobal.osgiBootstrap == null) {
@@ -20,6 +23,12 @@ public class DaspGlobal {
 	protected void setContextTempDir(TempDir contextTempDir) {
 		if (DaspGlobal.contextTempDir == null) {
 			DaspGlobal.contextTempDir = contextTempDir;
+		}
+	}
+
+	protected void setServletContext(ServletContext servletContext) {
+		if (DaspGlobal.servletContext == null) {
+			DaspGlobal.servletContext = servletContext;
 		}
 	}
 
@@ -43,5 +52,9 @@ public class DaspGlobal {
 	 */
 	public static TempDir getContextTempDir() {
 		return contextTempDir;
+	}
+
+	public static ServletContext getServletContext() {
+		return servletContext;
 	}
 }

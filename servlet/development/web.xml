@@ -8,51 +8,65 @@
 		Note: Spring's ContextLoaderListener should be loaded and initialized
 		first!
 	-->
-	<listener>
+	<!--
+		<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
+		</listener>
+	-->
 
 	<listener>
-		<listener-class>ddth.dasp.servlet.listener.ContextTempDirListener</listener-class>
+		<listener-class>ddth.dasp.servlet.listener.DaspContextListener</listener-class>
 	</listener>
-	<!--
 	<listener>
-		<listener-class>ddth.dasp.servlet.listener.SessionTempDirListener</listener-class>
+		<listener-class>ddth.dasp.servlet.listener.DaspSessionListener</listener-class>
 	</listener>
-	-->
 	<listener>
 		<listener-class>ddth.dasp.servlet.listener.DaspRequestListener</listener-class>
 	</listener>
 
 	<context-param>
-		<description>Used by Spring's ContextLoader</description>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/beans-dasp.xml</param-value>
+		<description>IP address to bind, used by OSGI remote shell</description>
+		<param-name>osgiRemoteShellListenIp</param-name>
+		<param-value>127.0.0.1</param-value>
+	</context-param>
+	<context-param>
+		<description>Port to bind, used by OSGI remote shell</description>
+		<param-name>osgiRemoteShellListenPort</param-name>
+		<param-value>16666</param-value>
 	</context-param>
 
-	<filter>
-		<filter-name>encodingFilter</filter-name>
+	<!--
+		<context-param> <description>Used by Spring's
+		ContextLoader</description>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/beans-dasp.xml</param-value>
+		</context-param> <filter> <filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
+		<init-param> <param-name>encoding</param-name>
+		<param-value>UTF-8</param-value> </init-param> </filter>
 
-	<filter-mapping>
-		<filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+		<filter-mapping> <filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern> </filter-mapping>
+	-->
 
-	<servlet>
-		<description>Spring's Dispatcher servlet. It will load a bean configuration file /WEB-INF/springDasp-servlet.xml</description>
+	<!--
+		<servlet> <description>Spring's Dispatcher servlet. It will load a
+		bean configuration file /WEB-INF/springDasp-servlet.xml</description>
 		<servlet-name>springDasp</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup> </servlet> <servlet-mapping>
+		<servlet-name>springDasp</servlet-name> <url-pattern>/*</url-pattern>
+		</servlet-mapping>
+	-->
+
+	<servlet>
+		<description>DASP Dispatcher Servlet</description>
+		<servlet-name>daspDispatcherServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.DaspDispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
 	<servlet-mapping>
-		<servlet-name>springDasp</servlet-name>
+		<servlet-name>daspDispatcherServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 

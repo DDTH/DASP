@@ -1,6 +1,6 @@
 package ddth.dasp.servlet.spring;
 
-import ddth.dasp.servlet.osgi.IOsgiBootstrap;
+import ddth.dasp.common.osgi.IOsgiBootstrap;
 
 /**
  * Defines Spring constants to use within the platform.

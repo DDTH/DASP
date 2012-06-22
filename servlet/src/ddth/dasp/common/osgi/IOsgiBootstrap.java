@@ -1,4 +1,4 @@
-package ddth.dasp.servlet.osgi;
+package ddth.dasp.common.osgi;
 
 import java.io.File;
 import java.io.FileNotFoundException;

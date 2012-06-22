@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.OsgiUtils;
 
 public class FelixOsgiBootstrap implements IOsgiBootstrap {

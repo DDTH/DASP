@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.IRequestHandler;
+import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.ServletUtils;
-import ddth.dasp.servlet.osgi.IOsgiBootstrap;
 
 public class DaspDispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -35,12 +35,14 @@ public class DaspDispatcherServlet extends HttpServlet {
 	}
 
 	protected void doHandleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws IOException, ServletException {
 		IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
 		IRequestHandler requestHandler = osgiBootstrap
 				.getService(HANDLER_CLASS);
 		if (requestHandler == null) {
 			ServletUtils.responseHttpError(response, 404, "No handler found!");
+			return;
 		}
+		requestHandler.handleRequest(request, response);
 	}
 }

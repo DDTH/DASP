@@ -1,5 +1,8 @@
 package ddth.dasp.common;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,5 +15,5 @@ public interface IRequestHandler {
 	 * @throws Exception
 	 */
 	public void handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception;
+			HttpServletResponse response) throws IOException, ServletException;
 }

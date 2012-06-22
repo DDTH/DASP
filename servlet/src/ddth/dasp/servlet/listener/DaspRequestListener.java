@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.rp.IRequestParser;
+import ddth.dasp.common.rp.RequestParsingInteruptedException;
 import ddth.dasp.common.tempdir.TempDir;
 import ddth.dasp.servlet.rp.HttpRequestParser;
-import ddth.dasp.servlet.rp.IRequestParser;
 import ddth.dasp.servlet.rp.MalformedRequestException;
-import ddth.dasp.servlet.rp.RequestParsingInteruptedException;
 import ddth.dasp.utils.DaspConstants;
 
 public class DaspRequestListener implements ServletRequestListener {

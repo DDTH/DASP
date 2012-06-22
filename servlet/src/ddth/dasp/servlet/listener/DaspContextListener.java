@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.tempdir.TempDir;
 import ddth.dasp.servlet.osgi.FelixOsgiBootstrap;
-import ddth.dasp.servlet.osgi.IOsgiBootstrap;
 
 /**
  * This {@link ServletContextListener} is responsible for initializing and
@@ -46,6 +46,10 @@ public class DaspContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("SERVLET_CONTEXT", event.getServletContext());
+		new _DaspGlobal(data);
+
 		initTempDir(event.getServletContext());
 		initOsgiBootstrap(event.getServletContext());
 	}
@@ -108,6 +112,11 @@ public class DaspContextListener implements ServletContextListener {
 	static class _DaspGlobal extends DaspGlobal {
 		public _DaspGlobal(Map<String, Object> data) {
 			Object obj;
+
+			obj = data.get("SERVLET_CONTEXT");
+			if (obj instanceof ServletContext) {
+				setServletContext((ServletContext) obj);
+			}
 
 			obj = data.get("CONTEXT_TEMPDIR");
 			if (obj instanceof TempDir) {

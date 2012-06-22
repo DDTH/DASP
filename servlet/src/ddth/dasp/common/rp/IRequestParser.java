@@ -1,7 +1,9 @@
-package ddth.dasp.servlet.rp;
+package ddth.dasp.common.rp;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import ddth.dasp.servlet.rp.MalformedRequestException;
 
 /**
  * This interface provides API to parse incoming requests into business tokens.
