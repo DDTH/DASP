@@ -18,50 +18,51 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
-public class SimpleHandlerMapping extends AbstractHandlerMapping {
+public class SimpleHandlerMapping {// extends AbstractHandlerMapping {
 
-	private Logger LOGGER = LoggerFactory.getLogger(SimpleHandlerMapping.class);
-	private Map<String, Controller> handlerMapping;
-
-	protected Map<String, Controller> getHandlerMapping() {
-		return handlerMapping;
-	}
-
-	public void setHandlerMapping(Map<String, Controller> handlerMapping) {
-		this.handlerMapping = handlerMapping;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Object getHandlerInternal(HttpServletRequest request,
-			String actionName) throws Exception {
-		Map<String, Controller> handlerMapping = getHandlerMapping();
-		if (handlerMapping == null) {
-			return null;
-		}
-		Controller controller = handlerMapping.get(actionName);
-		if (controller != null) {
-			if (LOGGER.isDebugEnabled()) {
-				String msg = "Found handler for action [" + actionName + "].";
-				LOGGER.debug(msg);
-			}
-			return controller;
-		}
-		controller = handlerMapping.get("*");
-		if (controller != null) {
-			if (LOGGER.isDebugEnabled()) {
-				String msg = "Found universal handler for action ["
-						+ actionName + "].";
-				LOGGER.debug(msg);
-			}
-			return controller;
-		}
-		if (LOGGER.isDebugEnabled()) {
-			String msg = "Found no handler for action [" + actionName + "].";
-			LOGGER.debug(msg);
-		}
-		return null;
-	}
+	// private Logger LOGGER =
+	// LoggerFactory.getLogger(SimpleHandlerMapping.class);
+	// private Map<String, Controller> handlerMapping;
+	//
+	// protected Map<String, Controller> getHandlerMapping() {
+	// return handlerMapping;
+	// }
+	//
+	// public void setHandlerMapping(Map<String, Controller> handlerMapping) {
+	// this.handlerMapping = handlerMapping;
+	// }
+	//
+	// /**
+	// * {@inheritDoc}
+	// */
+	// @Override
+	// protected Object getHandlerInternal(HttpServletRequest request,
+	// String actionName) throws Exception {
+	// Map<String, Controller> handlerMapping = getHandlerMapping();
+	// if (handlerMapping == null) {
+	// return null;
+	// }
+	// Controller controller = handlerMapping.get(actionName);
+	// if (controller != null) {
+	// if (LOGGER.isDebugEnabled()) {
+	// String msg = "Found handler for action [" + actionName + "].";
+	// LOGGER.debug(msg);
+	// }
+	// return controller;
+	// }
+	// controller = handlerMapping.get("*");
+	// if (controller != null) {
+	// if (LOGGER.isDebugEnabled()) {
+	// String msg = "Found universal handler for action ["
+	// + actionName + "].";
+	// LOGGER.debug(msg);
+	// }
+	// return controller;
+	// }
+	// if (LOGGER.isDebugEnabled()) {
+	// String msg = "Found no handler for action [" + actionName + "].";
+	// LOGGER.debug(msg);
+	// }
+	// return null;
+	// }
 }
