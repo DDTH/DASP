@@ -7,9 +7,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 
+import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.stats.RateCounter;
 import ddth.dasp.framework.stats.RateCounterFactory;
-import ddth.dasp.utils.OsgiUtils;
 
 public class AbstractCounterLogEngine implements BundleContextAware {
 

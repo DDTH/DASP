@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-import ddth.dasp.servlet.rp.IRequestParser;
+import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.utils.DaspConstants;
 
 /**

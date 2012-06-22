@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.Controller;
 
-import ddth.dasp.servlet.rp.IRequestParser;
+import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.utils.DaspConstants;
 import ddth.dasp.utils.JsonUtils;
 
