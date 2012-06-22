@@ -1,16 +1,15 @@
 package ddth.dasp.servlet.listener;
 
-import java.io.File;
-
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.tempdir.TempDir;
 import ddth.dasp.servlet.rp.HttpRequestParser;
 import ddth.dasp.servlet.rp.IRequestParser;
 import ddth.dasp.servlet.rp.MalformedRequestException;
@@ -28,14 +27,7 @@ public class DaspRequestListener implements ServletRequestListener {
 	public void requestDestroyed(ServletRequestEvent event) {
 		HttpServletRequest request = (HttpServletRequest) event
 				.getServletRequest();
-		Object tmp = request
-				.getAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR);
-		if (tmp instanceof File) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Deleting request temp dir [" + tmp + "]...");
-			}
-			FileUtils.deleteQuietly((File) tmp);
-		}
+		destroyTempDir(request);
 	}
 
 	/**
@@ -45,12 +37,11 @@ public class DaspRequestListener implements ServletRequestListener {
 	public void requestInitialized(ServletRequestEvent event) {
 		HttpServletRequest request = (HttpServletRequest) event
 				.getServletRequest();
-		File requestTempDir = createRequestTempDir();
-		request.setAttribute(DaspConstants.REQ_ATTR_CONTEXT_TEMP_DIR,
-				ContextTempDirListener.getTempDir());
-		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR,
-				requestTempDir);
+		initTempDir(request);
+		initRequestParser(request);
+	}
 
+	private void initRequestParser(HttpServletRequest request) {
 		IRequestParser rp = new HttpRequestParser();
 		((HttpRequestParser) rp).setHttpRequest(request);
 		rp.reset();
@@ -66,14 +57,23 @@ public class DaspRequestListener implements ServletRequestListener {
 		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_PARSER, rp);
 	}
 
-	protected File createRequestTempDir() {
-		File contextTempDir = ContextTempDirListener.getTempDir();
-		String randomStr = "REQ_" + RandomStringUtils.randomAlphanumeric(16);
-		File requestTempDir = new File(contextTempDir, randomStr);
-		requestTempDir.mkdirs();
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Created request temp dir [" + requestTempDir + "].");
+	private void destroyTempDir(HttpServletRequest request) {
+		Object tmp = request
+				.getAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR);
+		if (tmp instanceof TempDir) {
+			try {
+				((TempDir) tmp).delete();
+			} catch (Throwable t) {
+				LOGGER.warn(t.getMessage(), t);
+			}
 		}
-		return requestTempDir;
+	}
+
+	private void initTempDir(HttpServletRequest request) {
+		String randomStr = "REQ_" + RandomStringUtils.randomAlphanumeric(16);
+		TempDir contextTempDir = DaspGlobal.getContextTempDir();
+		TempDir requestTempDir = new TempDir(contextTempDir, randomStr);
+		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR,
+				requestTempDir);
 	}
 }

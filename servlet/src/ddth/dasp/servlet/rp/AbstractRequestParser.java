@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.utils.TimerUtils;
+import ddth.dasp.common.DaspGlobal;
 
 /**
  * Abstract implementation of {@link IRequestParser}.
@@ -232,7 +232,7 @@ public abstract class AbstractRequestParser implements IRequestParser {
 		}
 		this.isParsed = true;
 		TimerTask task = new SafeguardTask(this);
-		TimerUtils.getTimer().schedule(task, getTimeout());
+		DaspGlobal.getContextTimer().schedule(task, getTimeout());
 		try {
 			internalPreParseRequest();
 			internalParseRequest();

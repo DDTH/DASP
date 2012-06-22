@@ -12,6 +12,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 public interface IOsgiBootstrap {
+
 	/**
 	 * Deploys a bundle from a file.
 	 * 

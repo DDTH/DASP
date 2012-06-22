@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ddth.dasp.servlet.utils.ServletUtils;
+import ddth.dasp.common.utils.ServletUtils;
 
 /**
  * This implementation of {@link IRequestParser} is used to parse a HTTP

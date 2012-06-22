@@ -28,25 +28,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.context.WebApplicationContext;
 
-import ddth.dasp.utils.OsgiUtils;
+import ddth.dasp.common.utils.OsgiUtils;
 
-public class FelixOsgiBootstrap implements IOsgiBootstrap,
-		ApplicationContextAware {
+public class FelixOsgiBootstrap implements IOsgiBootstrap {
 
 	private final static String OSGI_CONFIG_FILE = "osgi-felix.properties";
 
-	private WebApplicationContext wac;
+	private ServletContext servletContext;
 	private String osgiContainerLocation = "/WEB-INF/osgi-container";
 	private Logger LOGGER = LoggerFactory.getLogger(FelixOsgiBootstrap.class);
 	private Marker FATAL = MarkerFactory.getMarker("FATAL");
 	private Framework framework;
 	private String remoteShellListenIp = "127.0.0.1";
 	private int remoteShellListenPort = 6666;
+
+	protected ServletContext getServletContext() {
+		return servletContext;
+	}
+
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
 
 	/**
 	 * Gets the osgi container folder.
@@ -283,8 +286,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 	}
 
 	private File renderOsgiContainerLocation() {
-		ServletContext sc = wac.getServletContext();
-		String root = sc.getRealPath("");
+		String root = servletContext.getRealPath("");
 		return new File(root, osgiContainerLocation);
 	}
 
@@ -480,14 +482,5 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap,
 		} catch (Exception e) {
 			LOGGER.error(FATAL, e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setApplicationContext(ApplicationContext ac)
-			throws BeansException {
-		wac = (WebApplicationContext) ac;
 	}
 }
