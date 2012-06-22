@@ -1,29 +1,27 @@
 package ddth.dasp.utils;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-
 /**
  * Spring-related utility class.
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
 public class SpringUtils {
-	/**
-	 * Gets a bean by name.
-	 * 
-	 * @param <T>
-	 * @param appContext
-	 *            ApplicationContext
-	 * @param clazz
-	 *            Class<T>
-	 * @return T
-	 */
-	public static <T> T getBean(ApplicationContext appContext, Class<T> clazz) {
-		try {
-			return appContext.getBean(clazz);
-		} catch (BeansException e) {
-			return null;
-		}
-	}
+	// /**
+	// * Gets a bean by name.
+	// *
+	// * @param <T>
+	// * @param appContext
+	// * ApplicationContext
+	// * @param clazz
+	// * Class<T>
+	// * @return T
+	// */
+	// public static <T> T getBean(ApplicationContext appContext, Class<T>
+	// clazz) {
+	// try {
+	// return appContext.getBean(clazz);
+	// } catch (BeansException e) {
+	// return null;
+	// }
+	// }
 }
