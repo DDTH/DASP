@@ -199,7 +199,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference getServiceReference(String clazz) {
+	public ServiceReference<?> getServiceReference(String clazz) {
 		return OsgiUtils.getServiceReference(getBundleContext(), clazz);
 	}
 
@@ -207,7 +207,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference getServiceReference(String clazz, String query) {
+	public ServiceReference<?> getServiceReference(String clazz, String query) {
 		return OsgiUtils.getServiceReference(getBundleContext(), clazz, query);
 	}
 
@@ -215,7 +215,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference getServiceReference(String clazz,
+	public ServiceReference<?> getServiceReference(String clazz,
 			Map<String, String> filter) {
 		return OsgiUtils.getServiceReference(getBundleContext(), clazz, filter);
 	}
@@ -224,7 +224,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference[] getServiceReferences(String clazz, String query) {
+	public ServiceReference<?>[] getServiceReferences(String clazz, String query) {
 		return OsgiUtils.getServiceReferences(getBundleContext(), clazz, query);
 	}
 
@@ -232,7 +232,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ServiceReference[] getServiceReferences(String clazz,
+	public ServiceReference<?>[] getServiceReferences(String clazz,
 			Map<String, String> filter) {
 		return OsgiUtils
 				.getServiceReferences(getBundleContext(), clazz, filter);
@@ -242,7 +242,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void ungetServiceReference(ServiceReference sref) {
+	public void ungetServiceReference(ServiceReference<?> sref) {
 		OsgiUtils.ungetServiceReference(getBundleContext(), sref);
 	}
 
@@ -250,7 +250,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object getService(ServiceReference sref) {
+	public Object getService(ServiceReference<?> sref) {
 		return OsgiUtils.getService(getBundleContext(), sref);
 	}
 
@@ -258,7 +258,7 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> T getService(ServiceReference sref, Class<T> clazz) {
+	public <T> T getService(ServiceReference<T> sref, Class<T> clazz) {
 		return OsgiUtils.getService(getBundleContext(), sref, clazz);
 	}
 
