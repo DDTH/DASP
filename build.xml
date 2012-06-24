@@ -67,12 +67,12 @@
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_log4j}" target="build-development" />
 
-		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-id]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_id}" target="build-development" />
 
+		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-status]...</echo>
