@@ -64,7 +64,7 @@ public interface IOsgiBootstrap {
 	 *            String
 	 * @return ServiceReference
 	 */
-	public ServiceReference getServiceReference(String clazz);
+	public ServiceReference<?> getServiceReference(String clazz);
 
 	/**
 	 * Gets a service reference by query. If more than one service reference
@@ -79,7 +79,7 @@ public interface IOsgiBootstrap {
 	 * @see http://www.osgi.org/javadoc/r4v43/org/osgi/framework/Filter.html for
 	 *      query syntax
 	 */
-	public ServiceReference getServiceReference(String clazz, String query);
+	public ServiceReference<?> getServiceReference(String clazz, String query);
 
 	/**
 	 * Gets a service reference by filter. If more than one service reference
@@ -91,7 +91,7 @@ public interface IOsgiBootstrap {
 	 * @param filter
 	 * @return
 	 */
-	public ServiceReference getServiceReference(String clazz,
+	public ServiceReference<?> getServiceReference(String clazz,
 			Map<String, String> filter);
 
 	/**
@@ -105,7 +105,7 @@ public interface IOsgiBootstrap {
 	 * @see http://www.osgi.org/javadoc/r4v43/org/osgi/framework/Filter.html for
 	 *      query syntax
 	 */
-	public ServiceReference[] getServiceReferences(String clazz, String query);
+	public ServiceReference<?>[] getServiceReferences(String clazz, String query);
 
 	/**
 	 * Gets all service references by filter.
@@ -115,7 +115,7 @@ public interface IOsgiBootstrap {
 	 * @param filter
 	 * @return
 	 */
-	public ServiceReference[] getServiceReferences(String clazz,
+	public ServiceReference<?>[] getServiceReferences(String clazz,
 			Map<String, String> filter);
 
 	/**
@@ -124,7 +124,7 @@ public interface IOsgiBootstrap {
 	 * @param sref
 	 *            ServiceReference
 	 */
-	public void ungetServiceReference(ServiceReference sref);
+	public void ungetServiceReference(ServiceReference<?> sref);
 
 	/**
 	 * Gets a service from a service reference.
@@ -133,7 +133,7 @@ public interface IOsgiBootstrap {
 	 *            ServiceReference
 	 * @return Object
 	 */
-	public Object getService(ServiceReference sref);
+	public Object getService(ServiceReference<?> sref);
 
 	/**
 	 * Gets a service from a service reference.
@@ -145,7 +145,7 @@ public interface IOsgiBootstrap {
 	 *            Class
 	 * @return T
 	 */
-	public <T> T getService(ServiceReference sref, Class<T> clazz);
+	public <T> T getService(ServiceReference<T> sref, Class<T> clazz);
 
 	/**
 	 * Gets an OSGi service. This method unregisters the
