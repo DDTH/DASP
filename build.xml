@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Ant build file for DASP project -->
-<project name="WFP" default="build-development">
+<project name="DASP" default="build-development">
 	<property name="dir.bundle_framework" value="bundle_framework" />
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
 	<property name="dir.bundle_log4j" value="bundle_log4j" />
