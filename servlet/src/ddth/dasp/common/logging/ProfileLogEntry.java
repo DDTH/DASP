@@ -57,12 +57,14 @@ public class ProfileLogEntry implements Serializable, Cloneable {
     private String nodeId;
 
     /**
-     * ID of the client where the request originates. Usually it's the client's IP address.
+     * ID of the client where the request originates. Usually it's the client's
+     * IP address.
      */
     private String clientId;
 
     /**
-     * ID of the enduser where the request originates. Usually it's the enduser's IP address.
+     * ID of the enduser where the request originates. Usually it's the
+     * enduser's IP address.
      */
     private String enduserId;
 
@@ -318,8 +320,8 @@ public class ProfileLogEntry implements Serializable, Cloneable {
             return false;
         }
         ProfileLogEntry other = (ProfileLogEntry) obj;
-        return new EqualsBuilder().append(id, other.id).append(requestId, other.requestId).append(
-                nodeId, other.nodeId).append(clientId, other.clientId).append(enduserId,
-                other.enduserId).append(timestamp, other.timestamp).isEquals();
+        return new EqualsBuilder().append(id, other.id).append(requestId, other.requestId)
+                .append(nodeId, other.nodeId).append(clientId, other.clientId)
+                .append(enduserId, other.enduserId).append(timestamp, other.timestamp).isEquals();
     }
 }

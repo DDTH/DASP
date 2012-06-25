@@ -20,7 +20,8 @@ public class ProfileLogger {
     protected static ThreadLocal<ProfileLogEntry> logEntry = new ThreadLocal<ProfileLogEntry>();
 
     /**
-     * Gets the currently bound {@link ProfileLogEntry} object. Creates one if not exists.
+     * Gets the currently bound {@link ProfileLogEntry} object. Creates one if
+     * not exists.
      * 
      * @return ProfileLogEntry
      */
@@ -49,7 +50,8 @@ public class ProfileLogger {
      * 
      * @param name
      *            String
-     * @return ProfileLogEntry the currently bound {@link ProfileLogEntry} object.
+     * @return ProfileLogEntry the currently bound {@link ProfileLogEntry}
+     *         object.
      */
     public static ProfileLogEntry push(String name) {
         ProfileLogEntry entry = get();

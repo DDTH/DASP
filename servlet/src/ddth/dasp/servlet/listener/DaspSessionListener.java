@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.tempdir.TempDir;
-import ddth.dasp.utils.DaspConstants;
+import ddth.dasp.common.utils.DaspConstants;
 
 /**
  * This {@link ServletContextListener} is responsible for initializing and

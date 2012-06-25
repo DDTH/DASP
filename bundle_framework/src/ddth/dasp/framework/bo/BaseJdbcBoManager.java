@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.MapMaker;
 
+import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
-import ddth.dasp.utils.JsonUtils;
-import ddth.dasp.utils.PropsUtils;
+import ddth.dasp.framework.utils.JsonUtils;
 
 public abstract class BaseJdbcBoManager implements IJdbcBoManager {
 

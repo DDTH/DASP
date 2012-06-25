@@ -15,8 +15,6 @@
 	<property name="dir.bundle_springmvc.build" value="${dir.bundle_springmvc}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
-	<property name="dir.lib_utils" value="lib_utils" />
-	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
 
 	<target name="clean">
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
@@ -41,19 +39,9 @@
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant dir="${dir.bundle_log4j}" target="clean" />
-
-		<echo>
-		</echo>
-		<echo>CLEANING SUB-PROJECT [lib-utils]...</echo>
-		<ant dir="${dir.lib_utils}" target="clean" />
 	</target>
 
 	<target name="build-development">
-		<echo>BUILDING SUB-PROJECT [lib-utils]...</echo>
-		<ant inheritall="false" dir="${dir.lib_utils}" target="build-development" />
-
-		<echo>
-		</echo>
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
 
@@ -88,11 +76,6 @@
 	</target>
 
 	<target name="build-production" depends="clean">
-		<echo>BUILDING SUB-PROJECT [lib-utils]...</echo>
-		<ant dir="${dir.lib_utils}" target="build-production" />
-
-		<echo>
-		</echo>
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="build-production" />
 
@@ -125,12 +108,6 @@
 	</target>
 
 	<target name="post-build">
-		<copy todir="${dir.servlet.build}/web/WEB-INF/lib">
-			<fileset dir="${dir.lib_utils.build}">
-				<include name="**/*.jar" />
-			</fileset>
-		</copy>
-
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
 			<fileset dir="${dir.bundle_log4j.build}">
 				<include name="**/*.jar" />

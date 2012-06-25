@@ -7,8 +7,8 @@ package ddth.dasp.common.osgi;
  * @author NBThanh <btnguyen2k@gmail.com>
  */
 public interface IRequireCleanupService {
-	/**
-	 * Called to perform cleaning up tasks.
-	 */
-	public void destroy();
+    /**
+     * Called to perform cleaning up tasks.
+     */
+    public void destroy();
 }

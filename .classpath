@@ -5,7 +5,6 @@
 	<classpathentry kind="src" output="test/classes" path="test/src"/>
 	<classpathentry kind="src" output="bundle_id/classes" path="bundle_id/src"/>
 	<classpathentry kind="src" output="bundle_log4j/classes" path="bundle_log4j/src"/>
-	<classpathentry kind="src" output="lib_utils/classes" path="lib_utils/src"/>
 	<classpathentry kind="src" output="bundle_framework/classes" path="bundle_framework/src"/>
 	<classpathentry kind="src" output="bundle_services/classes" path="bundle_services/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

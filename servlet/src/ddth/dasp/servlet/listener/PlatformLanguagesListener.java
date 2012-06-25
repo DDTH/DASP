@@ -13,10 +13,10 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.servlet.mls.ILanguage;
 import ddth.dasp.servlet.mls.LanguageManager;
 import ddth.dasp.servlet.mls.PropertiesBasedLanguage;
-import ddth.dasp.utils.PropsUtils;
 
 /**
  * This {@link ServletContextListener} is responsible for initializing and

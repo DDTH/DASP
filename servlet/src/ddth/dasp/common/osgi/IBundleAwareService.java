@@ -8,5 +8,5 @@ import org.osgi.framework.Bundle;
  * @author NBThanh <btnguyen2k@gmail.com>
  */
 public interface IBundleAwareService {
-	public void setBundle(Bundle bundle);
+    public void setBundle(Bundle bundle);
 }

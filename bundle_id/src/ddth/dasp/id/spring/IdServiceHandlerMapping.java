@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.web.servlet.mvc.Controller;
 
 import ddth.dasp.common.id.IdGenerator;
-import ddth.dasp.common.spring.SimpleHandlerMapping;
 import ddth.dasp.framework.api.DelegateJsonRestApiHandler;
+import ddth.dasp.framework.spring.SimpleHandlerMapping;
 import ddth.dasp.id.api.AbstractIdApiHandler;
 import ddth.dasp.id.api.Id128Apihandler;
 import ddth.dasp.id.api.Id128HexApihandler;

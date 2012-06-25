@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.utils.TimerUtils;
+import ddth.dasp.framework.utils.TimerUtils;
 
 /**
  * Abstract implementation of {@link IJdbcFactory}.
