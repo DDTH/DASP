@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
-import ddth.dasp.common.osgi.BaseBundleActivator;
 
 /**
  * This {@link BundleActivator} does the following:

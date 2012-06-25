@@ -5,8 +5,6 @@
 	<property name="dir.lib" value="lib" />
 	<property name="dir.META-INF" value="META-INF" />
 	<property name="dir.resources" value="../resources" />
-	<property name="dir.lib_utils" value="../lib_utils" />
-	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
 	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
@@ -30,9 +28,6 @@
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.platform_libs}">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="${dir.lib_utils.build}">
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.platform_bundles}/apachecommons">
