@@ -7,8 +7,6 @@
 	<property name="dir.web.WEB_INF" value="${dir.web}/WEB-INF" />
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.release" value="release" />
-	<property name="dir.lib_utils" value="../lib_utils" />
-	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
 	<tstamp>
 		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
 	</tstamp>
@@ -26,6 +24,7 @@
 		<fileset dir="${dir.web.WEB_INF}/lib">
 			<include name="*.jar" />
 		</fileset>
+		<!--
 		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/spring">
 			<include name="*.jar" />
 		</fileset>
@@ -35,10 +34,8 @@
 		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/apachecommons">
 			<include name="*.jar" />
 		</fileset>
+		-->
 		<fileset dir="${dir.resources}/lib">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="${dir.lib_utils.build}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
