@@ -14,7 +14,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.rp.IRequestParser;
-import ddth.dasp.utils.DaspConstants;
+import ddth.dasp.common.utils.DaspConstants;
 
 public class DaspHandlerMapping extends AbstractHandlerMapping {
 
