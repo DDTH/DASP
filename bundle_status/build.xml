@@ -9,8 +9,6 @@
 	<property name="dir.skins" value="skins" />
 	<property name="dir.bundle_framework" value="../bundle_framework" />
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
-	<property name="dir.lib_utils" value="../lib_utils" />
-	<property name="dir.lib_utils.build" value="${dir.lib_utils}/build" />
 	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
@@ -37,9 +35,6 @@
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.bundle_framework.build}">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="${dir.lib_utils.build}">
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.platform_bundles}/apachecommons">
