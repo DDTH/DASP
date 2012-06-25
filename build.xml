@@ -60,12 +60,10 @@
 		<echo>BUILDING SUB-PROJECT [bundle-id]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_id}" target="build-development" />
 
-		<!--
 		<echo>
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-status]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_status}" target="build-development" />
-		-->
 
 		<echo>
 		</echo>
@@ -120,13 +118,13 @@
 			</fileset>
 		</copy>
 
-		<!--
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_id.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
 
+		<!--
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_status.build}">
 				<include name="**/*.jar" />

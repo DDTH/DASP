@@ -37,16 +37,16 @@
 		<fileset dir="${dir.bundle_framework.build}">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${dir.platform_bundles}/apachecommons">
+		<fileset dir="${dir.platform_bundles}/00.log">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${dir.platform_bundles}/log">
+		<fileset dir="${dir.platform_bundles}/01.apachecommons">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${dir.platform_bundles}/spring">
+		<fileset dir="${dir.platform_bundles}/03.spring">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="${dir.platform_bundles}/springdm">
+		<fileset dir="${dir.platform_bundles}/04.springdm">
 			<include name="*.jar" />
 		</fileset>
 	</path>
