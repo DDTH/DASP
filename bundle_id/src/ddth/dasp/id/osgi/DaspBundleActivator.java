@@ -4,7 +4,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.web.servlet.HandlerMapping;
 
 import ddth.dasp.common.id.IdGenerator;
-import ddth.dasp.common.osgi.BaseBundleActivator;
+import ddth.dasp.framework.osgi.BaseBundleActivator;
 import ddth.dasp.id.DaspBundleConstants;
 import ddth.dasp.id.spring.IdServiceHandlerMapping;
 
