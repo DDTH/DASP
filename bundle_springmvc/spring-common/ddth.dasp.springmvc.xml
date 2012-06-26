@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		Spring Configurations for bundle ddth.dasp.springmvc
-	-->
+<!-- Spring Configurations for bundle ddth.dasp.springmvc -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -9,30 +7,11 @@
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<bean id="_springMvcHandlerMapping" class="ddth.dasp.springmvc.spring.DaspHandlerMapping"></bean>
-	<bean id="_springMvcViewResolver" class="ddth.dasp.springmvc.spring.DaspViewResolver"></bean>
-
-	<!--
-		<bean id="handlerMapping"
-		class="ddth.dasp.common.spring.SimpleHandlerMapping" lazy-init="false"
-		scope="singleton"> <property name="handlerMapping"> <map> <entry
-		key="*" value-ref="controllerHome" /> </map> </property> </bean> <bean
-		id="bundleResourceLoader"
-		class="ddth.dasp.framework.osgi.BundleResourceLoader"
-		lazy-init="false" scope="singleton"></bean> <bean
-		id="_freemarkerConfig"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"
-		lazy-init="false" scope="singleton"> <property name="templateLoaders">
-		<array value-type="freemarker.cache.TemplateLoader"> <bean
-		class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader">
-		<property name="bundleResourceLoader" ref="bundleResourceLoader" />
-		</bean> </array> </property> </bean> <bean id="viewResolver"
-		class="ddth.dasp.framework.osgi.freemarker.BundleFreeMarkerViewResolver"
-		lazy-init="false" scope="singleton"> <property name="viewClass"
-		value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"
-		/> <property name="cache" value="true" /> <property name="prefix"
-		value="" /> <property name="suffix" value=".ftl" /> </bean> <bean
-		id="controllerHome" class="ddth.dasp.status.controller.HomeController"
-		scope="singleton" lazy-init="true"></bean>
-	-->
+	<bean id="_springMvcHandlerMapping" class="ddth.dasp.springmvc.spring.DaspHandlerMapping"
+		lazy-init="false" scope="singleton"></bean>
+	<bean id="_springMvcViewResolver" class="ddth.dasp.springmvc.spring.DaspViewResolver"
+		lazy-init="false" scope="singleton">
+		<property name="cache" value="false" />
+		<property name="cacheUnresolved" value="false" />
+	</bean>
 </beans>

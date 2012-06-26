@@ -106,7 +106,7 @@
 	</target>
 
 	<target name="post-build">
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/mybundles">
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/00.log">
 			<fileset dir="${dir.bundle_log4j.build}">
 				<include name="**/*.jar" />
 			</fileset>

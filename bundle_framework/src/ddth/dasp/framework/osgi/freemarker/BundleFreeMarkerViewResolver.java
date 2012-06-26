@@ -13,6 +13,10 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
  */
 public class BundleFreeMarkerViewResolver extends FreeMarkerViewResolver {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected AbstractUrlBasedView buildView(String viewName) throws Exception {
         FreeMarkerConfig freemarkerConfig = getApplicationContext().getBean(FreeMarkerConfig.class);
         FreeMarkerView view = (FreeMarkerView) super.buildView(viewName);

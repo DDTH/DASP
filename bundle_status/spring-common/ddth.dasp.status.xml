@@ -33,7 +33,7 @@
 			<array value-type="freemarker.cache.TemplateLoader">
 				<bean class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader">
 					<property name="bundleResourceLoader" ref="bundleResourceLoader" />
-					<property name="prefix" value="/META-INF/skins/default/page_" />
+					<property name="prefix" value="/META-INF/skins/default/" />
 				</bean>
 			</array>
 		</property>

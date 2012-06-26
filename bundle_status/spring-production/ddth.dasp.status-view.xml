@@ -10,9 +10,13 @@
 		class="ddth.dasp.framework.osgi.freemarker.BundleFreeMarkerViewResolver"
 		lazy-init="false" scope="singleton">
 		<property name="viewClass"
-			value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+			value="ddth.dasp.framework.osgi.freemarker.BundleFreeMarkerView" />
+		<property name="exposeRequestAttributes" value="false" />
+		<property name="exposeSessionAttributes" value="false" />
+		<property name="exposeSpringMacroHelpers" value="false" />
 		<property name="cache" value="true" />
-		<property name="prefix" value="" />
+		<property name="cacheUnresolved" value="true" />
+		<property name="prefix" value="page_" />
 		<property name="suffix" value=".ftl" />
 	</bean>
 </beans>

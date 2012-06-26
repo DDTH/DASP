@@ -50,7 +50,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.orm-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.oxm-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.transaction-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web-3.1.1.RELEASE.jar" sourcepath="/JavaSources/spring/3.1.1/org.springframework.web-sources-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web.servlet-3.1.1.RELEASE.jar" sourcepath="/JavaSources/spring/3.1.1/org.springframework.web.servlet-sources-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-core-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-extender-2.0.0.M1.jar"/>
