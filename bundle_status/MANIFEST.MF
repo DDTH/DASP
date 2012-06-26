@@ -5,8 +5,10 @@ Bundle-SymbolicName: ddth.dasp.status
 Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.status.osgi.DaspBundleActivator
 Bundle-ClassPath: .
-Import-Package: ddth.dasp.common.id,
+Import-Package: ddth.dasp.common,
+ ddth.dasp.common.id,
  ddth.dasp.common.osgi,
+ ddth.dasp.common.utils,
  ddth.dasp.framework.api,
  ddth.dasp.framework.osgi,
  ddth.dasp.framework.osgi.freemarker,

@@ -41,6 +41,7 @@
     <!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script type="text/javascript" src="/thirdparty/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/thirdparty/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

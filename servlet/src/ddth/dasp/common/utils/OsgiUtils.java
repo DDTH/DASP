@@ -16,7 +16,6 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * OSGi related utilities.
  * 
@@ -25,6 +24,35 @@ import org.slf4j.LoggerFactory;
 public class OsgiUtils {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(OsgiUtils.class);
+
+    /**
+     * Gets the string represented the bundle state.
+     * 
+     * @param bundle
+     * @return
+     */
+    public static String getBundleStateAsString(Bundle bundle) {
+        int state = bundle.getState();
+        if ((state & Bundle.UNINSTALLED) != 0) {
+            return "UNINSTALLED";
+        }
+        if ((state & Bundle.INSTALLED) != 0) {
+            return "INSTALLED";
+        }
+        if ((state & Bundle.RESOLVED) != 0) {
+            return "RESOLVED";
+        }
+        if ((state & Bundle.STARTING) != 0) {
+            return "STARTING";
+        }
+        if ((state & Bundle.STOPPING) != 0) {
+            return "STOPPING";
+        }
+        if ((state & Bundle.ACTIVE) != 0) {
+            return "ACTIVE";
+        }
+        return "UNKNOWN";
+    }
 
     /**
      * Obtains an OSGi service reference.
