@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jackson-core-lgpl-1.8.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jackson-mapper-lgpl-1.8.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.apache.felix.main-4.0.2.jar"/>
-	<classpathentry kind="lib" path="resources/lib/freemarker-2.3.19.jar"/>
+	<classpathentry kind="lib" path="resources/lib/freemarker-2.3.19.jar" sourcepath="/JavaSources/freemarker/2.3.19/freemarker-2.3.19-src.zip"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.org.apache.log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.slf4j.api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.slf4j.log4j-1.5.6.jar"/>
@@ -42,7 +42,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.aspects-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.beans-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.context-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.context.support-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.context.support-3.1.1.RELEASE.jar" sourcepath="/JavaSources/spring/3.1.1/org.springframework.context.support-sources-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.core-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.expression-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.jdbc-3.1.1.RELEASE.jar"/>
@@ -51,7 +51,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.oxm-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.transaction-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web-3.1.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web.servlet-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web.servlet-3.1.1.RELEASE.jar" sourcepath="/JavaSources/spring/3.1.1/org.springframework.web.servlet-sources-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-core-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-extender-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-io-2.0.0.M1.jar"/>

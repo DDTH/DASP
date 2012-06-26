@@ -4,16 +4,6 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	<display-name>DDTH Application Service Platform</display-name>
 
-	<!--
-		Note: Spring's ContextLoaderListener should be loaded and initialized
-		first!
-	-->
-	<!--
-		<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-		</listener>
-	-->
-
 	<listener>
 		<listener-class>ddth.dasp.servlet.listener.DaspContextListener</listener-class>
 	</listener>
@@ -35,40 +25,36 @@
 		<param-value>16666</param-value>
 	</context-param>
 
-	<!--
-		<context-param> <description>Used by Spring's
-		ContextLoader</description>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/beans-dasp.xml</param-value>
-		</context-param> <filter> <filter-name>encodingFilter</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param> <param-name>encoding</param-name>
-		<param-value>UTF-8</param-value> </init-param> </filter>
-
-		<filter-mapping> <filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern> </filter-mapping>
-	-->
-
-	<!--
-		<servlet> <description>Spring's Dispatcher servlet. It will load a
-		bean configuration file /WEB-INF/springDasp-servlet.xml</description>
-		<servlet-name>springDasp</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<load-on-startup>1</load-on-startup> </servlet> <servlet-mapping>
-		<servlet-name>springDasp</servlet-name> <url-pattern>/*</url-pattern>
-		</servlet-mapping>
-	-->
-
 	<servlet>
 		<description>DASP Dispatcher Servlet</description>
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<servlet-class>ddth.dasp.servlet.DaspDispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>/403.jsp</url-pattern>
+		<url-pattern>/404.jsp</url-pattern>
+		<url-pattern>/500.jsp</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
+
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/500.jsp</location>
+	</error-page>
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

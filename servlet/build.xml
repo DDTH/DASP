@@ -78,30 +78,37 @@
 	</target>
 
 	<target name="build-base" depends="jar">
+		<copy file="common/web.xml" tofile="${dir.build.web}/WEB-INF/web.xml" overwrite="true" />
+		<copy todir="${dir.build.web}/WEB-INF/classes" overwrite="true">
+			<fileset dir="common/classes">
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="build-development" depends="build-base">
-		<copy file="development/web.xml" tofile="${dir.build.web}/WEB-INF/web.xml" overwrite="true" />
 		<copy todir="${dir.build.web}/WEB-INF/classes" overwrite="true">
 			<fileset dir="development/classes">
 			</fileset>
 		</copy>
+		<!--
 		<copy todir="${dir.build.web}/WEB-INF/spring" overwrite="true">
 			<fileset dir="development/spring">
 			</fileset>
 		</copy>
+		-->
 	</target>
 
 	<target name="build-production" depends="build-base">
-		<copy file="production/web.xml" tofile="${dir.build.web}/WEB-INF/web.xml" overwrite="true" />
 		<copy todir="${dir.build.web}/WEB-INF/classes" overwrite="true">
 			<fileset dir="production/classes">
 			</fileset>
 		</copy>
+		<!--
 		<copy todir="${dir.build.web}/WEB-INF/spring" overwrite="true">
 			<fileset dir="production/spring">
 			</fileset>
 		</copy>
+		-->
 	</target>
 
 	<target name="release" depends="build-production">
