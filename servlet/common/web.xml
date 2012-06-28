@@ -32,6 +32,18 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>Comet</servlet-name>
+		<servlet-class>ddth.dasp.temp.ChatServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!--
+	<servlet-mapping>
+		<servlet-name>Comet</servlet-name>
+		<url-pattern>/chat</url-pattern>
+	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>/403.jsp</url-pattern>
@@ -42,6 +54,7 @@
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
+	-->
 
 	<error-page>
 		<error-code>403</error-code>

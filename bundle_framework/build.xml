@@ -93,7 +93,7 @@
 		</copy>
 		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF" overwrite="true" />
 		<replaceregexp file="${dir.META-INF}/MANIFEST.MF" match="Bundle-Version(.*)" replace="Bundle-Version: ${product.version.micro}" byline="true" />
-		<jar jarfile="${dir.build}/${product.name}-${product.version.micro}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
+		<jar jarfile="${dir.build}/${product.name}-${product.version}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
 			<metainf dir="${dir.META-INF}">
 			</metainf>
 		</jar>

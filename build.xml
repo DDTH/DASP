@@ -16,6 +16,18 @@
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
 
+	<target name="release-interim" depends="build-development">
+		<antcall target="post-build" />
+		<copy todir="release/interim" overwrite="true" includeemptydirs="true">
+			<fileset dir="${dir.servlet.build}/web/WEB-INF/lib">
+				<include name="**/DASP-*.*" />
+			</fileset>
+			<fileset dir="${dir.bundle_framework}/build">
+				<include name="**/ddth*.*" />
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="clean">
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="clean" />
