@@ -5,9 +5,11 @@ import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -215,7 +217,49 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
     }
 
     /**
-     * Executes a SELECT query and returns the result as an array of object.
+     * Executes a SELECT query and returns the result as an array of records,
+     * each record is a Map<String, Object>.
+     * 
+     * @param sqlKey
+     * @param params
+     * @return
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params)
+            throws SQLException {
+        SqlProps sqlProps = getSqlProps(sqlKey);
+        if (sqlProps == null) {
+            throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+        }
+        Connection conn = getConnection();
+        if (conn == null) {
+            throw new RuntimeException("Can not make connection to database!");
+        }
+        try {
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+            PreparedStatement stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+            ResultSet rs = stm.executeQuery();
+            ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
+            while (rs.next()) {
+                Map<String, Object> obj = new HashMap<String, Object>();
+                for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
+                    String colName = rsMetaData.getColumnName(i);
+                    Object value = rs.getObject(colName);
+                    obj.put(colName, value);
+                }
+                result.add(obj);
+            }
+            JdbcUtils.closeResources(null, stm, rs);
+            return result.toArray((Map<String, Object>[]) Array.newInstance(Map.class, 0));
+        } finally {
+            releaseConnection(conn);
+        }
+    }
+
+    /**
+     * Executes a SELECT query and returns the result as an array of result,
+     * each result is an instance of type {@link BaseJdbcBo}.
      * 
      * @param <T>
      * @param sqlKey
@@ -239,14 +283,19 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
             List<T> result = new ArrayList<T>();
             PreparedStatement stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
             ResultSet rs = stm.executeQuery();
+            ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
             while (rs.next()) {
                 T obj = null;
                 try {
-                    obj = clazz.newInstance();
-                    obj.populate(rs);
+                    obj = createBusinessObject(clazz);
+                    obj.populate(rs, rsMetaData);
                     result.add(obj);
                 } catch (Exception e) {
-                    throw new SQLException(e);
+                    if (e instanceof SQLException) {
+                        throw (SQLException) e;
+                    } else {
+                        throw new SQLException(e);
+                    }
                 }
             }
             JdbcUtils.closeResources(null, stm, rs);
