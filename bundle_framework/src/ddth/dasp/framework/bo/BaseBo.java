@@ -17,6 +17,19 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseBo implements IBo {
 
     private Logger LOGGER = LoggerFactory.getLogger(BaseBo.class);
+    private Map<String, Object[]> dataMappings;
+
+    public void setDataMappings(Map<String, Object[]> dataMappings) {
+        this.dataMappings = dataMappings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Object[]> getDataMappings() {
+        return dataMappings;
+    }
 
     protected Boolean toBoolean(Object value) {
         if (value == null) {
