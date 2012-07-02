@@ -44,6 +44,7 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
     // .concurrencyLevel(NUM_PROCESSORS).weakKeys().weakValues().makeMap();
     private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker().concurrencyLevel(
             NUM_PROCESSORS).makeMap();
+    private Object sqlPropsLocation;
 
     protected IJdbcFactory getJdbcFactory() {
         return jdbcFactory;
@@ -128,7 +129,25 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
      * 
      * @return location of the SQL properties
      */
-    protected abstract Object getSqlPropsLocation();
+    protected Object getSqlPropsLocation() {
+        return sqlPropsLocation;
+    }
+
+    /**
+     * Sets the SQL properties location. The location can be either of:
+     * 
+     * <ul>
+     * <li>{@link InputStream}: properties are loaded from the input stream.</li>
+     * <li>{@link Properties}: properties are copied from this one.</li>
+     * <li>{@link String}: properties are loaded from file (located within the
+     * classpath) specified by this string.</li>
+     * </ul>
+     * 
+     * @param sqlPropsLocation
+     */
+    public void setSqlPropsLocation(Object sqlPropsLocation) {
+        this.sqlPropsLocation = sqlPropsLocation;
+    }
 
     /**
      * Gets a SQL property by name.
