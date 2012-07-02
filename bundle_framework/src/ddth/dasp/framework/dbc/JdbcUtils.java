@@ -82,7 +82,7 @@ public class JdbcUtils {
             LOGGER.debug("Preparing statement [" + sql + "] with arguments: " + params);
         }
         PreparedStatement stmt = isCallable ? conn.prepareCall(sql) : conn.prepareStatement(sql);
-        if (params != null) {
+        if (params != null && params.length > 0) {
             int index = 1;
             for (Object param : params) {
                 if (param instanceof String) {
@@ -137,7 +137,7 @@ public class JdbcUtils {
         String[] paramsByIndex = extractParams(sql);
         List<Object> paramsValueByIndex = new LinkedList<Object>();
         for (String paramName : paramsByIndex) {
-            if (params.containsKey(paramName)) {
+            if (params != null && params.containsKey(paramName)) {
                 paramsValueByIndex.add(params.get(paramName));
             } else {
                 throw new SQLException("Missing value for parameter " + paramName);
@@ -165,5 +165,4 @@ public class JdbcUtils {
         }
         return result.toArray(new String[0]);
     }
-
 }
