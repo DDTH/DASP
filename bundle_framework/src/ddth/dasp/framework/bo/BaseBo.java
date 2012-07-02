@@ -19,6 +19,12 @@ public abstract class BaseBo implements IBo {
     private Logger LOGGER = LoggerFactory.getLogger(BaseBo.class);
     private Map<String, Object[]> dataMappings;
 
+    /**
+     * Sets BO data mappings.
+     * 
+     * @param dataMappings
+     * @see IBo#getDataMappings()
+     */
     public void setDataMappings(Map<String, Object[]> dataMappings) {
         this.dataMappings = dataMappings;
     }

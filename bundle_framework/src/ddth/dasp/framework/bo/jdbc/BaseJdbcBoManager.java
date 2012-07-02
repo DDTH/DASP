@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.MapMaker;
 
 import ddth.dasp.common.utils.PropsUtils;
+import ddth.dasp.framework.bo.BaseBoManager;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
 import ddth.dasp.framework.utils.JsonUtils;
@@ -30,7 +31,7 @@ import ddth.dasp.framework.utils.JsonUtils;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class BaseJdbcBoManager implements IJdbcBoManager {
+public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBoManager {
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
