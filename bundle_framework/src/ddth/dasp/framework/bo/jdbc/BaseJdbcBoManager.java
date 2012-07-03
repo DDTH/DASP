@@ -25,6 +25,7 @@ import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.bo.BaseBoManager;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
+import ddth.dasp.framework.utils.EhProperties;
 import ddth.dasp.framework.utils.JsonUtils;
 
 /**
@@ -41,7 +42,7 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
     private IJdbcFactory jdbcFactory;
     private String dbDriver, dbConnUrl, dbUsername, dbPassword;
     private List<String> setupSqls;
-    private Properties sqlProps = new Properties();
+    private Properties sqlProps = new EhProperties();
     // private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker()
     // .concurrencyLevel(NUM_PROCESSORS).weakKeys().weakValues().makeMap();
     private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker().concurrencyLevel(
