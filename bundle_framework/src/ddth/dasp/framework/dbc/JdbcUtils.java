@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JdbcUtils {
-    private static final Pattern PATTERN_PARAMS_PLACEHOLDER = Pattern.compile("\\$\\{([^\\}]+)\\}");
+    private static final Pattern PATTERN_PARAMS_PLACEHOLDER = Pattern.compile("\\@\\{([^\\}]+)\\}");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcUtils.class);
 
