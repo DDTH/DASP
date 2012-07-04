@@ -79,9 +79,9 @@ public class BaseViewModel<T> implements InvocationHandler {
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
-        if (!PATTERN_METHOD_GET.matcher(methodName).matches()) {
+        if (!"toString".equals(methodName) && "hashCode".equals(methodName)
+                & !PATTERN_METHOD_GET.matcher(methodName).matches()) {
             throw new IllegalAccessException("Invoking method [" + methodName + "] is not allowed!");
-
         }
         Method m = null;
         try {
