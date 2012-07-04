@@ -8,36 +8,37 @@ import java.lang.reflect.Proxy;
 import java.util.regex.Pattern;
 
 /**
- * Model object: to be used on view.
+ * View Model object: to be used on view. Use case: A view model object wraps a
+ * business object and delegate only "get" method calls to the underlying
+ * object.
  * 
  * Use this class as starting point for model objects.
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public class BaseModel<T> implements InvocationHandler {
+public class BaseViewModel<T> implements InvocationHandler {
     private final static Pattern PATTERN_METHOD_GET = Pattern.compile("^get[A-Z]\\w*$");
     private T obj;
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(Class<T> interf, final T obj) {
-        BaseModel<T> model = new BaseModel<T>(obj);
-        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { interf },
-                model);
+    public static <T> T createModel(Class<?>[] interfaces, final T obj) {
+        BaseViewModel<T> model = new BaseViewModel<T>(obj);
+        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(Class<T> interf,
-            final Class<? extends BaseModel<T>> modelClazz, final T obj) throws SecurityException,
-            NoSuchMethodException, IllegalArgumentException, InstantiationException,
-            IllegalAccessException, InvocationTargetException {
-        Constructor<BaseModel<T>> c = (Constructor<BaseModel<T>>) modelClazz.getConstructor(interf);
-        BaseModel<T> model = c.newInstance(obj);
-        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { interf },
-                model);
+    public static <T> T createModel(Class<?>[] interfaces,
+            final Class<? extends BaseViewModel<T>> modelClazz, final T obj)
+            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
+            InstantiationException, IllegalAccessException, InvocationTargetException {
+        Constructor<BaseViewModel<T>> c = (Constructor<BaseViewModel<T>>) modelClazz
+                .getConstructor(obj.getClass());
+        BaseViewModel<T> model = c.newInstance(obj);
+        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
     }
 
-    protected BaseModel(T obj) {
+    protected BaseViewModel(T obj) {
         setTargetObject(obj);
     }
 
