@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -27,6 +29,17 @@ public class BaseViewModel<T> implements InvocationHandler {
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
     }
 
+    public static <T> T[] createModel(Class<?>[] interfaces, final T[] objs) {
+        List<T> result = new ArrayList<T>();
+        for (T obj : objs) {
+            T t = createModel(interfaces, obj);
+            if (t != null) {
+                result.add(t);
+            }
+        }
+        return result.toArray(objs);
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T createModel(Class<?>[] interfaces,
             final Class<? extends BaseViewModel<T>> modelClazz, final T obj)
@@ -36,6 +49,20 @@ public class BaseViewModel<T> implements InvocationHandler {
                 .getConstructor(obj.getClass());
         BaseViewModel<T> model = c.newInstance(obj);
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
+    }
+
+    public static <T> T[] createModel(Class<?>[] interfaces,
+            final Class<? extends BaseViewModel<T>> modelClazz, final T[] objs)
+            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
+            InstantiationException, IllegalAccessException, InvocationTargetException {
+        List<T> result = new ArrayList<T>();
+        for (T obj : objs) {
+            T t = createModel(interfaces, modelClazz, obj);
+            if (t != null) {
+                result.add(t);
+            }
+        }
+        return result.toArray(objs);
     }
 
     protected BaseViewModel(T obj) {
