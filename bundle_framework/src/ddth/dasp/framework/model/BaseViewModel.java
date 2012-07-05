@@ -24,15 +24,16 @@ public class BaseViewModel<T> implements InvocationHandler {
     private T obj;
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(Class<?>[] interfaces, final T obj) {
+    public static <T> T createModel(T obj) {
         BaseViewModel<T> model = new BaseViewModel<T>(obj);
-        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
+        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass()
+                .getInterfaces(), model);
     }
 
-    public static <T> T[] createModel(Class<?>[] interfaces, final T[] objs) {
+    public static <T> T[] createModel(T[] objs) {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(interfaces, obj);
+            T t = createModel(obj);
             if (t != null) {
                 result.add(t);
             }
@@ -41,23 +42,34 @@ public class BaseViewModel<T> implements InvocationHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(Class<?>[] interfaces,
-            final Class<? extends BaseViewModel<T>> modelClazz, final T obj)
-            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static <T> T createModel(Class<? extends BaseViewModel<T>> modelClazz,
+            Class<T> targetClass, T obj) throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, InstantiationException, IllegalAccessException,
+            InvocationTargetException {
+        List<Class<?>> interfaces = new ArrayList<Class<?>>();
+        Class<?>[] interfacesModel = modelClazz.getClasses();
+        for (Class<?> interf : interfacesModel) {
+            interfaces.add(interf);
+        }
+        Class<?>[] interfacesTarget = obj.getClass().getInterfaces();
+        for (Class<?> interf : interfacesTarget) {
+            interfaces.add(interf);
+        }
+
         Constructor<BaseViewModel<T>> c = (Constructor<BaseViewModel<T>>) modelClazz
-                .getConstructor(obj.getClass());
+                .getConstructor(targetClass);
         BaseViewModel<T> model = c.newInstance(obj);
-        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), interfaces, model);
+        return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(),
+                interfaces.toArray(new Class[0]), model);
     }
 
-    public static <T> T[] createModel(Class<?>[] interfaces,
-            final Class<? extends BaseViewModel<T>> modelClazz, final T[] objs)
-            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static <T> T[] createModel(Class<? extends BaseViewModel<T>> modelClazz,
+            Class<T> targetClass, T[] objs) throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, InstantiationException, IllegalAccessException,
+            InvocationTargetException {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(interfaces, modelClazz, obj);
+            T t = createModel(modelClazz, targetClass, obj);
             if (t != null) {
                 result.add(t);
             }
