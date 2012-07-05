@@ -57,7 +57,8 @@ public class BaseViewModel<T> implements InvocationHandler {
         }
 
         Constructor<BaseViewModel<T>> c = (Constructor<BaseViewModel<T>>) modelClazz
-                .getConstructor(targetClass);
+                .getDeclaredConstructor(targetClass);
+        c.setAccessible(true);
         BaseViewModel<T> model = c.newInstance(obj);
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(),
                 interfaces.toArray(new Class[0]), model);
