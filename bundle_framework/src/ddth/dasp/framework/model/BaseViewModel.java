@@ -43,7 +43,7 @@ public class BaseViewModel<T> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <T> T createModel(Class<? extends BaseViewModel<T>> modelClazz,
-            Class<T> targetClass, T obj) throws SecurityException, NoSuchMethodException,
+            Class<?> targetClass, T obj) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, InstantiationException, IllegalAccessException,
             InvocationTargetException {
         List<Class<?>> interfaces = new ArrayList<Class<?>>();
@@ -64,7 +64,7 @@ public class BaseViewModel<T> implements InvocationHandler {
     }
 
     public static <T> T[] createModel(Class<? extends BaseViewModel<T>> modelClazz,
-            Class<T> targetClass, T[] objs) throws SecurityException, NoSuchMethodException,
+            Class<?> targetClass, T[] objs) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, InstantiationException, IllegalAccessException,
             InvocationTargetException {
         List<T> result = new ArrayList<T>();
