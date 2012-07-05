@@ -47,7 +47,7 @@ public class BaseViewModel<T> implements InvocationHandler {
             IllegalArgumentException, InstantiationException, IllegalAccessException,
             InvocationTargetException {
         List<Class<?>> interfaces = new ArrayList<Class<?>>();
-        Class<?>[] interfacesModel = modelClazz.getClasses();
+        Class<?>[] interfacesModel = modelClazz.getInterfaces();
         for (Class<?> interf : interfacesModel) {
             interfaces.add(interf);
         }
