@@ -1,23 +1,39 @@
 package ddth.dasp.common.logging;
 
 /**
- * This class represents a profiling log entry.
+ * Application profiling logger.
  * 
- * Log information:
- * <ul>
- * <li>Log's id: unique of the log entry.
- * <li>Request id: id of the associated request.
- * <li>Node's id: id of the node (app server) where the log entry originates.
- * <li>Client's id: id of the client where the request originates.
- * <li>Enduser's id: id of the enduser.
- * <li>Timestamp: timestamp when the log occurs.
- * </ul>
+ * Usage:
+ * 
+ * <pre>
+ * ProfileLogger.push(&quot;marker_name_1&quot;);
+ * // do some work
+ * ProfileLogger.pop();
+ * 
+ * ProfileLogger.push(&quot;marker_name_2&quot;);
+ * // do some other work
+ * ProfileLogger.push(&quot;marker_name_child_1&quot;);
+ * // do some child work
+ * ProfileLogger.pop();
+ * ProfileLogger.pop();
+ * 
+ * ProfileLogEntry logEntry = ProfileLogger.get();
+ * // do something with logEntry
+ * </pre>
  * 
  * @author ThanhNB
  */
 public class ProfileLogger {
 
-    protected static ThreadLocal<ProfileLogEntry> logEntry = new ThreadLocal<ProfileLogEntry>();
+    protected static ThreadLocal<ProfileLogEntry> logEntry = new ThreadLocal<ProfileLogEntry>() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected ProfileLogEntry initialValue() {
+            return new ProfileLogEntry();
+        }
+    };
 
     /**
      * Gets the currently bound {@link ProfileLogEntry} object. Creates one if
@@ -26,23 +42,15 @@ public class ProfileLogger {
      * @return ProfileLogEntry
      */
     public static ProfileLogEntry get() {
-        synchronized (logEntry) {
-            ProfileLogEntry entry = logEntry.get();
-            if (entry == null) {
-                entry = new ProfileLogEntry();
-                logEntry.set(entry);
-            }
-            return entry;
-        }
+        ProfileLogEntry entry = logEntry.get();
+        return entry;
     }
 
     /**
      * Removes the currently bound {@link ProfileLogEntry} object.
      */
     public static void remove() {
-        synchronized (logEntry) {
-            logEntry.remove();
-        }
+        logEntry.remove();
     }
 
     /**

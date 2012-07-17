@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.id.IdGenerator;
+import ddth.dasp.common.logging.JdbcLogEntry;
+import ddth.dasp.common.logging.JdbcLogger;
 import ddth.dasp.common.logging.ProfileLogEntry;
 import ddth.dasp.common.logging.ProfileLogger;
 import ddth.dasp.common.rp.IRequestParser;
@@ -41,11 +43,38 @@ public class DaspRequestListener implements ServletRequestListener {
     public void requestDestroyed(ServletRequestEvent event) {
         HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
         destroyTempDir(request);
-        ProfileLogger.pop();
-        ProfileLogEntry profileLog = ProfileLogger.get();
-        Object[] profileData = profileLog.getProfiling();
-        String json = JsonUtils.toJson(profileData);
-        System.out.println(json);
+
+        logProfiling();
+        logJdbc();
+    }
+
+    private void logProfiling() {
+        try {
+            ProfileLogger.pop();
+            ProfileLogEntry profileLog = ProfileLogger.get();
+            Object[] profileData = profileLog.getProfiling();
+            String json = JsonUtils.toJson(profileData);
+            LOGGER.info(json);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        } finally {
+            ProfileLogger.remove();
+        }
+    }
+
+    private void logJdbc() {
+        try {
+            JdbcLogEntry[] entries = JdbcLogger.get();
+            for (JdbcLogEntry entry : entries) {
+                long duration = entry.getDuration();
+                String sql = entry.getSql();
+                LOGGER.info("\t[" + duration + "] " + sql);
+            }
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        } finally {
+            JdbcLogger.remove();
+        }
     }
 
     /**
@@ -53,9 +82,13 @@ public class DaspRequestListener implements ServletRequestListener {
      */
     @Override
     public void requestInitialized(ServletRequestEvent event) {
-        String reqId = generateId();
-        ProfileLogger.push(reqId);
         HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
+
+        String reqId = generateId();
+        ProfileLogEntry logEntry = ProfileLogger.push(reqId);
+        logEntry.setRequestId(reqId);
+        logEntry.setClientId(request.getRemoteAddr());
+
         request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_ID, reqId);
         initTempDir(request);
         initRequestParser(request);
