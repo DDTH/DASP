@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.framework.logging.AppLogEntry;
 import ddth.dasp.framework.logging.IAppLogEngine;
 import ddth.dasp.framework.logging.ILogWriter;
-import ddth.dasp.framework.utils.JsonUtils;
 
 /**
  * This implementation of {@link IAppLogEngine} stores log via an instance of

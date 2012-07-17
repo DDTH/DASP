@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.common.utils.DaspConstants;
-import ddth.dasp.framework.utils.JsonUtils;
+import ddth.dasp.common.utils.JsonUtils;
 
 /**
  * This {@link IApiHandler} uses JSON as message format.

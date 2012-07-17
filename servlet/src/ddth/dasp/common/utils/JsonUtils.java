@@ -1,4 +1,4 @@
-package ddth.dasp.framework.utils;
+package ddth.dasp.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;

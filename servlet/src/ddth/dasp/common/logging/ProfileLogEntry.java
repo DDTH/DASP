@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import ddth.dasp.common.id.IdGenerator;
 
 /**
  * This class represents a profiling log entry.
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class ProfileLogEntry implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1;
+    private static final IdGenerator idGen = IdGenerator.getInstance(IdGenerator.getMacAddr());
 
     public static final String KEY_NAME = "NAME";
     private static final String KEY_START_TIMESTAMP = "START_TIMESTAMP";
@@ -44,7 +46,7 @@ public class ProfileLogEntry implements Serializable, Cloneable {
     /**
      * Unique of the log entry.
      */
-    private String id = UUID.randomUUID().toString().toLowerCase();
+    private long id = idGen.generateId64();
 
     /**
      * ID of the associated request.
@@ -82,10 +84,9 @@ public class ProfileLogEntry implements Serializable, Cloneable {
     /**
      * Constructs a new {@link ProfileLogEntry} instance and specifies an ID.
      * 
-     * @param string
-     *            id
+     * @param id
      */
-    public ProfileLogEntry(String id) {
+    public ProfileLogEntry(long id) {
         this.id = id;
     }
 
@@ -177,11 +178,11 @@ public class ProfileLogEntry implements Serializable, Cloneable {
         }
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

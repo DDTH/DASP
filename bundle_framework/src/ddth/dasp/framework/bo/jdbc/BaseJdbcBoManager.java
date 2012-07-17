@@ -21,12 +21,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.MapMaker;
 
+import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.bo.CachedBoManager;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
 import ddth.dasp.framework.utils.EhProperties;
-import ddth.dasp.framework.utils.JsonUtils;
 
 /**
  * Use this class as starting point for JDBC-based Business Object manager.
