@@ -17,8 +17,7 @@ public class Id64HexApihandler extends AbstractIdApiHandler {
 
     @Override
     protected Object internalHandleApiCall(Object params, String authKey) {
-        long id = getIdGenerator().generateId64();
-        StringBuffer hex = new StringBuffer(Long.toHexString(id));
+        StringBuffer hex = new StringBuffer(getIdGenerator().generateId64Hex());
         if (params instanceof Map<?, ?>) {
             Map<?, ?> tempMap = (Map<?, ?>) params;
             if (tempMap.get("padding") != null) {

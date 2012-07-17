@@ -1,6 +1,5 @@
 package ddth.dasp.id.api;
 
-import java.math.BigInteger;
 import java.util.Map;
 
 import ddth.dasp.common.id.IdGenerator;
@@ -18,8 +17,7 @@ public class Id128HexApihandler extends AbstractIdApiHandler {
 
     @Override
     protected Object internalHandleApiCall(Object params, String authKey) {
-        BigInteger id = getIdGenerator().generateId128();
-        StringBuffer hex = new StringBuffer(id.toString(16));
+        StringBuffer hex = new StringBuffer(getIdGenerator().generateId128Hex());
         if (params instanceof Map<?, ?>) {
             Map<?, ?> tempMap = (Map<?, ?>) params;
             if (tempMap.get("padding") != null) {
