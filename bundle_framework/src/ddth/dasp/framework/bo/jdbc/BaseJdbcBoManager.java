@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.MapMaker;
 
+import ddth.dasp.common.logging.JdbcLogEntry;
+import ddth.dasp.common.logging.JdbcLogger;
 import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.bo.CachedBoManager;
@@ -239,7 +241,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     protected Long executeCount(final String sqlKey, Map<String, Object> params,
             final String cacheKey) throws SQLException {
         Long result = null;
-        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // get from cache
             result = (Long) getFromCache(cacheKey);
         }
@@ -256,17 +258,23 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
                 throw new RuntimeException("Can not make connection to database!");
             }
             try {
-                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                long startTimestamp = System.currentTimeMillis();
+                String sql = sqlProps.getSql();
+                stm = JdbcUtils.prepareStatement(conn, sql, params);
                 rs = stm.executeQuery();
                 if (rs.next()) {
                     result = rs.getLong(1);
                 }
+                long endTimestamp = System.currentTimeMillis();
+                JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql,
+                        params);
+                JdbcLogger.log(jdbcLogEntry);
             } finally {
                 JdbcUtils.closeResources(null, stm, rs);
                 releaseConnection(conn);
             }
         }
-        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // put to cache
             putToCache(cacheKey, result);
         }
@@ -293,8 +301,13 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
             throw new RuntimeException("Can not make connection to database!");
         }
         try {
-            stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+            long startTimestamp = System.currentTimeMillis();
+            String sql = sqlProps.getSql();
+            stm = JdbcUtils.prepareStatement(conn, sql, params);
             long result = stm.executeUpdate();
+            long endTimestamp = System.currentTimeMillis();
+            JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql, params);
+            JdbcLogger.log(jdbcLogEntry);
             return result;
         } finally {
             JdbcUtils.closeResources(null, stm, null);
@@ -330,7 +343,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params,
             final String cacheKey) throws SQLException {
         List<Map<String, Object>> result = null;
-        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // get from cache
             result = (List<Map<String, Object>>) getFromCache(cacheKey);
         }
@@ -347,8 +360,10 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
                 throw new RuntimeException("Can not make connection to database!");
             }
             try {
+                long startTimestamp = System.currentTimeMillis();
+                String sql = sqlProps.getSql();
                 result = new ArrayList<Map<String, Object>>();
-                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                stm = JdbcUtils.prepareStatement(conn, sql, params);
                 rs = stm.executeQuery();
                 ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
                 while (rs.next()) {
@@ -360,12 +375,16 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
                     }
                     result.add(obj);
                 }
+                long endTimestamp = System.currentTimeMillis();
+                JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql,
+                        params);
+                JdbcLogger.log(jdbcLogEntry);
             } finally {
                 JdbcUtils.closeResources(null, stm, rs);
                 releaseConnection(conn);
             }
         }
-        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // put to cache
             putToCache(cacheKey, result);
         }
@@ -404,7 +423,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
             Map<String, Object> params, Class<T> clazz, final String cacheKey) throws SQLException {
         List<T> result = null;
-        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // get from cache
             result = (List<T>) getFromCache(cacheKey);
         }
@@ -421,8 +440,10 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
                 throw new RuntimeException("Can not make connection to database!");
             }
             try {
+                long startTimestamp = System.currentTimeMillis();
+                String sql = sqlProps.getSql();
                 result = new ArrayList<T>();
-                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                stm = JdbcUtils.prepareStatement(conn, sql, params);
                 rs = stm.executeQuery();
                 ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
                 while (rs.next()) {
@@ -439,10 +460,18 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
                         }
                     }
                 }
+                long endTimestamp = System.currentTimeMillis();
+                JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql,
+                        params);
+                JdbcLogger.log(jdbcLogEntry);
             } finally {
                 JdbcUtils.closeResources(null, stm, rs);
                 releaseConnection(conn);
             }
+        }
+        if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
+            // put to cache
+            putToCache(cacheKey, result);
         }
         return result.toArray((T[]) Array.newInstance(clazz, 0));
     }

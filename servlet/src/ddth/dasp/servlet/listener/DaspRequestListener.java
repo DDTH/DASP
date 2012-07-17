@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.id.IdGenerator;
+import ddth.dasp.common.logging.JdbcConnLogger;
 import ddth.dasp.common.logging.JdbcLogEntry;
 import ddth.dasp.common.logging.JdbcLogger;
 import ddth.dasp.common.logging.ProfileLogEntry;
@@ -46,6 +47,15 @@ public class DaspRequestListener implements ServletRequestListener {
 
         logProfiling();
         logJdbc();
+        cleanUpJdbcConnections();
+    }
+
+    private void cleanUpJdbcConnections() {
+        try {
+            JdbcConnLogger.cleanUp();
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
     }
 
     private void logProfiling() {
