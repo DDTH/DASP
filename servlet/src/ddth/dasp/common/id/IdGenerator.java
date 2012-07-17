@@ -128,6 +128,16 @@ public class IdGenerator {
     }
 
     /**
+     * Generate a 64-bit id as hex string.
+     * 
+     * @return
+     */
+    public String generateId64Hex() {
+        long id = generateId64();
+        return Long.toHexString(id);
+    }
+
+    /**
      * Generates a 128-bit id
      * 
      * @return
@@ -149,6 +159,16 @@ public class IdGenerator {
         biResult = biResult.shiftLeft((int) SHIFT_TIMESTAMP_128);
         biResult = biResult.or(template128).or(biSequence);
         return biResult;
+    }
+
+    /**
+     * Generate a 128-bit id as hex string.
+     * 
+     * @return
+     */
+    public String generateId128Hex() {
+        BigInteger id = generateId128();
+        return id.toString(16);
     }
 
     public static void main(String... args) throws InterruptedException {
