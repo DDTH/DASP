@@ -28,7 +28,7 @@ import ddth.dasp.common.id.IdGenerator;
  */
 public class ProfileLogEntry implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = "$Id: Revision $".hashCode();
+    private static final long serialVersionUID = "$Id$".hashCode();
     private static final IdGenerator idGen = IdGenerator.getInstance(IdGenerator.getMacAddr());
 
     public static final String KEY_NAME = "NAME";
