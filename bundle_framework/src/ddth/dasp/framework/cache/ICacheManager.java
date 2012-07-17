@@ -26,28 +26,38 @@ public interface ICacheManager {
      * Gets a cache by name.
      * 
      * @param name
-     * @return
+     * @return an existing cache, <code>null</code> cache has not been created
      */
     public ICache getCache(String name);
 
     /**
-     * Removes a cache by name.
+     * Removes an existing cache by name.
      * 
      * @param name
-     * @return
      */
     public void removeCache(String name);
 
     /**
-     * Creates a cache with default options.
+     * Creates a cache with default capacity and options. This method returns
+     * the existing cache if such exists.
+     * 
+     * @param name
+     * @return
+     */
+    public ICache createCache(String name);
+
+    /**
+     * Creates a cache with default options. This method returns the existing
+     * cache if such exists.
      * 
      * @param name
      * @param capacity
+     * @return
      */
     public ICache createCache(String name, long capacity);
 
     /**
-     * Creates a cache.
+     * Creates a cache. This method returns the existing cache if such exists.
      * 
      * @param name
      *            name of the cache to create
