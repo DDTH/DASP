@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import ddth.dasp.framework.cache.AbstractCache;
 import ddth.dasp.framework.cache.ICache;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -15,19 +16,23 @@ import ddth.dasp.framework.cache.ICacheManager;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public class GuavaCache implements ICache {
+public class GuavaCache extends AbstractCache implements ICache {
 
     private Cache<String, Object> cache;
-    private String name;
-    private long capacity;
-    private long expireAfterWrite;
-    private long expireAfterAccess;
 
     public GuavaCache() {
     }
 
     public GuavaCache(String name) {
-        this.name = name;
+        super(name);
+    }
+
+    public GuavaCache(String name, long capacity) {
+        super(name, capacity);
+    }
+
+    public GuavaCache(String name, long capacity, long expireAfterWrite, long expireAfterAccess) {
+        super(name, capacity, expireAfterWrite, expireAfterAccess);
     }
 
     /**
@@ -35,9 +40,13 @@ public class GuavaCache implements ICache {
      */
     @Override
     public void init() {
+        super.init();
         int numProcessores = Runtime.getRuntime().availableProcessors();
         CacheBuilder<Object, Object> cacheBuider = CacheBuilder.newBuilder();
         cacheBuider.concurrencyLevel(numProcessores);
+        long capacity = getCapacity();
+        long expireAfterAccess = getExpireAfterAccess();
+        long expireAfterWrite = getExpireAfterWrite();
         cacheBuider.maximumSize(capacity > 0 ? capacity : ICacheManager.DEFAULT_CACHE_CAPACITY);
         if (expireAfterAccess > 0) {
             cacheBuider.expireAfterAccess(expireAfterAccess, TimeUnit.SECONDS);
@@ -55,56 +64,12 @@ public class GuavaCache implements ICache {
      */
     @Override
     public void destroy() {
-        cache.cleanUp();
-        cache = null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(long capacity) {
-        this.capacity = capacity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getExpireAfterWrite() {
-        return expireAfterWrite;
-    }
-
-    public void setExpireAfterWrite(long expireAfterWrite) {
-        this.expireAfterWrite = expireAfterWrite;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getExpireAfterAccess() {
-        return expireAfterAccess;
-    }
-
-    public void setExpireAfterAccess(long expireAfterAccess) {
-        this.expireAfterAccess = expireAfterAccess;
+        try {
+            cache.cleanUp();
+            cache = null;
+        } finally {
+            super.destroy();
+        }
     }
 
     /**
@@ -127,7 +92,7 @@ public class GuavaCache implements ICache {
      * {@inheritDoc}
      */
     @Override
-    public Object get(String key) {
+    protected Object internalGet(String key) {
         return cache.getIfPresent(key);
     }
 

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.MapMaker;
 
 import ddth.dasp.common.utils.PropsUtils;
-import ddth.dasp.framework.bo.BaseBoManager;
+import ddth.dasp.framework.bo.CachedBoManager;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
 import ddth.dasp.framework.utils.EhProperties;
@@ -34,7 +34,7 @@ import ddth.dasp.framework.utils.JsonUtils;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBoManager {
+public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbcBoManager {
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
@@ -43,8 +43,6 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
     private String dbDriver, dbConnUrl, dbUsername, dbPassword;
     private List<String> setupSqls;
     private Properties sqlProps = new EhProperties();
-    // private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker()
-    // .concurrencyLevel(NUM_PROCESSORS).weakKeys().weakValues().makeMap();
     private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker().concurrencyLevel(
             NUM_PROCESSORS).makeMap();
     private Object sqlPropsLocation;
@@ -218,6 +216,93 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
     }
 
     /**
+     * Executes a COUNT query and returns the result.
+     * 
+     * @param sqlKey
+     * @param params
+     * @return
+     * @throws SQLException
+     */
+    protected Long executeCount(final String sqlKey, Map<String, Object> params)
+            throws SQLException {
+        return executeCount(sqlKey, params, null);
+    }
+
+    /**
+     * Executes a COUNT query and returns the result.
+     * 
+     * @param sqlKey
+     * @param params
+     * @return
+     * @throws SQLException
+     */
+    protected Long executeCount(final String sqlKey, Map<String, Object> params,
+            final String cacheKey) throws SQLException {
+        Long result = null;
+        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+            // get from cache
+            result = (Long) getFromCache(cacheKey);
+        }
+        if (result == null) {
+            // cache missed
+            SqlProps sqlProps = getSqlProps(sqlKey);
+            if (sqlProps == null) {
+                throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+            }
+            Connection conn = getConnection();
+            PreparedStatement stm = null;
+            ResultSet rs = null;
+            if (conn == null) {
+                throw new RuntimeException("Can not make connection to database!");
+            }
+            try {
+                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                rs = stm.executeQuery();
+                if (rs.next()) {
+                    result = rs.getLong(1);
+                }
+            } finally {
+                JdbcUtils.closeResources(null, stm, rs);
+                releaseConnection(conn);
+            }
+        }
+        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+            // put to cache
+            putToCache(cacheKey, result);
+        }
+        return result;
+    }
+
+    /**
+     * Executes a non-SELECT query and returns the number of affected rows.
+     * 
+     * @param sqlKey
+     * @param params
+     * @return
+     * @throws SQLException
+     */
+    protected long execNonSelect(final String sqlKey, Map<String, Object> params)
+            throws SQLException {
+        SqlProps sqlProps = getSqlProps(sqlKey);
+        if (sqlProps == null) {
+            throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+        }
+        Connection conn = getConnection();
+        PreparedStatement stm = null;
+        if (conn == null) {
+            throw new RuntimeException("Can not make connection to database!");
+        }
+        try {
+            stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+            long result = stm.executeUpdate();
+            return result;
+        } finally {
+            JdbcUtils.closeResources(null, stm, null);
+            releaseConnection(conn);
+        }
+    }
+
+    /**
      * Executes a SELECT query and returns the result as an array of records,
      * each record is a Map<String, Object>.
      * 
@@ -226,36 +311,65 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
      * @return
      * @throws SQLException
      */
-    @SuppressWarnings("unchecked")
     protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params)
             throws SQLException {
-        SqlProps sqlProps = getSqlProps(sqlKey);
-        if (sqlProps == null) {
-            throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+        return executeSelect(sqlKey, params, null);
+    }
+
+    /**
+     * Executes a SELECT query and returns the result as an array of records,
+     * each record is a Map<String, Object>.
+     * 
+     * @param sqlKey
+     * @param params
+     * @param cacheKey
+     * @return
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params,
+            final String cacheKey) throws SQLException {
+        List<Map<String, Object>> result = null;
+        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+            // get from cache
+            result = (List<Map<String, Object>>) getFromCache(cacheKey);
         }
-        Connection conn = getConnection();
-        if (conn == null) {
-            throw new RuntimeException("Can not make connection to database!");
-        }
-        try {
-            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-            PreparedStatement stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
-            ResultSet rs = stm.executeQuery();
-            ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
-            while (rs.next()) {
-                Map<String, Object> obj = new HashMap<String, Object>();
-                for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
-                    String colName = rsMetaData.getColumnName(i);
-                    Object value = rs.getObject(colName);
-                    obj.put(colName, value);
-                }
-                result.add(obj);
+        if (result == null) {
+            // cache missed
+            SqlProps sqlProps = getSqlProps(sqlKey);
+            if (sqlProps == null) {
+                throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
-            JdbcUtils.closeResources(null, stm, rs);
-            return result.toArray((Map<String, Object>[]) Array.newInstance(Map.class, 0));
-        } finally {
-            releaseConnection(conn);
+            Connection conn = getConnection();
+            PreparedStatement stm = null;
+            ResultSet rs = null;
+            if (conn == null) {
+                throw new RuntimeException("Can not make connection to database!");
+            }
+            try {
+                result = new ArrayList<Map<String, Object>>();
+                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                rs = stm.executeQuery();
+                ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
+                while (rs.next()) {
+                    Map<String, Object> obj = new HashMap<String, Object>();
+                    for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
+                        String colName = rsMetaData.getColumnName(i);
+                        Object value = rs.getObject(colName);
+                        obj.put(colName, value);
+                    }
+                    result.add(obj);
+                }
+            } finally {
+                JdbcUtils.closeResources(null, stm, rs);
+                releaseConnection(conn);
+            }
         }
+        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+            // put to cache
+            putToCache(cacheKey, result);
+        }
+        return result.toArray((Map<String, Object>[]) Array.newInstance(Map.class, 0));
     }
 
     /**
@@ -269,40 +383,67 @@ public abstract class BaseJdbcBoManager extends BaseBoManager implements IJdbcBo
      * @return
      * @throws SQLException
      */
-    @SuppressWarnings("unchecked")
     protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
             Map<String, Object> params, Class<T> clazz) throws SQLException {
-        SqlProps sqlProps = getSqlProps(sqlKey);
-        if (sqlProps == null) {
-            throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+        return executeSelect(sqlKey, params, clazz, null);
+    }
+
+    /**
+     * Executes a SELECT query and returns the result as an array of result,
+     * each result is an instance of type {@link BaseJdbcBo}.
+     * 
+     * @param <T>
+     * @param sqlKey
+     * @param params
+     * @param clazz
+     * @param cacheKey
+     * @return
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
+    protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
+            Map<String, Object> params, Class<T> clazz, final String cacheKey) throws SQLException {
+        List<T> result = null;
+        if (!StringUtils.isBlank(cacheKey) && !cacheEnabled()) {
+            // get from cache
+            result = (List<T>) getFromCache(cacheKey);
         }
-        Connection conn = getConnection();
-        if (conn == null) {
-            throw new RuntimeException("Can not make connection to database!");
-        }
-        try {
-            List<T> result = new ArrayList<T>();
-            PreparedStatement stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
-            ResultSet rs = stm.executeQuery();
-            ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
-            while (rs.next()) {
-                T obj = null;
-                try {
-                    obj = createBusinessObject(clazz);
-                    obj.populate(rs, rsMetaData);
-                    result.add(obj);
-                } catch (Exception e) {
-                    if (e instanceof SQLException) {
-                        throw (SQLException) e;
-                    } else {
-                        throw new SQLException(e);
+        if (result == null) {
+            // cache missed
+            SqlProps sqlProps = getSqlProps(sqlKey);
+            if (sqlProps == null) {
+                throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+            }
+            Connection conn = getConnection();
+            PreparedStatement stm = null;
+            ResultSet rs = null;
+            if (conn == null) {
+                throw new RuntimeException("Can not make connection to database!");
+            }
+            try {
+                result = new ArrayList<T>();
+                stm = JdbcUtils.prepareStatement(conn, sqlProps.getSql(), params);
+                rs = stm.executeQuery();
+                ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
+                while (rs.next()) {
+                    T obj = null;
+                    try {
+                        obj = createBusinessObject(clazz);
+                        obj.populate(rs, rsMetaData);
+                        result.add(obj);
+                    } catch (Exception e) {
+                        if (e instanceof SQLException) {
+                            throw (SQLException) e;
+                        } else {
+                            throw new SQLException(e);
+                        }
                     }
                 }
+            } finally {
+                JdbcUtils.closeResources(null, stm, rs);
+                releaseConnection(conn);
             }
-            JdbcUtils.closeResources(null, stm, rs);
-            return result.toArray((T[]) Array.newInstance(clazz, 0));
-        } finally {
-            releaseConnection(conn);
         }
+        return result.toArray((T[]) Array.newInstance(clazz, 0));
     }
 }

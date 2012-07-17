@@ -14,6 +14,20 @@ public class BaseBoManager {
     private Map<Class<?>, Map<String, Object[]>> dataMappings;
 
     /**
+     * Initializing method
+     */
+    public void init() {
+        // EMPTY
+    }
+
+    /**
+     * Destroying method
+     */
+    public void destroy() {
+        // EMPTY
+    }
+
+    /**
      * Sets data mappings for BO classes.
      * 
      * @param dataMappings
