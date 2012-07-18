@@ -7,10 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.mvc.Controller;
 
 /**
- * This {@link HandlerMapping} obtains a Map&lt;String, Controller&gt; and
+ * This {@link HandlerMapping} obtains a Map&lt;String, Object&gt; and
  * simply looks up the handler from the map.
  * 
  * A handler named '*' is will catch all mappings if the specific handler is not
@@ -21,13 +20,13 @@ import org.springframework.web.servlet.mvc.Controller;
 public class SimpleHandlerMapping extends AbstractHandlerMapping {
 
     private Logger LOGGER = LoggerFactory.getLogger(SimpleHandlerMapping.class);
-    private Map<String, Controller> handlerMapping;
+    private Map<String, ?> handlerMapping;
 
-    protected Map<String, Controller> getHandlerMapping() {
+    protected Map<String, ?> getHandlerMapping() {
         return handlerMapping;
     }
 
-    public void setHandlerMapping(Map<String, Controller> handlerMapping) {
+    public void setHandlerMapping(Map<String, ?> handlerMapping) {
         this.handlerMapping = handlerMapping;
     }
 
@@ -37,11 +36,11 @@ public class SimpleHandlerMapping extends AbstractHandlerMapping {
     @Override
     protected Object getHandlerInternal(HttpServletRequest request, String actionName)
             throws Exception {
-        Map<String, Controller> handlerMapping = getHandlerMapping();
+        Map<String, ?> handlerMapping = getHandlerMapping();
         if (handlerMapping == null) {
             return null;
         }
-        Controller controller = handlerMapping.get(actionName);
+        Object controller = handlerMapping.get(actionName);
         if (controller != null) {
             if (LOGGER.isDebugEnabled()) {
                 String msg = "Found handler for action [" + actionName + "].";
