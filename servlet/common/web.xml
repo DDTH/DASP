@@ -40,7 +40,7 @@
 	<servlet-mapping>
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>/403.jsp</url-pattern>
-		<url-pattern>/404.jsp</url-pattern>
+		<url-pattern>/403.jsp</url-pattern>
 		<url-pattern>/500.jsp</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>

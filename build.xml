@@ -18,7 +18,7 @@
 
 	<target name="release-interim" depends="build-development">
 		<antcall target="post-build" />
-		<copy todir="release/interim" overwrite="true" includeemptydirs="true">
+		<copy todir="release/interim/jar" overwrite="true" includeemptydirs="true">
 			<fileset dir="${dir.servlet.build}/web/WEB-INF/lib">
 				<include name="**/DASP-*.*" />
 			</fileset>
