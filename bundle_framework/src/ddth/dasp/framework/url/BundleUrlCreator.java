@@ -15,6 +15,14 @@ public class BundleUrlCreator implements IUrlCreator {
 
     private String urlSuffix;
 
+    public String getUrlSuffix() {
+        return urlSuffix;
+    }
+
+    public void setUrlSuffix(String urlSuffix) {
+        this.urlSuffix = urlSuffix;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -37,7 +45,7 @@ public class BundleUrlCreator implements IUrlCreator {
         for (String param : virtualParams) {
             url.append("/").append(param);
         }
-        if (StringUtils.isBlank(urlSuffix)) {
+        if (!StringUtils.isBlank(urlSuffix)) {
             url.append(urlSuffix);
         }
 

@@ -203,6 +203,10 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     @Override
     public Connection getConnection() throws SQLException {
         Connection conn = jdbcFactory.getConnection(dbDriver, dbConnUrl, dbUsername, dbPassword);
+        if (LOGGER.isDebugEnabled()) {
+            String msg = "Opened JDBC connection [" + conn + "].";
+            LOGGER.debug(msg);
+        }
         if (conn != null) {
             runSetupSqls(conn);
         }
@@ -215,6 +219,10 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     @Override
     public void releaseConnection(Connection conn) throws SQLException {
         jdbcFactory.releaseConnection(conn);
+        if (LOGGER.isDebugEnabled()) {
+            String msg = "Closed JDBC connection [" + conn + "].";
+            LOGGER.debug(msg);
+        }
     }
 
     /**
