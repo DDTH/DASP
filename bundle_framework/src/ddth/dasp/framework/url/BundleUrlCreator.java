@@ -8,12 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.ServletContextAware;
 
 import ddth.dasp.common.DaspGlobal;
 
-public class BundleUrlCreator implements IUrlCreator {
+public class BundleUrlCreator implements IUrlCreator, ServletContextAware {
 
     private String urlSuffix;
+    private ServletContext servletContext;
 
     public String getUrlSuffix() {
         return urlSuffix;
@@ -39,7 +41,7 @@ public class BundleUrlCreator implements IUrlCreator {
     public String createUrl(HttpServletRequest request, HttpServletResponse response,
             String[] virtualParams, Map<String, Object> urlParams, String urlSuffix,
             boolean absoluteUrl, boolean forceHttps) {
-        ServletContext servletContext = DaspGlobal.getServletContext();
+        ServletContext servletContext = getServletContext();
         StringBuilder url = new StringBuilder(servletContext.getContextPath());
 
         for (String param : virtualParams) {
@@ -65,5 +67,17 @@ public class BundleUrlCreator implements IUrlCreator {
         }
 
         return response.encodeURL(url.toString());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    protected ServletContext getServletContext() {
+        return servletContext != null ? servletContext : DaspGlobal.getServletContext();
     }
 }
