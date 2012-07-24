@@ -3,6 +3,11 @@ package ddth.dasp.framework.springmvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import ddth.dasp.common.rp.IRequestParser;
+import ddth.dasp.common.utils.DaspConstants;
+
 /**
  * Use this class as starting point for application SpringMVC form.
  * 
@@ -32,6 +37,28 @@ public abstract class BaseForm {
         this.action = action;
         this.cancelAction = cancelAction;
     }
+
+    /**
+     * Populate form fields from the http request.
+     * 
+     * @param request
+     */
+    public void populateFields(HttpServletRequest request) {
+        String[] fieldList = getFieldList();
+        IRequestParser rp = (IRequestParser) request
+                .getAttribute(DaspConstants.REQ_ATTR_REQUEST_PARSER);
+        for (String field : fieldList) {
+            Object value = rp != null ? rp.getFormField(field) : request.getParameter(field);
+            setField(field, value);
+        }
+    }
+
+    /**
+     * Gets list of fields awared by this form.
+     * 
+     * @return
+     */
+    public abstract String[] getFieldList();
 
     /**
      * Sets value for a field.
