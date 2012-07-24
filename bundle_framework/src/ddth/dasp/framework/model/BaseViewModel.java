@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import ddth.dasp.framework.url.IUrlCreator;
+
 /**
  * View Model object: to be used on view. Use case: A view model object wraps a
  * business object and delegate only "get" method calls to the underlying
@@ -22,18 +27,31 @@ import java.util.regex.Pattern;
 public class BaseViewModel<T> implements InvocationHandler {
     private final static Pattern PATTERN_METHOD_GET = Pattern.compile("^get[A-Z]\\w*$");
     private T obj;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+    private IUrlCreator urlCreator;
+
+    private static <T> void initModelObj(BaseViewModel<T> model, HttpServletRequest request,
+            HttpServletResponse response, IUrlCreator urlCreator) {
+        model.setHttpRequest(request);
+        model.setHttpResponse(response);
+        model.setUrlCreator(urlCreator);
+    }
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(T obj) {
+    public static <T> T createModel(HttpServletRequest request, HttpServletResponse response,
+            IUrlCreator urlCreator, T obj) {
         BaseViewModel<T> model = new BaseViewModel<T>(obj);
+        initModelObj(model, request, response, urlCreator);
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass()
                 .getInterfaces(), model);
     }
 
-    public static <T> T[] createModel(T[] objs) {
+    public static <T> T[] createModel(HttpServletRequest request, HttpServletResponse response,
+            IUrlCreator urlCreator, T[] objs) {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(obj);
+            T t = createModel(request, response, urlCreator, obj);
             if (t != null) {
                 result.add(t);
             }
@@ -42,7 +60,8 @@ public class BaseViewModel<T> implements InvocationHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T createModel(Class<? extends BaseViewModel<T>> modelClazz,
+    public static <T> T createModel(HttpServletRequest request, HttpServletResponse response,
+            IUrlCreator urlCreator, Class<? extends BaseViewModel<T>> modelClazz,
             Class<?> targetClass, T obj) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, InstantiationException, IllegalAccessException,
             InvocationTargetException {
@@ -60,17 +79,19 @@ public class BaseViewModel<T> implements InvocationHandler {
                 .getDeclaredConstructor(targetClass);
         c.setAccessible(true);
         BaseViewModel<T> model = c.newInstance(obj);
+        initModelObj(model, request, response, urlCreator);
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(),
                 interfaces.toArray(new Class[0]), model);
     }
 
-    public static <T> T[] createModel(Class<? extends BaseViewModel<T>> modelClazz,
+    public static <T> T[] createModel(HttpServletRequest request, HttpServletResponse response,
+            IUrlCreator urlCreator, Class<? extends BaseViewModel<T>> modelClazz,
             Class<?> targetClass, T[] objs) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, InstantiationException, IllegalAccessException,
             InvocationTargetException {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(modelClazz, targetClass, obj);
+            T t = createModel(request, response, urlCreator, modelClazz, targetClass, obj);
             if (t != null) {
                 result.add(t);
             }
@@ -88,6 +109,30 @@ public class BaseViewModel<T> implements InvocationHandler {
 
     protected T getTargetObject() {
         return obj;
+    }
+
+    protected void setHttpRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    protected HttpServletRequest getHttpRequest() {
+        return request;
+    }
+
+    protected void setHttpResponse(HttpServletResponse response) {
+        this.response = response;
+    }
+
+    protected HttpServletResponse getHttpResponse() {
+        return response;
+    }
+
+    protected void setUrlCreator(IUrlCreator urlCreator) {
+        this.urlCreator = urlCreator;
+    }
+
+    protected IUrlCreator getUrlCreator() {
+        return urlCreator;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
