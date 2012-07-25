@@ -56,5 +56,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-extender-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/04.springdm/spring-osgi-io-2.0.0.M1.jar"/>
 	<classpathentry kind="lib" path="resources/lib/catalina.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpclient-4.2.1.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpcore-4.2.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -334,7 +334,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      */
     protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params)
             throws SQLException {
-        return executeSelect(sqlKey, params, null);
+        return executeSelect(sqlKey, params, (String) null);
     }
 
     /**
@@ -412,7 +412,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      */
     protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
             Map<String, Object> params, Class<T> clazz) throws SQLException {
-        return executeSelect(sqlKey, params, clazz, null);
+        return executeSelect(sqlKey, params, clazz, (String) null);
     }
 
     /**

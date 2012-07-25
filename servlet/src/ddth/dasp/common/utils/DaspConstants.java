@@ -2,6 +2,8 @@ package ddth.dasp.common.utils;
 
 public class DaspConstants {
 
+    public final static String DEFAULT_CHARSET = "UTF-8";
+    
     public final static int PARAM_INDEX_MODULE = 0;
     public final static int PARAM_INDEX_ACTION = 1;
     public final static int PARAM_INDEX_AUTHKEY = 2;
