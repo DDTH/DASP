@@ -337,7 +337,6 @@ public class HttpRequestParser extends AbstractRequestParser {
                 } catch (UnsupportedEncodingException e) {
                     throw new MalformedRequestException(e.getMessage(), e);
                 }
-                this.formFields.putAll(httpRequest.getParameterMap());
             }
         }
     }
