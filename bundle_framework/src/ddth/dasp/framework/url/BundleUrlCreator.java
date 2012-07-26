@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +15,19 @@ public class BundleUrlCreator implements IUrlCreator, ServletContextAware {
 
     private String urlSuffix;
     private ServletContext servletContext;
+    private HttpServletResponse httpResponse;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BundleUrlCreator clone() throws CloneNotSupportedException {
+        BundleUrlCreator urlCreator = (BundleUrlCreator) super.clone();
+        urlCreator.servletContext = servletContext;
+        urlCreator.urlSuffix = urlSuffix;
+        urlCreator.httpResponse = httpResponse;
+        return urlCreator;
+    }
 
     public String getUrlSuffix() {
         return urlSuffix;
@@ -25,22 +37,46 @@ public class BundleUrlCreator implements IUrlCreator, ServletContextAware {
         this.urlSuffix = urlSuffix;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String createUrl(HttpServletRequest request, HttpServletResponse response,
-            String[] virtualParams, Map<String, Object> urlParams) {
-        return createUrl(request, response, virtualParams, urlParams, urlSuffix, false, false);
+    public HttpServletResponse getHttpResponse() {
+        return httpResponse;
+    }
+
+    public void setHttpResponse(HttpServletResponse httpResponse) {
+        this.httpResponse = httpResponse;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String createUrl(HttpServletRequest request, HttpServletResponse response,
-            String[] virtualParams, Map<String, Object> urlParams, String urlSuffix,
-            boolean absoluteUrl, boolean forceHttps) {
+    public String createUrl(String[] virtualParams, Map<String, Object> urlParams) {
+        return createUrl(httpResponse, virtualParams, urlParams);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createUrl(HttpServletResponse response, String[] virtualParams,
+            Map<String, Object> urlParams) {
+        return createUrl(response, virtualParams, urlParams, urlSuffix, false, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createUrl(String[] virtualParams, Map<String, Object> urlParams,
+            String urlSuffix, boolean absoluteUrl, boolean forceHttps) {
+        return createUrl(httpResponse, virtualParams, urlParams, urlSuffix, absoluteUrl, forceHttps);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createUrl(HttpServletResponse response, String[] virtualParams,
+            Map<String, Object> urlParams, String urlSuffix, boolean absoluteUrl, boolean forceHttps) {
         ServletContext servletContext = getServletContext();
         StringBuilder url = new StringBuilder(servletContext.getContextPath());
 
@@ -66,7 +102,7 @@ public class BundleUrlCreator implements IUrlCreator, ServletContextAware {
             // TODO
         }
 
-        return response.encodeURL(url.toString());
+        return response != null ? response.encodeURL(url.toString()) : url.toString();
     }
 
     /**
