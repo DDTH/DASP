@@ -53,4 +53,10 @@ public interface IUrlCreator extends Cloneable {
     public String createUrl(HttpServletResponse response, String[] virtualParams,
             Map<String, Object> urlParams, String urlSuffix, boolean absoluteUrl, boolean forceHttps);
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @return
+     */
+    public IUrlCreator clone();
 }

@@ -21,8 +21,13 @@ public class BundleUrlCreator implements IUrlCreator, ServletContextAware {
      * {@inheritDoc}
      */
     @Override
-    public BundleUrlCreator clone() throws CloneNotSupportedException {
-        BundleUrlCreator urlCreator = (BundleUrlCreator) super.clone();
+    public BundleUrlCreator clone() {
+        BundleUrlCreator urlCreator;
+        try {
+            urlCreator = (BundleUrlCreator) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
         urlCreator.servletContext = servletContext;
         urlCreator.urlSuffix = urlSuffix;
         urlCreator.httpResponse = httpResponse;
