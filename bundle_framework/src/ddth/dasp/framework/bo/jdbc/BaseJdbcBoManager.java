@@ -297,7 +297,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected long execNonSelect(final String sqlKey, Map<String, Object> params)
+    protected long executeNonSelect(final String sqlKey, Map<String, Object> params)
             throws SQLException {
         SqlProps sqlProps = getSqlProps(sqlKey);
         if (sqlProps == null) {
