@@ -71,6 +71,34 @@ public abstract class CachedBoManager extends BaseBoManager {
         return cache;
     }
 
+    /**
+     * Deletes all cache entries.
+     */
+    protected void flushCache() {
+        ICache cache = getCache();
+        if (cache != null) {
+            cache.deleteAll();
+        }
+    }
+
+    /**
+     * Deletes an entry from cache.
+     * 
+     * @param key
+     */
+    protected void deleteFromCache(String key) {
+        ICache cache = getCache();
+        if (cache != null) {
+            cache.delete(key);
+        }
+    }
+
+    /**
+     * Puts an entry to cache.
+     * 
+     * @param key
+     * @param value
+     */
     protected void putToCache(String key, Object value) {
         ICache cache = getCache();
         if (cache != null) {
@@ -85,6 +113,12 @@ public abstract class CachedBoManager extends BaseBoManager {
         }
     }
 
+    /**
+     * Gets an entry from cache.
+     * 
+     * @param key
+     * @return
+     */
     protected Object getFromCache(String key) {
         ICache cache = getCache();
         if (cache != null) {
