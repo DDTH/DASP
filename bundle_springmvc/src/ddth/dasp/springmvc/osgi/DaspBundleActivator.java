@@ -19,23 +19,24 @@ import org.springframework.web.servlet.DispatcherServlet;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.IRequestHandler;
 import ddth.dasp.framework.osgi.BaseSpringBundleActivator;
+import ddth.dasp.framework.osgi.ServiceInfo;
 import ddth.dasp.springmvc.DaspBundleConstants;
 
 public class DaspBundleActivator extends BaseSpringBundleActivator {
 
     private final static String[] springConfigFiles = new String[] { "META-INF/osgispring/*.xml" };
     private DispatcherServlet dispatcherServlet;
-    private List<Object[]> serviceInfoList;
+    private List<ServiceInfo> serviceInfoList;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected List<Object[]> getServiceInfoList() {
+    protected List<ServiceInfo> getServiceInfoList() {
         if (serviceInfoList == null) {
-            serviceInfoList = new ArrayList<Object[]>();
-            Object[] serviceInfo = new Object[] { IRequestHandler.class.getName(),
-                    new DaspRequestHandler() };
+            serviceInfoList = new ArrayList<ServiceInfo>();
+            ServiceInfo serviceInfo = new ServiceInfo(IRequestHandler.class.getName(),
+                    new DaspRequestHandler());
             serviceInfoList.add(serviceInfo);
         }
         return serviceInfoList;
