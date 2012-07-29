@@ -7,6 +7,7 @@ Bundle-Activator: ddth.dasp.id.osgi.DaspBundleActivator
 Bundle-ClassPath: .
 Import-Package: ddth.dasp.common.id,
  ddth.dasp.common.osgi,
+ ddth.dasp.common.api,
  ddth.dasp.common.rp,
  ddth.dasp.common.spring,
  ddth.dasp.common.utils,
