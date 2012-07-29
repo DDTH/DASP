@@ -83,7 +83,7 @@ public class OsgiUtils {
         if (filter == null || filter.size() == 0) {
             return getServiceReference(bundleContext, clazz, (String) null);
         }
-        StringBuilder query = new StringBuilder();
+        StringBuilder query = new StringBuilder("(&");
         for (Entry<String, String> entry : filter.entrySet()) {
             query.append("(");
             query.append(entry.getKey());
@@ -91,6 +91,7 @@ public class OsgiUtils {
             query.append(entry.getValue());
             query.append(")");
         }
+        query.append(")");
         return getServiceReference(bundleContext, clazz, query.toString());
     }
 
@@ -142,7 +143,7 @@ public class OsgiUtils {
         if (filter == null || filter.size() == 0) {
             return getServiceReferences(bundleContext, clazz, (String) null);
         }
-        StringBuilder query = new StringBuilder();
+        StringBuilder query = new StringBuilder("(&");
         for (Entry<String, String> entry : filter.entrySet()) {
             query.append("(");
             query.append(entry.getKey());
@@ -150,6 +151,7 @@ public class OsgiUtils {
             query.append(entry.getValue());
             query.append(")");
         }
+        query.append(")");
         return getServiceReferences(bundleContext, clazz, query.toString());
     }
 
