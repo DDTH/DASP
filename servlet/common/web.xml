@@ -26,6 +26,13 @@
 	</context-param>
 
 	<servlet>
+		<description>DASP Thrift Service Servlet</description>
+		<servlet-name>daspThriftServiceServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.thrift.ThriftServiceBootstrapServlet</servlet-class>
+		<load-on-startup>30</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<description>DASP Dispatcher Servlet</description>
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<servlet-class>ddth.dasp.servlet.DaspDispatcherServlet</servlet-class>
@@ -40,7 +47,13 @@
 	<servlet-mapping>
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>/403.jsp</url-pattern>
-		<url-pattern>/403.jsp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>/404.jsp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
 		<url-pattern>/500.jsp</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
