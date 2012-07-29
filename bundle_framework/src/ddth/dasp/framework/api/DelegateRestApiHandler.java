@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import ddth.dasp.common.api.ApiException;
+import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.common.utils.DaspConstants;
 
@@ -84,7 +86,7 @@ public abstract class DelegateRestApiHandler extends DelegateApiHandler implemen
             throws Exception {
         String authKey = parseAuthKey(request);
         Object params = parseInput(request);
-        Object result = handleApiCall(params, authKey);
+        Object result = callApi(params, authKey);
         returnResult(response, result);
         return null;
     }

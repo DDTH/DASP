@@ -1,5 +1,8 @@
 package ddth.dasp.framework.api;
 
+import ddth.dasp.common.api.ApiException;
+import ddth.dasp.common.api.IApiHandler;
+
 public abstract class AbstractApiHandler implements IApiHandler {
 
     /**
@@ -31,7 +34,7 @@ public abstract class AbstractApiHandler implements IApiHandler {
     }
 
     /**
-     * Called by {@link #handleApiCall(Object, String)}. Sub-class overrides
+     * Called by {@link #callApi(Object, String)}. Sub-class overrides
      * this method to perform is own business.
      * 
      * @param params
@@ -48,7 +51,7 @@ public abstract class AbstractApiHandler implements IApiHandler {
      * {@inheritDoc}
      */
     @Override
-    public Object handleApiCall(Object params, String authKey) throws ApiException {
+    public Object callApi(Object params, String authKey) throws ApiException {
         if (!validateAuthKey(authKey)) {
             String msg = "Authkey [" + authKey + "] validation failed!";
             throw new ApiException(msg);

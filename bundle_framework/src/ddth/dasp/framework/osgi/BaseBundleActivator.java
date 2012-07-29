@@ -4,8 +4,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Bundle;
@@ -175,7 +175,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
         return null;
     }
 
-    protected List<Object[]> getServiceInfoList() {
+    protected List<ServiceInfo> getServiceInfoList() {
         return null;
     }
 
@@ -183,14 +183,14 @@ public abstract class BaseBundleActivator implements BundleActivator {
      * Registers OSGi services provided by this module.
      */
     protected void registerServices() {
-        List<Object[]> serviceInfoList = getServiceInfoList();
-        if (serviceInfoList == null) {
+        List<ServiceInfo> serviceInfoList = getServiceInfoList();
+        if (serviceInfoList == null || serviceInfoList.size() == 0) {
             return;
         }
-        for (Object[] serviceInfo : serviceInfoList) {
-            String serviceName = serviceInfo[0].toString();
-            Object serviceObj = serviceInfo[1];
-            registerService(serviceName, serviceObj, getProperties());
+        for (ServiceInfo serviceInfo : serviceInfoList) {
+            Properties props = serviceInfo.getProperties();
+            props.putAll(getProperties());
+            registerService(serviceInfo.getClassName(), serviceInfo.getService(), props);
         }
     }
 
@@ -223,7 +223,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
     /**
      * Convenient method for sub-class to register one service.
      * 
-     * @param name
+     * @param className
      *            String
      * @param service
      *            Object
@@ -231,9 +231,10 @@ public abstract class BaseBundleActivator implements BundleActivator {
      *            properties
      * @return ServiceRegistration
      */
-    protected ServiceRegistration<?> registerService(String name, Object service, Properties props) {
+    protected ServiceRegistration<?> registerService(String className, Object service,
+            Properties props) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Registering service [" + name + "] with properties " + props);
+            LOGGER.debug("Registering service [" + className + "] with properties " + props);
         }
         if (service instanceof IBundleAwareService) {
             ((IBundleAwareService) service).setBundle(bundle);
@@ -244,7 +245,7 @@ public abstract class BaseBundleActivator implements BundleActivator {
         for (Entry<Object, Object> entry : props.entrySet()) {
             dProps.put(entry.getKey().toString(), entry.getValue());
         }
-        ServiceRegistration<?> sr = bundleContext.registerService(name, service, dProps);
+        ServiceRegistration<?> sr = bundleContext.registerService(className, service, dProps);
         if (sr != null) {
             registeredServices.add(sr);
         }
