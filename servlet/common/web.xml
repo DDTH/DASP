@@ -29,6 +29,14 @@
 		<description>DASP Thrift Service Servlet</description>
 		<servlet-name>daspThriftServiceServlet</servlet-name>
 		<servlet-class>ddth.dasp.servlet.thrift.ThriftServiceBootstrapServlet</servlet-class>
+		<init-param>
+			<param-name>nonblockingServer</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>port</param-name>
+			<param-value>9090</param-value>
+		</init-param>
 		<load-on-startup>30</load-on-startup>
 	</servlet>
 
