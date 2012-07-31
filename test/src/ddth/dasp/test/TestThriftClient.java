@@ -34,7 +34,9 @@ public class TestThriftClient {
         @Override
         public Client makeObject() throws Exception {
             System.out.println("Creating new object...");
-            TTransport trans = new TFramedTransport(new TSocket("localhost", 9090));
+            // TTransport trans = new TFramedTransport(new TSocket("localhost",
+            // 9090));
+            TTransport trans = new TFramedTransport(new TSocket("10.60.7.221", 49999));
             TProtocol proto = new TBinaryProtocol(trans);
             DaspJsonService.Client client = new DaspJsonService.Client(proto);
             trans.open();
@@ -55,7 +57,7 @@ public class TestThriftClient {
     public static void main(String[] args) throws Exception {
 
         final ObjectPool<DaspJsonService.Client> pool = new GenericObjectPool<DaspJsonService.Client>(
-                new ClientFactory(), 8);
+                new ClientFactory(), 128);
         final Map<Object, Boolean> map = new ConcurrentHashMap<Object, Boolean>();
 
         BenchmarkResult result = new Benchmark(new Operation() {
@@ -82,7 +84,7 @@ public class TestThriftClient {
                     e.printStackTrace();
                 }
             }
-        }, 200000, 8).run();
+        }, 200000, 64).run();
         System.out.println(result.summarize());
 
         pool.close();
