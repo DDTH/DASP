@@ -61,10 +61,12 @@ public class DaspRequestListener implements ServletRequestListener {
     private void logProfiling() {
         try {
             ProfileLogger.pop();
-            ProfileLogEntry profileLog = ProfileLogger.get();
-            Object[] profileData = profileLog.getProfiling();
-            String json = JsonUtils.toJson(profileData);
-            LOGGER.info(json);
+            if (LOGGER.isDebugEnabled()) {
+                ProfileLogEntry profileLog = ProfileLogger.get();
+                Object[] profileData = profileLog.getProfiling();
+                String json = JsonUtils.toJson(profileData);
+                LOGGER.debug(json);
+            }
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
         } finally {
@@ -73,17 +75,20 @@ public class DaspRequestListener implements ServletRequestListener {
     }
 
     private void logJdbc() {
-        try {
-            JdbcLogEntry[] entries = JdbcLogger.get();
-            for (JdbcLogEntry entry : entries) {
-                long duration = entry.getDuration();
-                String sql = entry.getSql();
-                LOGGER.info("\t[" + duration + "] " + sql);
+        if (LOGGER.isDebugEnabled()) {
+            try {
+                JdbcLogEntry[] entries = JdbcLogger.get();
+                for (JdbcLogEntry entry : entries) {
+                    long duration = entry.getDuration();
+                    String sql = entry.getSql();
+                    LOGGER.debug("\t[" + duration + "] " + sql);
+                }
+
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            } finally {
+                JdbcLogger.remove();
             }
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);
-        } finally {
-            JdbcLogger.remove();
         }
     }
 
