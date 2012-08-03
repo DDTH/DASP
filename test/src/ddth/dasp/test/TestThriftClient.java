@@ -55,6 +55,17 @@ public class TestThriftClient {
     }
 
     public static void main(String[] args) throws Exception {
+        int numSamples = 10000;
+        int numThreads = 4;
+        if (args.length > 0) {
+            numSamples = Integer.parseInt(args[0]);
+        }
+        if (args.length > 1) {
+            numThreads = Integer.parseInt(args[1]);
+        }
+
+        System.out.println("Num Samples: " + numSamples);
+        System.out.println("Num Threads: " + numThreads);
 
         final ObjectPool<DaspJsonService.Client> pool = new GenericObjectPool<DaspJsonService.Client>(
                 new ClientFactory(), 32);
@@ -84,7 +95,7 @@ public class TestThriftClient {
                     e.printStackTrace();
                 }
             }
-        }, 10000, 8).run();
+        }, numSamples, numThreads).run();
         System.out.println(result.summarize());
         pool.close();
     }
