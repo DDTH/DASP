@@ -36,7 +36,7 @@ public class TestThriftClient {
             System.out.println("Creating new object...");
             // TTransport trans = new TFramedTransport(new TSocket("localhost",
             // 9090));
-            TTransport trans = new TFramedTransport(new TSocket("10.60.7.221", 49999));
+            TTransport trans = new TFramedTransport(new TSocket("10.199.5.127", 9090));
             TProtocol proto = new TBinaryProtocol(trans);
             DaspJsonService.Client client = new DaspJsonService.Client(proto);
             trans.open();
@@ -57,7 +57,7 @@ public class TestThriftClient {
     public static void main(String[] args) throws Exception {
 
         final ObjectPool<DaspJsonService.Client> pool = new GenericObjectPool<DaspJsonService.Client>(
-                new ClientFactory(), 128);
+                new ClientFactory(), 32);
         final Map<Object, Boolean> map = new ConcurrentHashMap<Object, Boolean>();
 
         BenchmarkResult result = new Benchmark(new Operation() {
@@ -72,11 +72,11 @@ public class TestThriftClient {
                     try {
                         Object result = client.callApi(moduleName, functionName, jsonEncodedInput,
                                 authKey);
-                        if (map.containsKey(result)) {
-                            System.out.println("Was generated: " + result);
-                        } else {
-                            map.put(result, Boolean.TRUE);
-                        }
+                        // if (map.containsKey(result)) {
+                        // System.out.println("Was generated: " + result);
+                        // } else {
+                        // map.put(result, Boolean.TRUE);
+                        // }
                     } finally {
                         pool.returnObject(client);
                     }
@@ -84,9 +84,8 @@ public class TestThriftClient {
                     e.printStackTrace();
                 }
             }
-        }, 200000, 64).run();
+        }, 10000, 8).run();
         System.out.println(result.summarize());
-
         pool.close();
     }
 }

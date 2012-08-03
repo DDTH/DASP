@@ -148,4 +148,29 @@
 			</fileset>
 		</copy>
 	</target>
+
+	<path id="path.lib">
+		<fileset dir="resources/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="servlet/build/web/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="testThriftClient">
+		<delete dir="test/classes" includeemptydirs="true" quiet="true" />
+		<mkdir dir="test/classes" />
+		<javac includeantruntime="false" srcdir="test/src" destdir="test/classes" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
+			<classpath>
+				<path refid="path.lib" />
+			</classpath>
+		</javac>
+		<java classname="ddth.dasp.test.TestThriftClient">
+			<classpath>
+				<path refid="path.lib" />
+				<pathelement path="test/classes" />
+			</classpath>
+		</java>
+	</target>
 </project>
