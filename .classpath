@@ -59,5 +59,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpclient-4.2.1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpcore-4.2.1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/libthrift-0.8.0.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/netty-3.5.3.Final.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -39,7 +39,23 @@
 		</init-param>
 		<load-on-startup>30</load-on-startup>
 	</servlet>
+	<servlet>
+		<description>DASP Netty JSON Service Servlet</description>
+		<servlet-name>daspNettyJsonServiceServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.netty.NettyJsonServiceBootstrapServlet</servlet-class>
+		<init-param>
+			<param-name>port</param-name>
+			<param-value>8082</param-value>
+		</init-param>
+		<load-on-startup>30</load-on-startup>
+	</servlet>
 
+	<servlet>
+		<description>DASP JSON Service Servlet</description>
+		<servlet-name>daspJsonServiceServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.DaspJsonServiceServlet</servlet-class>
+		<load-on-startup>10</load-on-startup>
+	</servlet>
 	<servlet>
 		<description>DASP Dispatcher Servlet</description>
 		<servlet-name>daspDispatcherServlet</servlet-name>
@@ -47,11 +63,6 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
-	<!-- <servlet> <servlet-name>Comet</servlet-name> <servlet-class>ddth.dasp.temp.ChatServlet</servlet-class> 
-		<load-on-startup>1</load-on-startup> </servlet> -->
-
-	<!-- <servlet-mapping> <servlet-name>Comet</servlet-name> <url-pattern>/chat</url-pattern> 
-		</servlet-mapping> -->
 	<servlet-mapping>
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>/403.jsp</url-pattern>
@@ -63,6 +74,10 @@
 	<servlet-mapping>
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>/500.jsp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>daspJsonServiceServlet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>daspDispatcherServlet</servlet-name>
