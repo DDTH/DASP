@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -103,55 +104,62 @@ public class DaspJsonServiceServlet extends HttpServlet implements CometProcesso
         return result;
     }
 
+    private static AtomicLong counter = new AtomicLong();
+
     protected void doHandleRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        String uri = request.getRequestURI();
-        if (uri.startsWith(contextPath)) {
-            uri = uri.substring(contextPath.length());
-        }
-        if (!uri.startsWith(URI_PREFIX)) {
-            Map<Object, Object> res = new HashMap<Object, Object>();
-            res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
-            res.put(IApiHandler.RESULT_FIELD_MESSAGE, "Request must starts with '/api'!");
-            response.getWriter().print(JsonUtils.toJson(res));
-            return;
-        }
-        uri = uri.substring(URI_PREFIX.length());
-        String[] tokens = uri.replaceAll("^\\/+", "").replaceAll("^\\/+", "").split("\\/");
-        String moduleName = tokens.length > 0 ? tokens[0] : null;
-        String functionName = tokens.length > 1 ? tokens[1] : null;
-        String authKey = tokens.length > 2 ? tokens[2] : null;
-        Object apiParams = parseInput(request);
-
-        IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-        Object result;
+        counter.incrementAndGet();
         try {
-            Map<String, String> filter = new HashMap<String, String>();
-            filter.put(IApiHandler.PROP_MODULE, moduleName);
-            filter.put(IApiHandler.PROP_API, functionName);
-            IApiHandler apiHandler = osgiBootstrap.getService(IApiHandler.class, filter);
-            if (apiHandler != null) {
-                result = apiHandler.callApi(apiParams, authKey);
-            } else {
-                filter.remove(IApiHandler.PROP_API);
-                IApiGroupHandler apiGroupHandler = osgiBootstrap.getService(IApiGroupHandler.class,
-                        filter);
-                if (apiGroupHandler != null) {
-                    result = apiGroupHandler.handleApiCall(functionName, apiParams, authKey);
-                } else {
-                    Map<Object, Object> res = new HashMap<Object, Object>();
-                    res.put(IApiHandler.RESULT_FIELD_STATUS, 404);
-                    res.put(IApiHandler.RESULT_FIELD_MESSAGE, "No handler for [" + moduleName + "/"
-                            + functionName + "]!");
-                    result = res;
-                }
+            String uri = request.getRequestURI();
+            if (uri.startsWith(contextPath)) {
+                uri = uri.substring(contextPath.length());
             }
-        } catch (Exception ex) {
-            Map<Object, Object> res = new HashMap<Object, Object>();
-            res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
-            res.put(IApiHandler.RESULT_FIELD_MESSAGE, ex.getMessage());
-            result = res;
+            if (!uri.startsWith(URI_PREFIX)) {
+                Map<Object, Object> res = new HashMap<Object, Object>();
+                res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
+                res.put(IApiHandler.RESULT_FIELD_MESSAGE, "Request must starts with '/api'!");
+                response.getWriter().print(JsonUtils.toJson(res));
+                return;
+            }
+            uri = uri.substring(URI_PREFIX.length());
+            String[] tokens = uri.replaceAll("^\\/+", "").replaceAll("^\\/+", "").split("\\/");
+            String moduleName = tokens.length > 0 ? tokens[0] : null;
+            String functionName = tokens.length > 1 ? tokens[1] : null;
+            String authKey = tokens.length > 2 ? tokens[2] : null;
+            Object apiParams = parseInput(request);
+
+            IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
+            Object result;
+            try {
+                Map<String, String> filter = new HashMap<String, String>();
+                filter.put(IApiHandler.PROP_MODULE, moduleName);
+                filter.put(IApiHandler.PROP_API, functionName);
+                IApiHandler apiHandler = osgiBootstrap.getService(IApiHandler.class, filter);
+                if (apiHandler != null) {
+                    result = apiHandler.callApi(apiParams, authKey);
+                } else {
+                    filter.remove(IApiHandler.PROP_API);
+                    IApiGroupHandler apiGroupHandler = osgiBootstrap.getService(
+                            IApiGroupHandler.class, filter);
+                    if (apiGroupHandler != null) {
+                        result = apiGroupHandler.handleApiCall(functionName, apiParams, authKey);
+                    } else {
+                        Map<Object, Object> res = new HashMap<Object, Object>();
+                        res.put(IApiHandler.RESULT_FIELD_STATUS, 404);
+                        res.put(IApiHandler.RESULT_FIELD_MESSAGE, "No handler for [" + moduleName
+                                + "/" + functionName + "]!");
+                        result = res;
+                    }
+                }
+            } catch (Exception ex) {
+                Map<Object, Object> res = new HashMap<Object, Object>();
+                res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
+                res.put(IApiHandler.RESULT_FIELD_MESSAGE, ex.getMessage());
+                result = res;
+            }
+            response.getWriter().print(JsonUtils.toJson(result));
+        } finally {
+            counter.decrementAndGet();
         }
-        response.getWriter().print(JsonUtils.toJson(result));
     }
 }

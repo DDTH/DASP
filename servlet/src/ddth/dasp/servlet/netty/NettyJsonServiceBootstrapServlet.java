@@ -27,6 +27,7 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
             .getLogger(NettyJsonServiceBootstrapServlet.class);
 
     private int port = 8082;
+    private int numWorkers = 1024;
     private ExecutorService bossExecutor, workerExecutor;
     private ServerBootstrap nettyServer;
     private Timer timer;
@@ -46,7 +47,7 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
         bossExecutor = Executors.newCachedThreadPool();
         workerExecutor = Executors.newCachedThreadPool();
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(bossExecutor,
-                workerExecutor, 1024));
+                workerExecutor, numWorkers));
         nettyServer.setPipelineFactory(new NettyJsonServicePipelineFactory(timer));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
@@ -96,6 +97,14 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public int getNumWorkers() {
+        return numWorkers;
+    }
+
+    public void setNumWorkers(int numWorkers) {
+        this.numWorkers = numWorkers;
     }
 
     @Override

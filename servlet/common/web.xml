@@ -47,6 +47,18 @@
 			<param-name>port</param-name>
 			<param-value>8082</param-value>
 		</init-param>
+		<init-param>
+			<param-name>numWorkers</param-name>
+			<param-value>1024</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>5</param-value>
+		</init-param>
+		<init-param>
+			<param-name>writeTimeout</param-name>
+			<param-value>5</param-value>
+		</init-param>
 		<load-on-startup>30</load-on-startup>
 	</servlet>
 

@@ -2,7 +2,6 @@ package ddth.dasp.servlet.netty;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -41,43 +40,53 @@ public class NettyJsonServiceHandler extends SimpleChannelUpstreamHandler {
     }
 
     private static AtomicLong counter = new AtomicLong();
-    private static Random rand = new Random(System.currentTimeMillis());
+
+    // private static Random rand = new Random(System.currentTimeMillis());
 
     private void writeResponse(MessageEvent e, HttpRequest request) {
-        String result = "";
+        // String result = "";
+        // counter.incrementAndGet();
+        // try {
+        // int value = counter.intValue();
+        // long timestamp = System.currentTimeMillis();
+        // System.out.println(value + ": start " + request.getUri());
+        // Thread.sleep(Math.abs(rand.nextLong() % 10000));
+        // value = counter.intValue();
+        // System.out.println(value + ": end " + request.getUri() + "/"
+        // + (System.currentTimeMillis() - timestamp));
+        // result = value + "";
+        // } catch (InterruptedException ie) {
+        // ie.printStackTrace();
+        // } finally {
+        // counter.decrementAndGet();
+        // }
+        // HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+        // HttpResponseStatus.OK);
+        // response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
+        // "application/json; charset=UTF-8");
+        // response.setContent(ChannelBuffers.copiedBuffer(JsonUtils.toJson(result),
+        // CharsetUtil.UTF_8));
+        // ChannelFuture future = e.getChannel().write(response);
+        // future.addListener(ChannelFutureListener.CLOSE);
+
         counter.incrementAndGet();
         try {
-            int value = counter.intValue();
-            System.out.println(value + ":" + request);
-            Thread.sleep(Math.abs(rand.nextLong() % 5000));
-            value = counter.intValue();
-            System.out.println(value + ":" + request);
-            result = value + "";
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
+            String uri = request.getUri();
+            String contextPath = DaspGlobal.getServletContext().getContextPath();
+            if (uri.startsWith(contextPath)) {
+                uri = uri.substring(contextPath.length());
+            }
+            ChannelFuture future;
+            if (!uri.startsWith(URI_PREFIX)) {
+                future = responseError(e, HttpResponseStatus.BAD_REQUEST,
+                        "Request must starts with '/api'!");
+            } else {
+                future = responseApiCall(e, uri.substring(URI_PREFIX.length()));
+            }
+            future.addListener(ChannelFutureListener.CLOSE);
         } finally {
             counter.decrementAndGet();
         }
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/json; charset=UTF-8");
-        response.setContent(ChannelBuffers.copiedBuffer(JsonUtils.toJson(result), CharsetUtil.UTF_8));
-        ChannelFuture future = e.getChannel().write(response);
-        future.addListener(ChannelFutureListener.CLOSE);
-
-        // String uri = request.getUri();
-        // String contextPath = DaspGlobal.getServletContext().getContextPath();
-        // if (uri.startsWith(contextPath)) {
-        // uri = uri.substring(contextPath.length());
-        // }
-        //
-        // ChannelFuture future;
-        // if (!uri.startsWith(URI_PREFIX)) {
-        // future = responseError(e, HttpResponseStatus.BAD_REQUEST,
-        // "Request must starts with '/api'!");
-        // } else {
-        // future = responseApiCall(e, uri.substring(URI_PREFIX.length()));
-        // }
-        // future.addListener(ChannelFutureListener.CLOSE);
     }
 
     private ChannelFuture responseApiCall(MessageEvent e, String uri) {
@@ -137,6 +146,7 @@ public class NettyJsonServiceHandler extends SimpleChannelUpstreamHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         Throwable t = e.getCause();
         LOGGER.error(t.getMessage(), t);
-        ctx.getChannel().close();
+        e.getChannel().close();
+        e.getFuture().cancel();
     }
 }
