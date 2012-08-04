@@ -19,6 +19,8 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.api.IApiGroupHandler;
@@ -29,6 +31,8 @@ import ddth.dasp.common.utils.JsonUtils;
 public class NettyJsonServiceHandler extends SimpleChannelUpstreamHandler {
 
     private final static String URI_PREFIX = "/api";
+
+    private Logger LOGGER = LoggerFactory.getLogger(NettyJsonServiceHandler.class);
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
@@ -131,7 +135,8 @@ public class NettyJsonServiceHandler extends SimpleChannelUpstreamHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        e.getCause().printStackTrace();
-        e.getChannel().close();
+        Throwable t = e.getCause();
+        LOGGER.error(t.getMessage(), t);
+        ctx.getChannel().close();
     }
 }

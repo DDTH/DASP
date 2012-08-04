@@ -6,17 +6,24 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.timeout.ReadTimeoutHandler;
+import org.jboss.netty.util.Timer;
 
 public class NettyJsonServicePipelineFactory implements ChannelPipelineFactory {
+
+    private final Timer timer;
+
+    public NettyJsonServicePipelineFactory(Timer timer) {
+        this.timer = timer;
+    }
+
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         // Create a default pipeline implementation.
-        ChannelPipeline pipeline = Channels.pipeline();
-
+        ChannelPipeline pipeline = Channels.pipeline(new ReadTimeoutHandler(timer, 5));
         pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpChunkAggregator(1024 * 1024));
+        pipeline.addLast("aggregator", new HttpChunkAggregator(128 * 1024));
         pipeline.addLast("encoder", new HttpResponseEncoder());
-        // pipeline.addLast("deflater", new HttpContentCompressor());
         pipeline.addLast("handler", new NettyJsonServiceHandler());
         return pipeline;
     }

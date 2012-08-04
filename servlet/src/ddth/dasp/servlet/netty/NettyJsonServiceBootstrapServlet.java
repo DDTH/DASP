@@ -14,6 +14,8 @@ import javax.servlet.ServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
     private int port = 8082;
     private ExecutorService bossExecutor, workerExecutor;
     private ServerBootstrap nettyServer;
+    private Timer timer;
 
     /**
      * {@inheritDoc}
@@ -39,15 +42,12 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
         if (!StringUtils.isBlank(strPort)) {
             port = Integer.parseInt(strPort);
         }
-        // int numProcessors = Runtime.getRuntime().availableProcessors();
-        int numProcessors = 16;
-        bossExecutor = Executors.newFixedThreadPool(numProcessors);
-        workerExecutor = Executors.newFixedThreadPool(numProcessors * 4);
+        timer = new HashedWheelTimer();
         bossExecutor = Executors.newCachedThreadPool();
         workerExecutor = Executors.newCachedThreadPool();
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(bossExecutor,
                 workerExecutor, 1024));
-        nettyServer.setPipelineFactory(new NettyJsonServicePipelineFactory());
+        nettyServer.setPipelineFactory(new NettyJsonServicePipelineFactory(timer));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
         LOGGER.info("Netty interface is listening on port " + port);
@@ -76,6 +76,13 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
         try {
             if (workerExecutor != null) {
                 workerExecutor.shutdown();
+            }
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+        try {
+            if (timer != null) {
+                timer.stop();
             }
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
