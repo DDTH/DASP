@@ -45,7 +45,8 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
         workerExecutor = Executors.newFixedThreadPool(numProcessors * 4);
         // bossExecutor = Executors.newCachedThreadPool();
         // workerExecutor = Executors.newCachedThreadPool();
-        nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory());
+        nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(bossExecutor,
+                workerExecutor, 1024));
         nettyServer.setPipelineFactory(new NettyJsonServicePipelineFactory());
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
