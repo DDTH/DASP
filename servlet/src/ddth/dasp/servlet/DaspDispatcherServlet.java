@@ -3,9 +3,9 @@ package ddth.dasp.servlet;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
-import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.IRequestHandler;
-import ddth.dasp.common.osgi.IOsgiBootstrap;
-import ddth.dasp.common.utils.ServletUtils;
 
 public class DaspDispatcherServlet extends HttpServlet implements CometProcessor {
     private static final long serialVersionUID = 1L;
@@ -82,22 +79,42 @@ public class DaspDispatcherServlet extends HttpServlet implements CometProcessor
         doHandleRequest(request, response);
     }
 
+    private static AtomicLong counter = new AtomicLong();
+    private static Random rand = new Random(System.currentTimeMillis());
+
     protected void doHandleRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        String uri = request.getRequestURI();
-        for (Entry<String, String> entry : ERROR_PAGE_MAPPING.entrySet()) {
-            if (uri.startsWith(entry.getKey())) {
-                RequestDispatcher rd = getServletContext().getRequestDispatcher(entry.getValue());
-                rd.forward(request, response);
-                return;
-            }
+        counter.incrementAndGet();
+        try {
+            int value = counter.intValue();
+            response.getWriter().println(value);
+            System.out.println(value + ":" + request);
+            Thread.sleep(Math.abs(rand.nextLong() % 5000));
+            value = counter.intValue();
+            response.getWriter().println(value);
+            System.out.println(value + ":" + request);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            counter.decrementAndGet();
         }
-        IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-        IRequestHandler requestHandler = osgiBootstrap.getService(HANDLER_CLASS);
-        if (requestHandler == null) {
-            ServletUtils.responseHttpError(response, 404, "No handler found!");
-            return;
-        }
-        requestHandler.handleRequest(request, response);
+
+        // String uri = request.getRequestURI();
+        // for (Entry<String, String> entry : ERROR_PAGE_MAPPING.entrySet()) {
+        // if (uri.startsWith(entry.getKey())) {
+        // RequestDispatcher rd =
+        // getServletContext().getRequestDispatcher(entry.getValue());
+        // rd.forward(request, response);
+        // return;
+        // }
+        // }
+        // IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
+        // IRequestHandler requestHandler =
+        // osgiBootstrap.getService(HANDLER_CLASS);
+        // if (requestHandler == null) {
+        // ServletUtils.responseHttpError(response, 404, "No handler found!");
+        // return;
+        // }
+        // requestHandler.handleRequest(request, response);
     }
 }

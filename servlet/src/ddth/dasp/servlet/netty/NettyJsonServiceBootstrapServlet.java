@@ -39,9 +39,12 @@ public class NettyJsonServiceBootstrapServlet extends GenericServlet {
         if (!StringUtils.isBlank(strPort)) {
             port = Integer.parseInt(strPort);
         }
-        int numProcessors = Runtime.getRuntime().availableProcessors();
-        bossExecutor = Executors.newFixedThreadPool(numProcessors);
-        workerExecutor = Executors.newFixedThreadPool(numProcessors * 4);
+        // int numProcessors = Runtime.getRuntime().availableProcessors();
+        // int numProcessors = 16;
+        // bossExecutor = Executors.newFixedThreadPool(numProcessors);
+        // workerExecutor = Executors.newFixedThreadPool(numProcessors * 4);
+        bossExecutor = Executors.newCachedThreadPool();
+        workerExecutor = Executors.newCachedThreadPool();
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(bossExecutor,
                 workerExecutor));
         nettyServer.setPipelineFactory(new NettyJsonServicePipelineFactory());
