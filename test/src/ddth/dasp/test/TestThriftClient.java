@@ -12,14 +12,14 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
-import ddth.dasp.servlet.thrift.DaspJsonService;
-import ddth.dasp.servlet.thrift.DaspJsonService.Client;
+import ddth.dasp.servlet.thrift.DaspJsonApi;
+import ddth.dasp.servlet.thrift.DaspJsonApi.Client;
 import ddth.dasp.test.utils.Benchmark;
 import ddth.dasp.test.utils.BenchmarkResult;
 import ddth.dasp.test.utils.Operation;
 
 public class TestThriftClient {
-    static class ClientFactory implements PoolableObjectFactory<DaspJsonService.Client> {
+    static class ClientFactory implements PoolableObjectFactory<DaspJsonApi.Client> {
         @Override
         public void activateObject(Client client) throws Exception {
             // client.getInputProtocol().getTransport().open();
@@ -38,7 +38,7 @@ public class TestThriftClient {
             // 9090));
             TTransport trans = new TFramedTransport(new TSocket("10.199.5.127", 9090));
             TProtocol proto = new TBinaryProtocol(trans);
-            DaspJsonService.Client client = new DaspJsonService.Client(proto);
+            DaspJsonApi.Client client = new DaspJsonApi.Client(proto);
             trans.open();
             return client;
         }
@@ -67,7 +67,7 @@ public class TestThriftClient {
         System.out.println("Num Samples: " + numSamples);
         System.out.println("Num Threads: " + numThreads);
 
-        final ObjectPool<DaspJsonService.Client> pool = new GenericObjectPool<DaspJsonService.Client>(
+        final ObjectPool<DaspJsonApi.Client> pool = new GenericObjectPool<DaspJsonApi.Client>(
                 new ClientFactory(), 32);
         final Map<Object, Boolean> map = new ConcurrentHashMap<Object, Boolean>();
 
@@ -79,7 +79,7 @@ public class TestThriftClient {
                 String jsonEncodedInput = null;
                 String authKey = null;
                 try {
-                    DaspJsonService.Client client = pool.borrowObject();
+                    DaspJsonApi.Client client = pool.borrowObject();
                     try {
                         Object result = client.callApi(moduleName, functionName, jsonEncodedInput,
                                 authKey);
