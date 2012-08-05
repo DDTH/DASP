@@ -20,12 +20,16 @@ import ddth.dasp.id.DaspBundleConstants;
 import ddth.dasp.id.api.AbstractIdApiHandler;
 import ddth.dasp.id.api.Id128Apihandler;
 import ddth.dasp.id.api.Id128HexApihandler;
+import ddth.dasp.id.api.Id48Apihandler;
+import ddth.dasp.id.api.Id48HexApihandler;
 import ddth.dasp.id.api.Id64Apihandler;
 import ddth.dasp.id.api.Id64HexApihandler;
 
 public class DaspBundleActivator extends BaseBundleActivator {
 
     private IdGenerator idGen = IdGenerator.getInstance(IdGenerator.getMacAddr());
+    private AbstractIdApiHandler id48 = new Id48Apihandler(idGen);
+    private AbstractIdApiHandler id48Hex = new Id48HexApihandler(idGen);
     private AbstractIdApiHandler id64 = new Id64Apihandler(idGen);
     private AbstractIdApiHandler id64Hex = new Id64HexApihandler(idGen);
     private AbstractIdApiHandler id128 = new Id128Apihandler(idGen);
@@ -44,8 +48,16 @@ public class DaspBundleActivator extends BaseBundleActivator {
             serviceInfoList = new ArrayList<ServiceInfo>();
             Properties props = new Properties();
 
+            props.put(IApiHandler.PROP_API, "id48");
+            ServiceInfo serviceInfo = new ServiceInfo(IApiHandler.class.getName(), id48, props);
+            serviceInfoList.add(serviceInfo);
+
+            props.put(IApiHandler.PROP_API, "id48hex");
+            serviceInfo = new ServiceInfo(IApiHandler.class.getName(), id48Hex, props);
+            serviceInfoList.add(serviceInfo);
+
             props.put(IApiHandler.PROP_API, "id64");
-            ServiceInfo serviceInfo = new ServiceInfo(IApiHandler.class.getName(), id64, props);
+            serviceInfo = new ServiceInfo(IApiHandler.class.getName(), id64, props);
             serviceInfoList.add(serviceInfo);
 
             props.put(IApiHandler.PROP_API, "id64hex");

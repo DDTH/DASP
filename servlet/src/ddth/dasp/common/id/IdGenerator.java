@@ -68,6 +68,12 @@ public class IdGenerator {
         }
     }
 
+    private final static long MASK_TIMESTAMP_48 = 0xFFFFFFFFL; // 32 bits
+    private final static long MASK_NODE_ID_48 = 0x7L; // 3 bits
+    private final static long MASK_SEQUENCE_48 = 0x1FFFL; // 13 bits
+    private final static long SHIFT_TIMESTAMP_48 = 16L;
+    private final static long SHIFT_NODE_ID_48 = 13L;
+
     private final static long MASK_TIMESTAMP_64 = 0x1FFFFFFFFFFL; // 41 bits
     private final static long MASK_NODE_ID_64 = 0x3FFL; // 10 bits
     private final static long MASK_SEQUENCE_64 = 0x1FFFL; // 13 bits
@@ -81,23 +87,18 @@ public class IdGenerator {
     private final static long SHIFT_NODE_ID_128 = 16L;
 
     private long nodeId;
-    private long template64;
+    private long template48, template64;
     private BigInteger template128;
     private AtomicLong sequence = new AtomicLong();
     private AtomicLong lastTimestamp = new AtomicLong();
 
-    /**
-     * Constructs a new {@link IdGenerator} instance.
-     * 
-     * @param nodeId
-     *            long
-     */
     protected IdGenerator(long nodeId) {
         this.nodeId = nodeId;
     }
 
     protected void init() {
         this.template64 = (this.nodeId & MASK_NODE_ID_64) << SHIFT_NODE_ID_64;
+        this.template48 = (this.nodeId & MASK_NODE_ID_48) << SHIFT_NODE_ID_48;
         this.template128 = BigInteger
                 .valueOf((this.nodeId & MASK_NODE_ID_128) << SHIFT_NODE_ID_128);
     }
@@ -107,7 +108,44 @@ public class IdGenerator {
     }
 
     /**
-     * Generates a 64-bit id
+     * Generates a 48-bit id.
+     * 
+     * Format of 48-bit: <32-bit: timestamp><3-bit: node id><13 bit: sequence
+     * number>
+     * 
+     * @return
+     */
+    synchronized public long generateId48() {
+        long timestamp = System.currentTimeMillis();
+        long sequence = 0;
+        if (timestamp == this.lastTimestamp.get()) {
+            // increase sequence
+            sequence = this.sequence.incrementAndGet();
+        } else {
+            // reset sequence
+            this.sequence.set(sequence);
+            this.lastTimestamp.set(timestamp);
+        }
+        timestamp = (timestamp - TIMESTAMP_EPOCH) & MASK_TIMESTAMP_48;
+        long result = timestamp << SHIFT_TIMESTAMP_48 | template48 | (sequence & MASK_SEQUENCE_48);
+        return result;
+    }
+
+    /**
+     * Generate a 48-bit id as hex string.
+     * 
+     * @return
+     */
+    public String generateId48Hex() {
+        long id = generateId48();
+        return Long.toHexString(id);
+    }
+
+    /**
+     * Generates a 64-bit id.
+     * 
+     * Format of 64-bit: <41-bit: timestamp><10-bit: node id><13 bit: sequence
+     * number>
      * 
      * @return
      */
