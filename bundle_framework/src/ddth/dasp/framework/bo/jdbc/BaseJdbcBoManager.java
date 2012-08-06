@@ -44,7 +44,6 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
-    private BundleContext bundleContext;
     private Logger LOGGER = LoggerFactory.getLogger(BaseJdbcBoManager.class);
     private IJdbcFactory jdbcFactory;
     private String dbDriver, dbConnUrl, dbUsername, dbPassword;
@@ -58,6 +57,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         if (jdbcFactory != null) {
             return jdbcFactory;
         }
+        BundleContext bundleContext = getBundleContext();
         if (bundleContext != null) {
             OsgiUtils.getService(bundleContext, IJdbcFactory.class);
         }
@@ -493,17 +493,5 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
             putToCache(cacheKey, result);
         }
         return result.toArray((T[]) Array.newInstance(clazz, 0));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setBundleContext(BundleContext bundleContext) {
-        setBundleContext(bundleContext);
-    }
-
-    protected BundleContext getBundleContext() {
-        return bundleContext;
     }
 }

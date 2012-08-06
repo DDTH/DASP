@@ -4,14 +4,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
+
 /**
  * Uses this class as starting point for Business Object manager.
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public class BaseBoManager {
+public class BaseBoManager implements BundleContextAware {
     private Map<Class<?>, Map<String, Object[]>> dataMappings;
+    private BundleContext bundleContext;
 
     /**
      * Initializing method
@@ -92,5 +96,17 @@ public class BaseBoManager {
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    protected BundleContext getBundleContext() {
+        return bundleContext;
     }
 }
