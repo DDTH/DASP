@@ -16,14 +16,17 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.osgi.context.BundleContextAware;
 
 import com.google.common.collect.MapMaker;
 
 import ddth.dasp.common.logging.JdbcLogEntry;
 import ddth.dasp.common.logging.JdbcLogger;
 import ddth.dasp.common.utils.JsonUtils;
+import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.bo.CachedBoManager;
 import ddth.dasp.framework.dbc.IJdbcFactory;
@@ -36,10 +39,12 @@ import ddth.dasp.framework.utils.EhProperties;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbcBoManager {
+public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbcBoManager,
+        BundleContextAware {
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
+    private BundleContext bundleContext;
     private Logger LOGGER = LoggerFactory.getLogger(BaseJdbcBoManager.class);
     private IJdbcFactory jdbcFactory;
     private String dbDriver, dbConnUrl, dbUsername, dbPassword;
@@ -50,7 +55,13 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     private Object sqlPropsLocation;
 
     protected IJdbcFactory getJdbcFactory() {
-        return jdbcFactory;
+        if (jdbcFactory != null) {
+            return jdbcFactory;
+        }
+        if (bundleContext != null) {
+            OsgiUtils.getService(bundleContext, IJdbcFactory.class);
+        }
+        return null;
     }
 
     public void setJdbcFactory(IJdbcFactory jdbcFactory) {
@@ -482,5 +493,17 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
             putToCache(cacheKey, result);
         }
         return result.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        setBundleContext(bundleContext);
+    }
+
+    protected BundleContext getBundleContext() {
+        return bundleContext;
     }
 }
