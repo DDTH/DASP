@@ -20,4 +20,13 @@ public class SqlProps {
         Object value = props.get("sql");
         return value != null ? value.toString() : null;
     }
+
+    /**
+     * Sets the sql query.
+     * 
+     * @param sql
+     */
+    public void setSql(String sql) {
+        props.put("sql", sql);
+    }
 }

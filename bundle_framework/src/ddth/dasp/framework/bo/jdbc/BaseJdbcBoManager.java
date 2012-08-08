@@ -8,7 +8,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -237,6 +239,25 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     }
 
     /**
+     * Obtains and builds the {@link SqlProps}.
+     * 
+     * @param sqkKey
+     * @return
+     */
+    protected SqlProps buildSqlProps(final Object sqlKey) {
+        final String finalKey = (sqlKey instanceof Object[]) ? ((Object[]) sqlKey)[0].toString()
+                : sqlKey.toString();
+        SqlProps sqlProps = getSqlProps(finalKey);
+        if (sqlProps != null && sqlKey instanceof Object[]) {
+            String sql = sqlProps.getSql();
+            Object[] temp = (Object[]) sqlKey;
+            sql = MessageFormat.format(sql, Arrays.copyOfRange(temp, 1, temp.length));
+            sqlProps.setSql(sql);
+        }
+        return sqlProps;
+    }
+
+    /**
      * Executes a COUNT query and returns the result.
      * 
      * @param sqlKey
@@ -244,7 +265,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected Long executeCount(final String sqlKey, Map<String, Object> params)
+    protected Long executeCount(final Object sqlKey, Map<String, Object> params)
             throws SQLException {
         return executeCount(sqlKey, params, null);
     }
@@ -257,7 +278,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected Long executeCount(final String sqlKey, Map<String, Object> params,
+    protected Long executeCount(final Object sqlKey, Map<String, Object> params,
             final String cacheKey) throws SQLException {
         Long result = null;
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
@@ -266,7 +287,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         }
         if (result == null) {
             // cache missed
-            SqlProps sqlProps = getSqlProps(sqlKey);
+            SqlProps sqlProps = buildSqlProps(sqlKey);
             if (sqlProps == null) {
                 throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
@@ -308,9 +329,9 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected long executeNonSelect(final String sqlKey, Map<String, Object> params)
+    protected long executeNonSelect(final Object sqlKey, Map<String, Object> params)
             throws SQLException {
-        SqlProps sqlProps = getSqlProps(sqlKey);
+        SqlProps sqlProps = buildSqlProps(sqlKey);
         if (sqlProps == null) {
             throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
         }
@@ -343,7 +364,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params)
+    protected Map<String, Object>[] executeSelect(final Object sqlKey, Map<String, Object> params)
             throws SQLException {
         return executeSelect(sqlKey, params, (String) null);
     }
@@ -359,7 +380,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    protected Map<String, Object>[] executeSelect(final String sqlKey, Map<String, Object> params,
+    protected Map<String, Object>[] executeSelect(final Object sqlKey, Map<String, Object> params,
             final String cacheKey) throws SQLException {
         List<Map<String, Object>> result = null;
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
@@ -368,7 +389,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         }
         if (result == null) {
             // cache missed
-            SqlProps sqlProps = getSqlProps(sqlKey);
+            SqlProps sqlProps = buildSqlProps(sqlKey);
             if (sqlProps == null) {
                 throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
@@ -421,7 +442,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @return
      * @throws SQLException
      */
-    protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
+    protected <T extends BaseJdbcBo> T[] executeSelect(final Object sqlKey,
             Map<String, Object> params, Class<T> clazz) throws SQLException {
         return executeSelect(sqlKey, params, clazz, (String) null);
     }
@@ -439,7 +460,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    protected <T extends BaseJdbcBo> T[] executeSelect(final String sqlKey,
+    protected <T extends BaseJdbcBo> T[] executeSelect(final Object sqlKey,
             Map<String, Object> params, Class<T> clazz, final String cacheKey) throws SQLException {
         List<T> result = null;
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
@@ -448,7 +469,7 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         }
         if (result == null) {
             // cache missed
-            SqlProps sqlProps = getSqlProps(sqlKey);
+            SqlProps sqlProps = buildSqlProps(sqlKey);
             if (sqlProps == null) {
                 throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
