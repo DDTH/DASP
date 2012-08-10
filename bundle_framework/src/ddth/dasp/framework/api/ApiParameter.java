@@ -6,6 +6,11 @@ public class ApiParameter<T> {
     private String name;
     private Class<T> clazz;
 
+    public ApiParameter(String name, Class<T> clazz) {
+        this.name = name;
+        this.clazz = clazz;
+    }
+
     /**
      * Extracts parameter value from input map.
      * 
