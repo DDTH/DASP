@@ -90,6 +90,9 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
         String rawInput = rp.getRequestContent();
         // first: parses parameters from request's content as JSON.
         Object result = JsonUtils.fromJson(rawInput);
+        if (result == null) {
+            result = new HashMap<String, Object>();
+        }
 
         // second: add parameters from URL if applicable.
         if (result instanceof Map<?, ?>) {
