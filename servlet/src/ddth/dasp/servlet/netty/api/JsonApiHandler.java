@@ -24,6 +24,7 @@ import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.api.IApiGroupHandler;
 import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
+import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.servlet.netty.AbstractHttpHandler;
 
@@ -66,17 +67,13 @@ public class JsonApiHandler extends AbstractHttpHandler {
                     Object params = JsonUtils.fromJson(jsonEncodedInput);
                     result = apiGroupHandler.handleApiCall(functionName, params, authKey);
                 } else {
-                    Map<Object, Object> res = new HashMap<Object, Object>();
-                    res.put(IApiHandler.RESULT_FIELD_STATUS, 404);
-                    res.put(IApiHandler.RESULT_FIELD_MESSAGE, "No handler for [" + moduleName + "/"
-                            + functionName + "]!");
+                    Map<Object, Object> res = ApiUtils.createApiResult(404, "No handler for ["
+                            + moduleName + "/" + functionName + "]!");
                     result = res;
                 }
             }
         } catch (Exception ex) {
-            Map<Object, Object> res = new HashMap<Object, Object>();
-            res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
-            res.put(IApiHandler.RESULT_FIELD_MESSAGE, ex.getMessage());
+            Map<Object, Object> res = ApiUtils.createApiResult(500, ex.getMessage());
             result = res;
         }
 

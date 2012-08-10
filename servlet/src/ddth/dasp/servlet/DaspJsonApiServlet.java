@@ -21,6 +21,7 @@ import ddth.dasp.common.api.IApiGroupHandler;
 import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.rp.IRequestParser;
+import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.DaspConstants;
 import ddth.dasp.common.utils.JsonUtils;
 
@@ -118,9 +119,8 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
                 uri = uri.substring(contextPath.length());
             }
             if (!uri.startsWith(URI_PREFIX)) {
-                Map<Object, Object> res = new HashMap<Object, Object>();
-                res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
-                res.put(IApiHandler.RESULT_FIELD_MESSAGE, "Request must starts with '/api'!");
+                Map<Object, Object> res = ApiUtils.createApiResult(500,
+                        "Request must starts with '/api'!");
                 response.getWriter().print(JsonUtils.toJson(res));
                 return;
             }
@@ -147,17 +147,13 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
                     if (apiGroupHandler != null) {
                         result = apiGroupHandler.handleApiCall(functionName, apiParams, authKey);
                     } else {
-                        Map<Object, Object> res = new HashMap<Object, Object>();
-                        res.put(IApiHandler.RESULT_FIELD_STATUS, 404);
-                        res.put(IApiHandler.RESULT_FIELD_MESSAGE, "No handler for [" + moduleName
-                                + "/" + functionName + "]!");
+                        Map<Object, Object> res = ApiUtils.createApiResult(404, "No handler for ["
+                                + moduleName + "/" + functionName + "]!");
                         result = res;
                     }
                 }
             } catch (Exception ex) {
-                Map<Object, Object> res = new HashMap<Object, Object>();
-                res.put(IApiHandler.RESULT_FIELD_STATUS, 500);
-                res.put(IApiHandler.RESULT_FIELD_MESSAGE, ex.getMessage());
+                Map<Object, Object> res = ApiUtils.createApiResult(500, ex.getMessage());
                 result = res;
             }
             response.getWriter().print(JsonUtils.toJson(result));
