@@ -5,16 +5,13 @@ Bundle-SymbolicName: ddth.dasp.id
 Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.id.osgi.DaspBundleActivator
 Bundle-ClassPath: .
-Import-Package: ddth.dasp.common.id,
+Require-Bundle: ddth.dasp.framework,
+ org.springframework.web.servlet
+Import-Package: ddth.dasp.common.api,
+ ddth.dasp.common.id,
  ddth.dasp.common.osgi,
- ddth.dasp.common.api,
  ddth.dasp.common.rp,
  ddth.dasp.common.spring,
  ddth.dasp.common.utils,
- ddth.dasp.framework,
- ddth.dasp.framework.api,
- ddth.dasp.framework.osgi,
- ddth.dasp.framework.spring,
- org.osgi.framework,
- org.springframework.web.servlet,
- org.springframework.web.servlet.mvc
+ org.osgi.framework
+
