@@ -32,6 +32,9 @@ public class ApiParameter<T> {
         if (input == null) {
             return null;
         }
+        if (input instanceof Map<?, ?>) {
+            return extractValue((Map<String, Object>) input);
+        }
         if (clazz.isAssignableFrom(input.getClass())) {
             return (T) input;
         }
