@@ -3,6 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DASP Framework
 Bundle-SymbolicName: ddth.dasp.framework
 Bundle-Version: 0.1.0
+Require-Bundle: org.springframework.web.servlet,
+ org.springframework.web,
+ org.springframework.beans,
+ org.springframework.context,
+ org.springframework.osgi.core,
+ org.apache.commons.lang3
 Export-Package: ddth.dasp.framework,
  ddth.dasp.framework.api,
  ddth.dasp.framework.bo,
@@ -44,23 +50,6 @@ Import-Package: ddth.dasp.common,
  javax.sql,
  org.apache.commons.dbcp,
  org.apache.commons.io,
- org.apache.commons.lang3,
- org.apache.commons.lang3.builder,
- org.apache.commons.lang3.text,
  org.apache.log4j,
  org.osgi.framework,
- org.slf4j,
- org.springframework.beans,
- org.springframework.beans.factory,
- org.springframework.context,
- org.springframework.osgi.context,
- org.springframework.osgi.context.support,
- org.springframework.stereotype,
- org.springframework.web.context,
- org.springframework.web.context.request,
- org.springframework.web.context.support,
- org.springframework.web.servlet,
- org.springframework.web.servlet.handler,
- org.springframework.web.servlet.mvc,
- org.springframework.web.servlet.view,
- org.springframework.web.servlet.view.freemarker
+ org.slf4j
