@@ -8,6 +8,7 @@ Bundle-ClassPath: .
 Require-Bundle: ddth.dasp.framework,
  org.springframework.context,
  org.springframework.web,
+ org.springframework.web.servlet,
  org.apache.commons.lang3
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.osgi,
