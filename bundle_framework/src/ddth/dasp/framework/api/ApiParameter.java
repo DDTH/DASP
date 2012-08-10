@@ -11,6 +11,22 @@ public class ApiParameter<T> {
         this.clazz = clazz;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
     /**
      * Extracts parameter value from input map.
      * 
