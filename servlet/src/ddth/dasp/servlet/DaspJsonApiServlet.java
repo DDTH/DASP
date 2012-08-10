@@ -119,8 +119,9 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
                 uri = uri.substring(contextPath.length());
             }
             if (!uri.startsWith(URI_PREFIX)) {
-                Map<Object, Object> res = ApiUtils.createApiResult(500,
-                        "Request must starts with '/api'!");
+                Map<Object, Object> res = ApiUtils
+                        .createApiResult(IApiHandler.RESULT_CODE_INVALID_REQUEST,
+                                "Request must starts with '/api'!");
                 response.getWriter().print(JsonUtils.toJson(res));
                 return;
             }
@@ -147,13 +148,15 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
                     if (apiGroupHandler != null) {
                         result = apiGroupHandler.handleApiCall(functionName, apiParams, authKey);
                     } else {
-                        Map<Object, Object> res = ApiUtils.createApiResult(404, "No handler for ["
-                                + moduleName + "/" + functionName + "]!");
+                        Map<Object, Object> res = ApiUtils.createApiResult(
+                                IApiHandler.RESULT_CODE_NOT_FOUND, "No handler for [" + moduleName
+                                        + "/" + functionName + "]!");
                         result = res;
                     }
                 }
             } catch (Exception ex) {
-                Map<Object, Object> res = ApiUtils.createApiResult(500, ex.getMessage());
+                Map<Object, Object> res = ApiUtils.createApiResult(IApiHandler.RESULT_CODE_ERROR,
+                        ex.getMessage());
                 result = res;
             }
             response.getWriter().print(JsonUtils.toJson(result));

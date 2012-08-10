@@ -67,13 +67,15 @@ public class JsonApiHandler extends AbstractHttpHandler {
                     Object params = JsonUtils.fromJson(jsonEncodedInput);
                     result = apiGroupHandler.handleApiCall(functionName, params, authKey);
                 } else {
-                    Map<Object, Object> res = ApiUtils.createApiResult(404, "No handler for ["
-                            + moduleName + "/" + functionName + "]!");
+                    Map<Object, Object> res = ApiUtils.createApiResult(
+                            IApiHandler.RESULT_CODE_NOT_FOUND, "No handler for [" + moduleName
+                                    + "/" + functionName + "]!");
                     result = res;
                 }
             }
         } catch (Exception ex) {
-            Map<Object, Object> res = ApiUtils.createApiResult(500, ex.getMessage());
+            Map<Object, Object> res = ApiUtils.createApiResult(IApiHandler.RESULT_CODE_ERROR,
+                    ex.getMessage());
             result = res;
         }
 
