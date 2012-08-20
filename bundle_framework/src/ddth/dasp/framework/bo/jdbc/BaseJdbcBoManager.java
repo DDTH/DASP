@@ -247,7 +247,11 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
     protected SqlProps buildSqlProps(final Object sqlKey) {
         final String finalKey = (sqlKey instanceof Object[]) ? ((Object[]) sqlKey)[0].toString()
                 : sqlKey.toString();
-        SqlProps sqlProps = getSqlProps(finalKey);
+        SqlProps sqlProps = null;
+        SqlProps tempSqlProps = getSqlProps(finalKey);
+        if (tempSqlProps != null) {
+            sqlProps = tempSqlProps.clone();
+        }
         if (sqlProps != null && sqlKey instanceof Object[]) {
             String sql = sqlProps.getSql();
             Object[] temp = (Object[]) sqlKey;
