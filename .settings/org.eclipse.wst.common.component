@@ -9,6 +9,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_status/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_springmvc/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_handlersocket/src"/>
         <property name="context-root" value="DASP"/>
         <property name="java-output-path" value="/DASP/servlet/build/classes"/>
     </wb-module>

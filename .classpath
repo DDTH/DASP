@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="servlet/classes" path="servlet/src"/>
+	<classpathentry kind="src" output="bundle_handlersocket/classes" path="bundle_handlersocket/src"/>
 	<classpathentry kind="src" output="bundle_springmvc/classes" path="bundle_springmvc/src"/>
 	<classpathentry kind="src" output="bundle_status/classes" path="bundle_status/src"/>
 	<classpathentry kind="src" output="test/classes" path="test/src"/>
