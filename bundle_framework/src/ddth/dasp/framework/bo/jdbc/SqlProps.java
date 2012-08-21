@@ -9,10 +9,10 @@ public class SqlProps implements Cloneable {
     public SqlProps clone() {
         try {
             SqlProps obj = (SqlProps) super.clone();
+            obj.props = new HashMap<String, Object>();
             obj.populate(this.props);
             return obj;
         } catch (CloneNotSupportedException e) {
-            // should not happen
             throw new RuntimeException(e);
         }
     }

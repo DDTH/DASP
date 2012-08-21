@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -255,7 +253,9 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         if (sqlProps != null && sqlKey instanceof Object[]) {
             String sql = sqlProps.getSql();
             Object[] temp = (Object[]) sqlKey;
-            sql = MessageFormat.format(sql, Arrays.copyOfRange(temp, 1, temp.length));
+            for (int i = 1; i < temp.length; i++) {
+                sql = sql.replaceAll("\\{" + i + "\\}", temp[i] != null ? temp[i].toString() : "");
+            }
             sqlProps.setSql(sql);
         }
         return sqlProps;
