@@ -13,6 +13,8 @@
 	<property name="dir.bundle_status.build" value="${dir.bundle_status}/build" />
 	<property name="dir.bundle_springmvc" value="bundle_springmvc" />
 	<property name="dir.bundle_springmvc.build" value="${dir.bundle_springmvc}/build" />
+	<property name="dir.bundle_handlersocket" value="bundle_handlersocket" />
+	<property name="dir.bundle_handlersocket.build" value="${dir.bundle_handlersocket}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
 
@@ -51,6 +53,11 @@
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant dir="${dir.bundle_log4j}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-handlersocket]...</echo>
+		<ant dir="${dir.bundle_handlersocket}" target="clean" />
 	</target>
 
 	<target name="build-development">
@@ -81,6 +88,11 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-springmvc]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_springmvc}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-handlersocket]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_handlersocket}" target="build-development" />
 
 		<antcall target="post-build" />
 	</target>
@@ -114,6 +126,11 @@
 		<echo>BUILDING SUB-PROJECT [bundle-springmvc]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_springmvc}" target="build-production" />
 
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-handlersocket]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_handlersocket}" target="build-production" />
+
 		<antcall target="post-build" />
 	</target>
 
@@ -128,22 +145,16 @@
 			<fileset dir="${dir.bundle_framework.build}">
 				<include name="**/*.jar" />
 			</fileset>
-		</copy>
-
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_id.build}">
 				<include name="**/*.jar" />
 			</fileset>
-		</copy>
-
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_status.build}">
 				<include name="**/*.jar" />
 			</fileset>
-		</copy>
-
-		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/dasp">
 			<fileset dir="${dir.bundle_springmvc.build}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${dir.bundle_handlersocket.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
