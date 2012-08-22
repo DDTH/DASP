@@ -1,4 +1,4 @@
-<project name="DASP - Bundle: IdService" basedir="." default="build-development">
+<project name="DASP - Bundle: HandlerSocket and BO" basedir="." default="build-development">
 	<property name="dir.src" value="src" />
 	<property name="dir.build" value="build" />
 	<property name="dir.classes" value="classes" />
