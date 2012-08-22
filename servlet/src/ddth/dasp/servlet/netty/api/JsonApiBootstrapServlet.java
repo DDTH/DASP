@@ -19,12 +19,13 @@ import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.servlet.utils.NetUtils;
+
 public class JsonApiBootstrapServlet extends GenericServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(JsonApiBootstrapServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonApiBootstrapServlet.class);
 
     private int port = 8082;
     private int numWorkers = 1024;
@@ -39,10 +40,21 @@ public class JsonApiBootstrapServlet extends GenericServlet {
     public void init() throws ServletException {
         super.init();
         ServletConfig servletConfig = getServletConfig();
+
         String strPort = servletConfig.getInitParameter("port");
         if (!StringUtils.isBlank(strPort)) {
-            port = Integer.parseInt(strPort);
+            // find free port
+            String[] tokens = strPort.split("[\\s,]+");
+            int[] ports = new int[tokens.length];
+            for (int i = 0; i < tokens.length; i++) {
+                ports[i] = Integer.parseInt(tokens[i]);
+            }
+            Integer port = NetUtils.getFreePort(ports);
+            if (port != null) {
+                this.port = port;
+            }
         }
+
         timer = new HashedWheelTimer();
         bossExecutor = Executors.newCachedThreadPool();
         workerExecutor = Executors.newCachedThreadPool();

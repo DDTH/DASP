@@ -22,7 +22,7 @@
 	<context-param>
 		<description>Port to bind, used by OSGI remote shell</description>
 		<param-name>osgiRemoteShellListenPort</param-name>
-		<param-value>16666</param-value>
+		<param-value>16666,16667,16668,16669</param-value>
 	</context-param>
 
 	<servlet>
@@ -35,7 +35,7 @@
 		</init-param>
 		<init-param>
 			<param-name>port</param-name>
-			<param-value>9090</param-value>
+			<param-value>9090,9091,9092,9093</param-value>
 		</init-param>
 		<load-on-startup>30</load-on-startup>
 	</servlet>
@@ -45,7 +45,7 @@
 		<servlet-class>ddth.dasp.servlet.netty.api.JsonApiBootstrapServlet</servlet-class>
 		<init-param>
 			<param-name>port</param-name>
-			<param-value>8082</param-value>
+			<param-value>8082,8083,8084,8085</param-value>
 		</init-param>
 		<init-param>
 			<param-name>numWorkers</param-name>

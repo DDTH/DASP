@@ -24,12 +24,13 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.servlet.utils.NetUtils;
+
 public class ThriftApiBootstrapServlet extends GenericServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ThriftApiBootstrapServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThriftApiBootstrapServlet.class);
 
     private int port = 9090;
     private boolean nonblockingServer = true;
@@ -49,7 +50,16 @@ public class ThriftApiBootstrapServlet extends GenericServlet {
         }
         String strPort = servletConfig.getInitParameter("port");
         if (!StringUtils.isBlank(strPort)) {
-            port = Integer.parseInt(strPort);
+            // find free port
+            String[] tokens = strPort.split("[\\s,]+");
+            int[] ports = new int[tokens.length];
+            for (int i = 0; i < tokens.length; i++) {
+                ports[i] = Integer.parseInt(tokens[i]);
+            }
+            Integer port = NetUtils.getFreePort(ports);
+            if (port != null) {
+                this.port = port;
+            }
         }
 
         TProcessor processor = new DaspJsonApi.Processor<DaspJsonApi.Iface>(
