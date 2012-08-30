@@ -1,4 +1,5 @@
-<project name="DASP - Bundle: HandlerSocket and BO" basedir="." default="build-development">
+<project name="DASP - Bundle: HandlerSocket and BO" basedir="."
+	default="build-development">
 	<property name="dir.src" value="src" />
 	<property name="dir.build" value="build" />
 	<property name="dir.classes" value="classes" />
@@ -7,10 +8,11 @@
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.bundle_framework" value="../bundle_framework" />
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
-	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
+	<property name="dir.platform_bundles"
+		value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
-		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.handlersocket" />
 	<property name="product.version" value="0.1.0" />
@@ -66,7 +68,9 @@
 	</target>
 
 	<target name="compile" depends="prepare">
-		<javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.classes}" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
+		<javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.classes}"
+			encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern"
+			source="1.6" target="1.6">
 			<classpath>
 				<path refid="path.lib" />
 			</classpath>
@@ -96,9 +100,12 @@
 			<fileset dir="${dir.lib}">
 			</fileset>
 		</copy>
-		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF" overwrite="true" />
-		<replaceregexp file="${dir.META-INF}/MANIFEST.MF" match="Bundle-Version(.*)" replace="Bundle-Version: ${product.version.micro}" byline="true" />
-		<jar jarfile="${dir.build}/${product.name}-${product.version}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
+		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF"
+			overwrite="true" />
+		<replaceregexp file="${dir.META-INF}/MANIFEST.MF" match="Bundle-Version(.*)"
+			replace="Bundle-Version: ${product.version.micro}" byline="true" />
+		<jar jarfile="${dir.build}/${product.name}-${product.version}.jar"
+			basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
 			<metainf dir="${dir.META-INF}">
 			</metainf>
 		</jar>

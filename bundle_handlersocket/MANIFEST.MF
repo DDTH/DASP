@@ -3,9 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DASP HandlerSocket Client & BO
 Bundle-SymbolicName: ddth.dasp.handlersocket
 Bundle-Version: 0.1.0
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ commons-pool-1.6.jar
 Require-Bundle: ddth.dasp.framework,
  org.apache.commons.lang3
 Import-Package: org.osgi.framework
-Export-Package: ddth.dasp.handlersocket.hsc,
+Export-Package: ddth.dasp.handlersocket.bo.hs,
+ ddth.dasp.handlersocket.hsc,
  ddth.dasp.handlersocket.hsc.hs4j

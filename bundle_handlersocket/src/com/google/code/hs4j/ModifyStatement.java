@@ -5,6 +5,9 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 import com.google.code.hs4j.exception.HandlerSocketException;
@@ -16,6 +19,45 @@ import com.google.code.hs4j.exception.HandlerSocketException;
  * 
  */
 public interface ModifyStatement {
+
+	/*
+	 * 2012-08-30: [ThanhNB] added date format constants
+	 */
+	public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+
+	/**
+	 * Sets the designated parameter to the given Java <code>Date</code> value.
+	 * 
+	 * @param parameterIndex
+	 *            the first parameter is 1, the second is 2, ...
+	 * @param x
+	 *            the parameter value
+	 * @exception SQLException
+	 *                if parameterIndex does not correspond to a parameter
+	 *                marker in the SQL statement; if a database access error
+	 *                occurs or this method is called on a closed
+	 *                <code>PreparedStatement</code>
+	 * @since 2012-08-30 by ThanhNB
+	 */
+	void setDate(int parameterIndex, Date x);
+
+	/**
+	 * Sets the designated parameter to the given Java <code>Date</code> value;
+	 * using the supplied <code>DateFormat</code> to format the value.
+	 * 
+	 * @param parameterIndex
+	 *            the first parameter is 1, the second is 2, ...
+	 * @param x
+	 *            the parameter value
+	 * @exception SQLException
+	 *                if parameterIndex does not correspond to a parameter
+	 *                marker in the SQL statement; if a database access error
+	 *                occurs or this method is called on a closed
+	 *                <code>PreparedStatement</code>
+	 * @since 2012-08-30 by ThanhNB
+	 */
+	void setDate(int parameterIndex, Date x, DateFormat df);
 
 	/**
 	 * Sets the designated parameter to the given Java <code>boolean</code>
@@ -274,7 +316,7 @@ public interface ModifyStatement {
 
 	/**
 	 * Incrment data.Offset is zero,and limit is one.
-	 *
+	 * 
 	 * @param indexId
 	 * @param keys
 	 * @param operator
@@ -289,7 +331,7 @@ public interface ModifyStatement {
 
 	/**
 	 * Decrment data.Offset is zero,and limit is one.
-	 *
+	 * 
 	 * @param indexId
 	 * @param keys
 	 * @param operator

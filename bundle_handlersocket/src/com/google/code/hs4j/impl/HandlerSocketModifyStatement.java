@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 import com.google.code.hs4j.FindOperator;
@@ -44,29 +46,29 @@ public class HandlerSocketModifyStatement implements ModifyStatement {
 		return this.hsClientImpl.insert0(indexId, values);
 	}
 
-	public int update(String[] keys, FindOperator operator,
-			int limit, int offset) throws InterruptedException,
-			TimeoutException, HandlerSocketException {
+	public int update(String[] keys, FindOperator operator, int limit,
+			int offset) throws InterruptedException, TimeoutException,
+			HandlerSocketException {
 		return this.hsClientImpl.update0(indexId, keys, operator, limit,
 				offset, values);
 	}
 
-	public int update( String[] keys, FindOperator operator)
+	public int update(String[] keys, FindOperator operator)
 			throws InterruptedException, TimeoutException,
 			HandlerSocketException {
-		return update(keys,operator,1,0);
+		return update(keys, operator, 1, 0);
 	}
 
-	public int incr(String[] keys, FindOperator operator) throws InterruptedException,
-			TimeoutException, HandlerSocketException {
-		return this.hsClientImpl.incr(indexId, keys, operator, 1,
-				0, values);
+	public int incr(String[] keys, FindOperator operator)
+			throws InterruptedException, TimeoutException,
+			HandlerSocketException {
+		return this.hsClientImpl.incr(indexId, keys, operator, 1, 0, values);
 	}
 
-	public int decr(String[] keys, FindOperator operator) throws InterruptedException,
-			TimeoutException, HandlerSocketException {
-		return this.hsClientImpl.decr(indexId, keys, operator, 1,
-				0, values);
+	public int decr(String[] keys, FindOperator operator)
+			throws InterruptedException, TimeoutException,
+			HandlerSocketException {
+		return this.hsClientImpl.decr(indexId, keys, operator, 1, 0, values);
 	}
 
 	public void setBigDecimal(int parameterIndex, BigDecimal x) {
@@ -103,6 +105,14 @@ public class HandlerSocketModifyStatement implements ModifyStatement {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void setDate(int parameterIndex, Date x) {
+		setString(parameterIndex, DEFAULT_DATE_FORMAT.format(x));
+	}
+
+	public void setDate(int parameterIndex, Date x, DateFormat df) {
+		setString(parameterIndex, df.format(x));
 	}
 
 	public void setDouble(int parameterIndex, double x) {

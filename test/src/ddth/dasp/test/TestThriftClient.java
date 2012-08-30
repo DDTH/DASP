@@ -36,7 +36,7 @@ public class TestThriftClient {
             System.out.println("Creating new object...");
             // TTransport trans = new TFramedTransport(new TSocket("localhost",
             // 9090));
-            TTransport trans = new TFramedTransport(new TSocket("10.199.5.127", 9090));
+            TTransport trans = new TFramedTransport(new TSocket("localhost", 9090));
             TProtocol proto = new TBinaryProtocol(trans);
             DaspJsonApi.Client client = new DaspJsonApi.Client(proto);
             trans.open();
@@ -55,7 +55,7 @@ public class TestThriftClient {
     }
 
     public static void main(String[] args) throws Exception {
-        int numSamples = 10000;
+        int numSamples = 100000;
         int numThreads = 4;
         if (args.length > 0) {
             numSamples = Integer.parseInt(args[0]);

@@ -600,7 +600,13 @@ public class ResultSetImpl implements ResultSet {
 		return data;
 	}
 
+	/*
+	 * 2012-08-30: [ThanhNB] handle null value
+	 */
 	private String encodeString(byte[] data) throws SQLException {
+		if (data == null || data[0] == 0) {
+			return null;
+		}
 		try {
 			return new String(data, this.encoding);
 		} catch (UnsupportedEncodingException e) {

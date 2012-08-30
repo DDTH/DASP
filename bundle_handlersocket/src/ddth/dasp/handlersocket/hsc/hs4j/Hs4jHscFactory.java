@@ -12,12 +12,34 @@ import ddth.dasp.handlersocket.hsc.IHscFactory;
  */
 public class Hs4jHscFactory extends AbstractHscFactory {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected IHsc buildConnection(String connName, String server, int port, boolean readWrite) {
-        IHsc conn = new Hs4jHsc(connName, server, port, readWrite);
-        return conn;
-    }
+	private boolean destroying = false;
+
+	public void destroy() {
+		destroying = true;
+		super.destroy();
+		destroying = false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IHsc buildConnection(String connName, String server, int port,
+			boolean readWrite) {
+		Hs4jHsc conn = new Hs4jHsc(connName, server, port, readWrite);
+		conn.init();
+		return conn;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean releaseConnection(IHsc conn) {
+		if (destroying) {
+			return super.releaseConnection(conn);
+		} else {
+			return true;
+		}
+	}
 }
