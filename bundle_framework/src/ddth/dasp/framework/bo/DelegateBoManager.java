@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class DelegateBoManager extends BaseBoManager {
+public abstract class DelegateBoManager extends CachedBoManager {
 
     private BaseBoManager delegatedBoManager;
 
