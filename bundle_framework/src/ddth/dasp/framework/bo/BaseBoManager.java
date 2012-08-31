@@ -13,7 +13,7 @@ import org.springframework.osgi.context.BundleContextAware;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public class BaseBoManager implements BundleContextAware {
+public abstract class BaseBoManager implements BundleContextAware {
     private Map<Class<?>, Map<String, Object[]>> dataMappings;
     private BundleContext bundleContext;
 

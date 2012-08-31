@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.osgi.context.BundleContextAware;
 
 import com.google.common.collect.MapMaker;
 
@@ -39,8 +38,7 @@ import ddth.dasp.framework.utils.EhProperties;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbcBoManager,
-        BundleContextAware {
+public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbcBoManager {
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
