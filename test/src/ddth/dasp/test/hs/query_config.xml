@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>SQL/DB Configurations for ApiService</comment>
+	<entry key="_db">test</entry>
+	<entry key="_table">tbl_tesths</entry>
+	<entry key="_index.primary">PRIMARY</entry>
+	<entry key="_index.c_int">PRIMARY</entry>
+
+	<entry key="getRows"><![CDATA[{
+		"db"     : "${_db}",
+		"table"  : "${_table}",
+		"index"  : "${_index.primary}",
+		"columns": [
+			{"name": "id", "mapped_name": "id", "type": "int"},
+			{"name": "c_string", "mapped_name": "col_string", "type": "string"},
+			{"name": "c_int", "mapped_name": "col_int", "type": "int"},
+			{"name": "c_real", "mapped_name": "col_real", "type": "double"},
+			{"name": "c_date", "mapped_name": "col_date", "type": "date"},
+			{"name": "c_binary", "mapped_name": "col_binary", "type": "binary"}
+		]
+	}
+	]]></entry>
+	<entry key="createRow"><![CDATA[{
+		"db"     : "${_db}",
+		"table"  : "${_table}",
+		"index"  : "${_index.primary}",
+		"columns": [
+			{"name": "id", "mapped_name": "id", "type": "int"},
+			{"name": "c_string", "mapped_name": "col_string", "type": "string"},
+			{"name": "c_int", "mapped_name": "col_int", "type": "int"},
+			{"name": "c_real", "mapped_name": "col_real", "type": "double"},
+			{"name": "c_date", "mapped_name": "col_date", "type": "date"},
+			{"name": "c_binary", "mapped_name": "col_binary", "type": "binary"}
+		]
+	}
+	]]></entry>
+</properties>
