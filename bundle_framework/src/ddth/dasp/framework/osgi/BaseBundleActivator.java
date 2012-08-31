@@ -11,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerMapping;
@@ -93,11 +95,21 @@ public abstract class BaseBundleActivator implements BundleActivator {
         setBundleContext(bundleContext);
         setBundle(bundleContext.getBundle());
 
+        long myId = this.bundle.getBundleId();
+        String myName = this.bundle.getSymbolicName();
+        Bundle[] currentBundles = bundleContext.getBundles();
+        for (Bundle bundle : currentBundles) {
+            if (myId != bundle.getBundleId() && myName.equals(bundle.getSymbolicName())) {
+                // found another version of me
+                handlerAnotherVersionAtStartup(bundle);
+            }
+            System.out.println(bundle);
+        }
+
         Properties props = new Properties();
         // String version = (String) bundle.getHeaders().get(
         // Constants.BUNDLE_VERSION);
-        String version = bundle.getVersion().toString();
-        props.put("Version", version);
+        props.put("Version", bundle.getVersion().toString());
         String moduleName = getModuleName();
         if (!StringUtils.isEmpty(moduleName)) {
             props.put("Module", moduleName);
@@ -108,6 +120,27 @@ public abstract class BaseBundleActivator implements BundleActivator {
         registerSpringMvcViewResolver();
 
         registerServices();
+    }
+
+    /**
+     * Called when another version of this bundle is found in the bundle
+     * context.
+     * 
+     * This method stops the other bundle if it's an old version of the current
+     * bundle. Sub-class may override this method to implement its own business
+     * logic.
+     * 
+     * @param bundle
+     * @throws BundleException
+     */
+    protected void handlerAnotherVersionAtStartup(Bundle bundle) throws BundleException {
+        Version myVersion = this.bundle.getVersion();
+        Version otherVersion = bundle.getVersion();
+        if (myVersion.compareTo(otherVersion) > 0) {
+            String msg = "Found an older version of me [" + bundle + "], stopping it!";
+            LOGGER.info(msg);
+            bundle.stop();
+        }
     }
 
     /**

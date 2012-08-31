@@ -517,4 +517,19 @@ public abstract class BaseJdbcBoManager extends CachedBoManager implements IJdbc
         }
         return result.toArray((T[]) Array.newInstance(clazz, 0));
     }
+
+    /**
+     * Utility method to build parameter map from a list of objects.
+     * 
+     * @param params
+     * @return
+     */
+    protected static Map<String, Object> buildParams(Object... params) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for (int i = 0, n = params.length / 2; i < n; i++) {
+            String key = params[i * 2].toString();
+            result.put(key, params[i * 2 + 1]);
+        }
+        return result;
+    }
 }
