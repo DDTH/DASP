@@ -19,6 +19,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private long defaultExpireAfterWrite = ICacheManager.DEFAULT_EXPIRE_AFTER_WRITE;
     private ConcurrentMap<String, ICache> caches;
     private Map<String, Properties> cacheProperties;
+    private String cacheNamePrefix;
 
     /**
      * {@inheritDoc}
@@ -48,6 +49,18 @@ public abstract class AbstractCacheManager implements ICacheManager {
             }
             caches = null;
         }
+    }
+
+    protected String buildCacheName(String cacheName) {
+        return cacheNamePrefix != null ? cacheNamePrefix + cacheName : cacheName;
+    }
+
+    public String getCacheNamePrefix() {
+        return cacheNamePrefix;
+    }
+
+    public void setCacheNamePrefix(String cacheNamePrefix) {
+        this.cacheNamePrefix = cacheNamePrefix;
     }
 
     public long getDefaultCacheCapacity() {
@@ -93,7 +106,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
      */
     @Override
     public ICache getCache(String name) {
-        return caches.get(name);
+        return caches.get(buildCacheName(name));
     }
 
     /**
@@ -101,12 +114,13 @@ public abstract class AbstractCacheManager implements ICacheManager {
      */
     @Override
     public void removeCache(String name) {
-        ICache cache = getCache(name);
+        String cacheName = buildCacheName(name);
+        ICache cache = caches.get(cacheName);
         if (cache != null) {
             try {
                 cache.destroy();
             } finally {
-                caches.remove(name);
+                caches.remove(cacheName);
             }
         }
     }
@@ -131,12 +145,14 @@ public abstract class AbstractCacheManager implements ICacheManager {
     @Override
     synchronized public ICache createCache(String name, long capacity, long expireAfterWrite,
             long expireAfterAccess) {
-        ICache cache = getCache(name);
+        String cacheName = buildCacheName(name);
+        ICache cache = caches.get(cacheName);
         if (cache == null) {
             // check if custom cache settings exist
             long cacheCapacity = capacity;
             long cacheExpireAfterWrite = expireAfterWrite;
             long cacheExpireAfterAccess = expireAfterAccess;
+            // yup, use "name" here (not "cacheName) is correct and intended
             Properties cacheProps = getCacheProperties(name);
             if (cacheProps != null) {
                 try {
@@ -155,9 +171,9 @@ public abstract class AbstractCacheManager implements ICacheManager {
                     cacheExpireAfterAccess = expireAfterAccess;
                 }
             }
-            cache = createCacheInternal(name, cacheCapacity, cacheExpireAfterWrite,
+            cache = createCacheInternal(cacheName, cacheCapacity, cacheExpireAfterWrite,
                     cacheExpireAfterAccess);
-            caches.put(name, cache);
+            caches.put(cacheName, cache);
         }
         return cache;
     }

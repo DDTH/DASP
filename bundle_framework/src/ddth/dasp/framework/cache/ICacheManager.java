@@ -26,7 +26,8 @@ public interface ICacheManager {
      * Gets a cache by name.
      * 
      * @param name
-     * @return an existing cache, <code>null</code> cache has not been created
+     * @return an existing cache, <code>null</code> is returned if cache has not
+     *         been created
      */
     public ICache getCache(String name);
 
