@@ -103,7 +103,6 @@ public abstract class BaseBundleActivator implements BundleActivator {
                 // found another version of me
                 handlerAnotherVersionAtStartup(bundle);
             }
-            System.out.println(bundle);
         }
 
         Properties props = new Properties();
