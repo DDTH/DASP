@@ -4,15 +4,16 @@ import ddth.dasp.common.id.IdGenerator;
 
 public class Id48Apihandler extends AbstractIdApiHandler {
 
-    public Id48Apihandler() {
-    }
+	public Id48Apihandler() {
+	}
 
-    public Id48Apihandler(IdGenerator idGen) {
-        super(idGen);
-    }
+	public Id48Apihandler(IdGenerator idGen) {
+		super(idGen);
+	}
 
-    @Override
-    protected Object internalHandleApiCall(Object params, String authKey) {
-        return getIdGenerator().generateId48();
-    }
+	@Override
+	protected Object internalHandleApiCall(Object params, String authKey,
+			String remoteAddr) {
+		return getIdGenerator().generateId48();
+	}
 }

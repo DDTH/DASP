@@ -12,7 +12,8 @@ public class Id128Apihandler extends AbstractIdApiHandler {
     }
 
     @Override
-    protected Object internalHandleApiCall(Object params, String authKey) {
+	protected Object internalHandleApiCall(Object params, String authKey,
+			String remoteAddr) {
         return getIdGenerator().generateId128().toString();
     }
 }
