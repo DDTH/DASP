@@ -12,7 +12,7 @@ public class Id48Apihandler extends AbstractIdApiHandler {
 	}
 
 	@Override
-	protected Object internalHandleApiCall(Object params, String authKey,
+	protected Object internalCallApi(Object params, String authKey,
 			String remoteAddr) {
 		return getIdGenerator().generateId48();
 	}

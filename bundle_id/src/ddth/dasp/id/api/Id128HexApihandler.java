@@ -16,7 +16,7 @@ public class Id128HexApihandler extends AbstractIdApiHandler {
 	}
 
 	@Override
-	protected Object internalHandleApiCall(Object params, String authKey,
+	protected Object internalCallApi(Object params, String authKey,
 			String remoteAddr) {
 		StringBuffer hex = new StringBuffer(getIdGenerator().generateId128Hex());
 		if (params instanceof Map<?, ?>) {

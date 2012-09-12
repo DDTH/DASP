@@ -43,8 +43,8 @@ public abstract class AbstractApiHandler implements IApiHandler {
 	 * @return Object
 	 * @throws Exception
 	 */
-	protected abstract Object internalHandleApiCall(Object params,
-			String authKey, String remoteAddr) throws ApiException;
+	protected abstract Object internalCallApi(Object params, String authKey,
+			String remoteAddr) throws ApiException;
 
 	/**
 	 * {@inheritDoc}
@@ -60,6 +60,6 @@ public abstract class AbstractApiHandler implements IApiHandler {
 			String msg = "Input params [" + params + "] validation failed!";
 			throw new ApiException(msg);
 		}
-		return internalHandleApiCall(params, authKey, remoteAddr);
+		return internalCallApi(params, authKey, remoteAddr);
 	}
 }

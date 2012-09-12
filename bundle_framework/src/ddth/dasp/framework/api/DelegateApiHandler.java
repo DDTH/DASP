@@ -26,7 +26,7 @@ public class DelegateApiHandler extends AbstractApiHandler {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Object internalHandleApiCall(Object params, String authKey,
+	protected Object internalCallApi(Object params, String authKey,
 			String remoteAddr) throws ApiException {
 		return apiHandler.callApi(params, authKey, remoteAddr);
 	}
