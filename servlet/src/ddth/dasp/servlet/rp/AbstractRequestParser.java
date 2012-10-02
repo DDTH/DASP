@@ -2,12 +2,10 @@ package ddth.dasp.servlet.rp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.common.rp.RequestParsingInteruptedException;
 
@@ -41,7 +39,7 @@ public abstract class AbstractRequestParser implements IRequestParser {
 		this.isMalformed = false;
 		this.isDirty = true;
 		this.requestContent = null;
-		this.buffer = new ByteArrayOutputStream(8192);
+		this.buffer = new ByteArrayOutputStream(4096);
 	}
 
 	/**
@@ -233,37 +231,37 @@ public abstract class AbstractRequestParser implements IRequestParser {
 			return;
 		}
 		this.isParsed = true;
-		TimerTask task = new SafeguardTask(this);
-		DaspGlobal.getContextTimer().schedule(task, getTimeout());
+		// TimerTask task = new SafeguardTask(this);
+		// DaspGlobal.getContextTimer().schedule(task, getTimeout());
 		try {
 			internalPreParseRequest();
 			internalParseRequest();
 			internalPostParseRequest();
 		} finally {
-			((SafeguardTask) task).finish();
+			// ((SafeguardTask) task).finish();
 		}
 	}
 
-	static class SafeguardTask extends TimerTask {
-
-		private boolean finish = false;
-		private IRequestParser requestParser;
-
-		public SafeguardTask(IRequestParser requestParser) {
-			this.requestParser = requestParser;
-		}
-
-		public void finish() {
-			this.finish = true;
-		}
-
-		@Override
-		public void run() {
-			if (!finish) {
-				requestParser.interrupt();
-			}
-		}
-	}
+	// static class SafeguardTask extends TimerTask {
+	//
+	// private boolean finish = false;
+	// private IRequestParser requestParser;
+	//
+	// public SafeguardTask(IRequestParser requestParser) {
+	// this.requestParser = requestParser;
+	// }
+	//
+	// public void finish() {
+	// this.finish = true;
+	// }
+	//
+	// @Override
+	// public void run() {
+	// if (!finish) {
+	// requestParser.interrupt();
+	// }
+	// }
+	// }
 
 	/**
 	 * This method is called before {@link #internalParseRequest()}. Sub-class
