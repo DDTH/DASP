@@ -22,7 +22,6 @@ public class BundleFreeMarkerViewResolver extends FreeMarkerViewResolver {
         FreeMarkerView view = (FreeMarkerView) super.buildView(viewName);
         if (freemarkerConfig != null) {
             view.setConfiguration(freemarkerConfig.getConfiguration());
-
         }
         return view;
     }

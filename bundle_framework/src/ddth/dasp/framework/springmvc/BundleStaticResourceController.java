@@ -3,8 +3,10 @@ package ddth.dasp.framework.springmvc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,8 +24,35 @@ import ddth.dasp.framework.osgi.BundleResourceLoader;
  */
 public class BundleStaticResourceController extends BaseAnnotationController {
 
+	private String encoding = "utf-8";
 	private String resourcePrefix = "";
 	private BundleResourceLoader bundleResourceLoader;
+	private Map<String, String> mimetypes = new HashMap<String, String>();
+
+	public BundleStaticResourceController() {
+		mimetypes.put(".bmp", "image/bmp");
+		mimetypes.put(".css", "text/css");
+		mimetypes.put(".gif", "image/gif");
+		mimetypes.put(".ico", "image/x-icon");
+		mimetypes.put(".jpg", "image/jpeg");
+		mimetypes.put(".js", "text/javascript");
+	}
+
+	protected Map<String, String> getMimetypes() {
+		return mimetypes;
+	}
+
+	public void setMimetypes(Map<String, String> mimetypes) {
+		this.mimetypes = mimetypes;
+	}
+
+	protected String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
 
 	protected String getResourcePrefix() {
 		return resourcePrefix;
@@ -68,8 +97,13 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 	}
 
 	protected String deltectMimetype(String resourceUri) {
-		String mimetype = URLConnection.getFileNameMap().getContentTypeFor(
-				resourceUri);
+		int index = resourceUri.lastIndexOf('.');
+		String resourceExt = index < 0 ? "" : resourceUri.substring(index);
+		String mimetype = mimetypes.get(resourceExt);
+		if (StringUtils.isBlank(mimetype)) {
+			mimetype = MimetypesFileTypeMap.getDefaultFileTypeMap()
+					.getContentType(resourceUri);
+		}
 		return !StringUtils.isBlank(mimetype) ? mimetype
 				: "application/octet-stream";
 	}
@@ -80,6 +114,11 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 		if (!bundleResourceLoader.resourceExists(resourceUri)) {
 			return false;
 		}
+
+		if (!StringUtils.isBlank(encoding)) {
+			response.setCharacterEncoding(encoding);
+		}
+
 		String mimetype = deltectMimetype(resourceUri);
 		response.setContentType(mimetype);
 		InputStream is = bundleResourceLoader.loadResource(resourceUri);
