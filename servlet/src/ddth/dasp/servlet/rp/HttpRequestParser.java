@@ -331,6 +331,9 @@ public class HttpRequestParser extends AbstractRequestParser {
 					int bytesRead = sis.read(buffer, 0, 1024);
 					write(buffer, 0, bytesRead);
 					counter += bytesRead;
+					if (System.currentTimeMillis() - getStartParsingTimestamp() > getTimeout()) {
+						interrupt();
+					}
 				}
 			} catch (IOException ioe) {
 				throw new RuntimeException(ioe);
@@ -381,6 +384,9 @@ public class HttpRequestParser extends AbstractRequestParser {
 					}
 				} else {
 					// TODO
+				}
+				if (System.currentTimeMillis() - getStartParsingTimestamp() > getTimeout()) {
+					interrupt();
 				}
 			}
 		} catch (FileUploadException fue) {

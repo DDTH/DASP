@@ -24,9 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
-import ddth.dasp.common.api.IApiGroupHandler;
-import ddth.dasp.common.api.IApiHandler;
-import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.servlet.netty.AbstractHttpHandler;
@@ -51,19 +48,10 @@ public class JsonApiHandler extends AbstractHttpHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ChannelFuture responseApiCall(HttpRequest request, Channel channel,
-			String uri) {
+	protected Object parseInput(HttpRequest request, String uri) {
 		QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
-		// String[] tokens = uri.replaceAll("^\\/+", "").replaceAll("^\\/+", "")
-		// .split("\\/");
-		String[] tokens = queryStringDecoder.getPath().replaceAll("^\\/+", "")
-				.replaceAll("^\\/+", "").split("\\/");
-		String moduleName = tokens.length > 0 ? tokens[0] : null;
-		String functionName = tokens.length > 1 ? tokens[1] : null;
-		String authKey = tokens.length > 2 ? tokens[2] : null;
 		String jsonEncodedInput = request.getContent().toString(
 				CharsetUtil.UTF_8);
-
 		Object params = JsonUtils.fromJson(jsonEncodedInput);
 		if (params == null) {
 			params = new HashMap<String, Object>();
@@ -79,39 +67,24 @@ public class JsonApiHandler extends AbstractHttpHandler {
 				}
 			}
 		}
+		return params;
+	}
 
-		Object result;
-		try {
-			String remoteAddr = channel.getRemoteAddress().toString();
-			IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-			Map<String, String> filter = new HashMap<String, String>();
-			filter.put(IApiHandler.PROP_MODULE, moduleName);
-			filter.put(IApiHandler.PROP_API, functionName);
-			IApiHandler apiHandler = osgiBootstrap.getService(
-					IApiHandler.class, filter);
-			if (apiHandler != null) {
-				result = apiHandler.callApi(params, authKey, remoteAddr);
-			} else {
-				filter.remove(IApiHandler.PROP_API);
-				IApiGroupHandler apiGroupHandler = osgiBootstrap.getService(
-						IApiGroupHandler.class, filter);
-				if (apiGroupHandler != null) {
-					result = apiGroupHandler.handleApiCall(functionName,
-							params, authKey, remoteAddr);
-				} else {
-					Map<Object, Object> res = ApiUtils.createApiResult(
-							IApiHandler.RESULT_CODE_NOT_FOUND,
-							"No handler for [" + moduleName + "/"
-									+ functionName + "]!");
-					result = res;
-				}
-			}
-		} catch (Exception ex) {
-			Map<Object, Object> res = ApiUtils.createApiResult(
-					IApiHandler.RESULT_CODE_ERROR, ex.getMessage());
-			result = res;
-		}
+	private ChannelFuture responseApiCall(HttpRequest request, Channel channel,
+			String uri) {
+		QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
+		// String[] tokens = uri.replaceAll("^\\/+", "").replaceAll("^\\/+", "")
+		// .split("\\/");
+		String[] tokens = queryStringDecoder.getPath().replaceAll("^\\/+", "")
+				.replaceAll("^\\/+", "").split("\\/");
+		String moduleName = tokens.length > 0 ? tokens[0] : null;
+		String functionName = tokens.length > 1 ? tokens[1] : null;
+		String authKey = tokens.length > 2 ? tokens[2] : null;
+		Object apiParams = parseInput(request, uri);
 
+		String remoteAddr = channel.getRemoteAddress().toString();
+		Object result = ApiUtils.executeApi(moduleName, functionName,
+				apiParams, authKey, remoteAddr);
 		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
 				HttpResponseStatus.OK);
 		response.setHeader(HttpHeaders.Names.CONTENT_TYPE,

@@ -27,6 +27,7 @@ public abstract class AbstractRequestParser implements IRequestParser {
 	private boolean isMalformed = false;
 	private boolean isDirty = true;
 	private ByteArrayOutputStream buffer = new ByteArrayOutputStream(4096);
+	private long startParsingTimestamp = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -40,6 +41,16 @@ public abstract class AbstractRequestParser implements IRequestParser {
 		this.isDirty = true;
 		this.requestContent = null;
 		this.buffer = new ByteArrayOutputStream(4096);
+		this.startParsingTimestamp = -1;
+	}
+
+	/**
+	 * Gets timestamp when the parsing started.
+	 * 
+	 * @return
+	 */
+	public long getStartParsingTimestamp() {
+		return startParsingTimestamp;
 	}
 
 	/**
@@ -234,6 +245,7 @@ public abstract class AbstractRequestParser implements IRequestParser {
 		// TimerTask task = new SafeguardTask(this);
 		// DaspGlobal.getContextTimer().schedule(task, getTimeout());
 		try {
+			startParsingTimestamp = System.currentTimeMillis();
 			internalPreParseRequest();
 			internalParseRequest();
 			internalPostParseRequest();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,17 +15,15 @@ import org.apache.catalina.comet.CometProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.common.DaspGlobal;
-import ddth.dasp.common.api.IApiGroupHandler;
 import ddth.dasp.common.api.IApiHandler;
-import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.DaspConstants;
 import ddth.dasp.common.utils.JsonUtils;
 
 public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
-	private static final long serialVersionUID = "$Id$".hashCode();
+	private static final long serialVersionUID = "$Id$"
+			.hashCode();
 	private final static String URI_PREFIX = "/api";
 
 	private Logger LOGGER = LoggerFactory.getLogger(DaspJsonApiServlet.class);
@@ -111,11 +108,11 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 		return result;
 	}
 
-	private static AtomicLong counter = new AtomicLong();
+	// private static AtomicLong counter = new AtomicLong();
 
 	protected void doHandleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		counter.incrementAndGet();
+		// counter.incrementAndGet();
 		try {
 			String uri = request.getRequestURI();
 			if (uri.startsWith(contextPath)) {
@@ -137,39 +134,11 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 			Object apiParams = parseInput(request);
 
 			String remoteAddr = request.getRemoteAddr();
-			IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-			Object result;
-			try {
-				Map<String, String> filter = new HashMap<String, String>();
-				filter.put(IApiHandler.PROP_MODULE, moduleName);
-				filter.put(IApiHandler.PROP_API, functionName);
-				IApiHandler apiHandler = osgiBootstrap.getService(
-						IApiHandler.class, filter);
-				if (apiHandler != null) {
-					result = apiHandler.callApi(apiParams, authKey, remoteAddr);
-				} else {
-					filter.remove(IApiHandler.PROP_API);
-					IApiGroupHandler apiGroupHandler = osgiBootstrap
-							.getService(IApiGroupHandler.class, filter);
-					if (apiGroupHandler != null) {
-						result = apiGroupHandler.handleApiCall(functionName,
-								apiParams, authKey, remoteAddr);
-					} else {
-						Map<Object, Object> res = ApiUtils.createApiResult(
-								IApiHandler.RESULT_CODE_NOT_FOUND,
-								"No handler for [" + moduleName + "/"
-										+ functionName + "]!");
-						result = res;
-					}
-				}
-			} catch (Exception ex) {
-				Map<Object, Object> res = ApiUtils.createApiResult(
-						IApiHandler.RESULT_CODE_ERROR, ex.getMessage());
-				result = res;
-			}
+			Object result = ApiUtils.executeApi(moduleName, functionName,
+					apiParams, authKey, remoteAddr);
 			response.getWriter().print(JsonUtils.toJson(result));
 		} finally {
-			counter.decrementAndGet();
+			// counter.decrementAndGet();
 		}
 	}
 }

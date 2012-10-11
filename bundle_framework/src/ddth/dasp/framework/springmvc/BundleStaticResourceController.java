@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ddth.dasp.common.rp.IRequestParser;
-import ddth.dasp.framework.osgi.BundleResourceLoader;
+import ddth.dasp.framework.resource.IResourceLoader;
 
 /**
  * This controller serves bundle's static content over the web.
@@ -26,7 +26,8 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 
 	private String encoding = "utf-8";
 	private String resourcePrefix = "";
-	private BundleResourceLoader bundleResourceLoader;
+	// private BundleResourceLoader bundleResourceLoader;
+	private IResourceLoader resourceLoader;
 	private Map<String, String> mimetypes = new HashMap<String, String>();
 
 	public BundleStaticResourceController() {
@@ -36,6 +37,7 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 		mimetypes.put(".ico", "image/x-icon");
 		mimetypes.put(".jpg", "image/jpeg");
 		mimetypes.put(".js", "text/javascript");
+		mimetypes.put(".png", "image/png");
 	}
 
 	protected Map<String, String> getMimetypes() {
@@ -62,13 +64,21 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 		this.resourcePrefix = resourcePrefix;
 	}
 
-	protected BundleResourceLoader getBundleResourceLoader() {
-		return bundleResourceLoader;
+	// protected BundleResourceLoader getBundleResourceLoader() {
+	// return bundleResourceLoader;
+	// }
+	//
+	// public void setBundleResourceLoader(
+	// BundleResourceLoader bundleResourceLoader) {
+	// this.bundleResourceLoader = bundleResourceLoader;
+	// }
+
+	protected IResourceLoader getResourceLoader() {
+		return resourceLoader;
 	}
 
-	public void setBundleResourceLoader(
-			BundleResourceLoader bundleResourceLoader) {
-		this.bundleResourceLoader = bundleResourceLoader;
+	public void setResourceLoader(IResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 	@RequestMapping
@@ -111,7 +121,10 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 	protected boolean serveStaticResource(String resourceUri,
 			HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		if (!bundleResourceLoader.resourceExists(resourceUri)) {
+		// if (!bundleResourceLoader.resourceExists(resourceUri)) {
+		// return false;
+		// }
+		if (!resourceLoader.resourceExists(resourceUri)) {
 			return false;
 		}
 
@@ -121,7 +134,8 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 
 		String mimetype = deltectMimetype(resourceUri);
 		response.setContentType(mimetype);
-		InputStream is = bundleResourceLoader.loadResource(resourceUri);
+		// InputStream is = bundleResourceLoader.loadResource(resourceUri);
+		InputStream is = resourceLoader.loadResource(resourceUri);
 		try {
 			OutputStream os = response.getOutputStream();
 			byte[] buffer = new byte[1024];

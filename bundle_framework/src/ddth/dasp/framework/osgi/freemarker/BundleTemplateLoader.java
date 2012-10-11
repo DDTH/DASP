@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import ddth.dasp.framework.osgi.BundleResourceLoader;
+import ddth.dasp.framework.resource.IResourceLoader;
 import freemarker.cache.TemplateLoader;
 
 /**
@@ -15,16 +16,25 @@ import freemarker.cache.TemplateLoader;
  */
 public class BundleTemplateLoader implements TemplateLoader {
 
-	private BundleResourceLoader bundleResourceLoader;
+	// private BundleResourceLoader bundleResourceLoader;
+	private IResourceLoader resourceLoader;
 	private String prefix, suffix;
 
-	protected BundleResourceLoader getBundleResourceLoader() {
-		return bundleResourceLoader;
+	// protected BundleResourceLoader getBundleResourceLoader() {
+	// return bundleResourceLoader;
+	// }
+	//
+	// public void setBundleResourceLoader(
+	// BundleResourceLoader bundleResourceLoader) {
+	// this.bundleResourceLoader = bundleResourceLoader;
+	// }
+
+	protected IResourceLoader getResourceLoader() {
+		return resourceLoader;
 	}
 
-	public void setBundleResourceLoader(
-			BundleResourceLoader bundleResourceLoader) {
-		this.bundleResourceLoader = bundleResourceLoader;
+	public void setResourceLoader(IResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 	protected String getPrefix() {
@@ -73,8 +83,9 @@ public class BundleTemplateLoader implements TemplateLoader {
 	 */
 	@Override
 	public Object findTemplateSource(String name) throws IOException {
-		return bundleResourceLoader.resourceExists(buildPath(name)) ? name
-				: null;
+		// return bundleResourceLoader.resourceExists(buildPath(name)) ? name
+		// : null;
+		return resourceLoader.resourceExists(buildPath(name)) ? name : null;
 	}
 
 	/**
@@ -82,7 +93,9 @@ public class BundleTemplateLoader implements TemplateLoader {
 	 */
 	@Override
 	public long getLastModified(Object templateSource) {
-		return bundleResourceLoader.getLastModified(buildPath(templateSource
+		// return bundleResourceLoader.getLastModified(buildPath(templateSource
+		// .toString()));
+		return resourceLoader.getLastModified(buildPath(templateSource
 				.toString()));
 	}
 
@@ -92,7 +105,9 @@ public class BundleTemplateLoader implements TemplateLoader {
 	@Override
 	public Reader getReader(Object templateSource, String encoding)
 			throws IOException {
-		String resourceContent = bundleResourceLoader.loadResourceAsString(
+		// String resourceContent = bundleResourceLoader.loadResourceAsString(
+		// buildPath(templateSource.toString()), encoding);
+		String resourceContent = resourceLoader.loadResourceAsString(
 				buildPath(templateSource.toString()), encoding);
 		return new StringReader(resourceContent);
 	}
