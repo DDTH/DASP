@@ -15,8 +15,9 @@
 			</map>
 		</property>
 	</bean>
-
-	<bean id="bundleResourceLoader" class="ddth.dasp.framework.osgi.BundleResourceLoader"
+	<!-- <bean id="bundleResourceLoader" class="ddth.dasp.framework.osgi.BundleResourceLoader" 
+		lazy-init="false" scope="singleton"></bean> -->
+	<bean id="skinResourceLoader" class="ddth.dasp.framework.osgi.BundleResourceLoader"
 		lazy-init="false" scope="singleton"></bean>
 
 	<bean id="_freemarkerConfig"
@@ -32,7 +33,7 @@
 		<property name="templateLoaders">
 			<array value-type="freemarker.cache.TemplateLoader">
 				<bean class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader">
-					<property name="bundleResourceLoader" ref="bundleResourceLoader" />
+					<property name="resourceLoader" ref="skinResourceLoader" />
 					<property name="prefix" value="/META-INF/skins/default/" />
 				</bean>
 			</array>
