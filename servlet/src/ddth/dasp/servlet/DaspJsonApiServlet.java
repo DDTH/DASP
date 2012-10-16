@@ -15,6 +15,7 @@ import org.apache.catalina.comet.CometProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.common.RequestLocal;
 import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.rp.IRequestParser;
 import ddth.dasp.common.utils.ApiUtils;
@@ -90,7 +91,12 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 		IRequestParser rp = (IRequestParser) tempRp;
 		String rawInput = rp.getRequestContent();
 		// first: parses parameters from request's content as JSON.
-		Object result = JsonUtils.fromJson(rawInput);
+		Object result = null;
+		try {
+			result = JsonUtils.fromJson(rawInput);
+		} catch (Exception e) {
+			//
+		}
 		if (result == null) {
 			result = new HashMap<String, Object>();
 		}
@@ -112,7 +118,9 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 
 	protected void doHandleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		// counter.incrementAndGet();
+		// init the request local and bound it to the current thread if needed.
+		RequestLocal oldRequestLocal = RequestLocal.get();
+		RequestLocal.set(new RequestLocal());
 		try {
 			String uri = request.getRequestURI();
 			if (uri.startsWith(contextPath)) {
@@ -138,7 +146,7 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 					apiParams, authKey, remoteAddr);
 			response.getWriter().print(JsonUtils.toJson(result));
 		} finally {
-			// counter.decrementAndGet();
+			RequestLocal.set(oldRequestLocal);
 		}
 	}
 }

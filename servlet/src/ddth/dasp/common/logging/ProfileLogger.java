@@ -1,5 +1,7 @@
 package ddth.dasp.common.logging;
 
+import ddth.dasp.common.RequestLocal;
+
 /**
  * Application profiling logger.
  * 
@@ -25,56 +27,65 @@ package ddth.dasp.common.logging;
  */
 public class ProfileLogger {
 
-    protected static ThreadLocal<ProfileLogEntry> logEntry = new ThreadLocal<ProfileLogEntry>() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected ProfileLogEntry initialValue() {
-            return new ProfileLogEntry();
-        }
-    };
+	private final static String REQUEST_LOCAL_KEY = "PROFILE_LOG";
 
-    /**
-     * Gets the currently bound {@link ProfileLogEntry} object. Creates one if
-     * not exists.
-     * 
-     * @return ProfileLogEntry
-     */
-    public static ProfileLogEntry get() {
-        ProfileLogEntry entry = logEntry.get();
-        return entry;
-    }
+	private static ProfileLogEntry getLogs(RequestLocal requestLocal,
+			boolean createIfNotExist) {
+		if (requestLocal != null) {
+			ProfileLogEntry log = requestLocal.getLocalVariable(
+					REQUEST_LOCAL_KEY, ProfileLogEntry.class);
+			if (log == null && createIfNotExist) {
+				log = new ProfileLogEntry();
+				requestLocal.setLocalVariable(REQUEST_LOCAL_KEY, log);
+			}
+			return log;
+		}
+		return null;
+	}
 
-    /**
-     * Removes the currently bound {@link ProfileLogEntry} object.
-     */
-    public static void remove() {
-        logEntry.remove();
-    }
+	public static ProfileLogEntry push(String name) {
+		return push(name, RequestLocal.get());
+	}
 
-    /**
-     * Pushes a profiling to the stack.
-     * 
-     * @param name
-     *            String
-     * @return ProfileLogEntry the currently bound {@link ProfileLogEntry}
-     *         object.
-     */
-    public static ProfileLogEntry push(String name) {
-        ProfileLogEntry entry = get();
-        entry.push(name);
-        return entry;
-    }
+	/**
+	 * Pushes a profiling to the stack.
+	 * 
+	 * @param name
+	 *            String
+	 * @return ProfileLogEntry the currently bound {@link ProfileLogEntry}
+	 *         object.
+	 */
+	public static ProfileLogEntry push(String name, RequestLocal requestLocal) {
+		if (name != null && requestLocal != null) {
+			ProfileLogEntry log = getLogs(requestLocal, true);
+			log.push(name);
+			return log;
+		}
+		return null;
+	}
 
-    /**
-     * Pops the last profiling from the stack.
-     * 
-     * @return ProfileLogEntry
-     */
-    public static ProfileLogEntry pop() {
-        ProfileLogEntry entry = get();
-        entry.pop();
-        return entry;
-    }
+	public static ProfileLogEntry pop() {
+		return pop(RequestLocal.get());
+	}
+
+	/**
+	 * Pops the last profiling from the stack.
+	 * 
+	 * @return ProfileLogEntry
+	 */
+	public static ProfileLogEntry pop(RequestLocal requestLocal) {
+		ProfileLogEntry log = getLogs(requestLocal, false);
+		if (log != null) {
+			log.pop();
+		}
+		return log;
+	}
+
+	public static ProfileLogEntry get() {
+		return get(RequestLocal.get());
+	}
+
+	public static ProfileLogEntry get(RequestLocal requestLocal) {
+		return getLogs(requestLocal, false);
+	}
 }

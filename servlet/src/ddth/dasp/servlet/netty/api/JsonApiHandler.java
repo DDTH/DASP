@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.RequestLocal;
 import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.servlet.netty.AbstractHttpHandler;
@@ -31,7 +31,6 @@ import ddth.dasp.servlet.netty.AbstractHttpHandler;
 public class JsonApiHandler extends AbstractHttpHandler {
 
 	private final static String URI_PREFIX = "/api";
-	private static AtomicLong counter = new AtomicLong();
 	private static Logger LOGGER = LoggerFactory
 			.getLogger(JsonApiHandler.class);
 
@@ -52,7 +51,12 @@ public class JsonApiHandler extends AbstractHttpHandler {
 		QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
 		String jsonEncodedInput = request.getContent().toString(
 				CharsetUtil.UTF_8);
-		Object params = JsonUtils.fromJson(jsonEncodedInput);
+		Object params = null;
+		try {
+			params = JsonUtils.fromJson(jsonEncodedInput);
+		} catch (Exception e) {
+			//
+		}
 		if (params == null) {
 			params = new HashMap<String, Object>();
 		}
@@ -73,8 +77,6 @@ public class JsonApiHandler extends AbstractHttpHandler {
 	private ChannelFuture responseApiCall(HttpRequest request, Channel channel,
 			String uri) {
 		QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
-		// String[] tokens = uri.replaceAll("^\\/+", "").replaceAll("^\\/+", "")
-		// .split("\\/");
 		String[] tokens = queryStringDecoder.getPath().replaceAll("^\\/+", "")
 				.replaceAll("^\\/+", "").split("\\/");
 		String moduleName = tokens.length > 0 ? tokens[0] : null;
@@ -101,7 +103,9 @@ public class JsonApiHandler extends AbstractHttpHandler {
 	@Override
 	protected void handleRequest(HttpRequest request, Channel userChannel)
 			throws Exception {
-		counter.incrementAndGet();
+		// init the request local and bound it to the current thread if needed.
+		RequestLocal oldRequestLocal = RequestLocal.get();
+		RequestLocal.set(new RequestLocal());
 		try {
 			String uri = request.getUri();
 			String contextPath = DaspGlobal.getServletContext()
@@ -120,7 +124,7 @@ public class JsonApiHandler extends AbstractHttpHandler {
 			}
 			future.addListener(ChannelFutureListener.CLOSE);
 		} finally {
-			counter.decrementAndGet();
+			RequestLocal.set(oldRequestLocal);
 		}
 	}
 

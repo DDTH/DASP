@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 public class FsResourceLoader extends AbstractResourceLoader {
 
 	private String rootDir;
+	private String envNameRootDir;
 
 	protected String getRootDir() {
 		return rootDir;
@@ -22,6 +23,39 @@ public class FsResourceLoader extends AbstractResourceLoader {
 
 	public void setRootDir(String rootDir) {
 		this.rootDir = rootDir;
+	}
+
+	/**
+	 * If {@link FsResourceLoader#envNameRootDir} is set, value of the
+	 * corresponding environment (if set) will be assigned to {@link #rootDir}.
+	 * 
+	 * @return
+	 */
+	protected String getEnvNameRootDir() {
+		return envNameRootDir;
+	}
+
+	/**
+	 * If {@link FsResourceLoader#envNameRootDir} is set, value of the
+	 * corresponding environment (if set) will be assigned to {@link #rootDir}.
+	 * 
+	 * @param envNameRootDir
+	 */
+	public void setEnvNameRootDir(String envNameRootDir) {
+		this.envNameRootDir = envNameRootDir;
+	}
+
+	public void init() {
+		if (!StringUtils.isBlank(envNameRootDir)) {
+			String value = System.getProperty(envNameRootDir);
+			if (!StringUtils.isBlank(value)) {
+				setRootDir(value);
+			}
+		}
+	}
+
+	public void destroy() {
+		// EMPTY
 	}
 
 	/**
