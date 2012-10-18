@@ -393,25 +393,32 @@ public class RateCounter {
 	 *            long
 	 * @return
 	 */
-	public long incCounter(long value) {
+	synchronized public long incCounter(long value) {
 		long timestamp = System.nanoTime();
 		int currentSlotNumber = slotNumber.get();
 		int newSlotNumber = calcSlotNumber(timestamp);
 		slotNumber.set(newSlotNumber);
 
-		long result = 1;
+		long result = value;
 		if (currentSlotNumber != newSlotNumber) {
+			// reset idle slots
+			while (currentSlotNumber != newSlotNumber) {
+				currentSlotNumber = nextSlotNumber(currentSlotNumber);
+				// if (currentSlotNumber != newSlotNumber) {
+				slots.set(currentSlotNumber, 0);
+				// }
+			}
 			// set value to slot number
 			slots.set(newSlotNumber, value);
+
+			// long oldValue = slots.get(newSlotNumber);
+			// if (!slots.compareAndSet(newSlotNumber, oldValue, value)) {
+			// System.out.println("Conflict");
+			// result = slots.addAndGet(newSlotNumber, value);
+			// }
 		} else {
 			// add value to slot number
 			result = slots.addAndGet(newSlotNumber, value);
-		}
-
-		// reset idle slots
-		while (currentSlotNumber != newSlotNumber) {
-			currentSlotNumber = nextSlotNumber(currentSlotNumber);
-			slots.set(currentSlotNumber, 0);
 		}
 
 		// update last access timestamp
