@@ -102,8 +102,7 @@ public class RateCounterFactory {
 	 * Gets a counter by name.
 	 * 
 	 * @param name
-	 *            String
-	 * @return RateCounter
+	 * @return
 	 */
 	public RateCounter getCounter(String name) {
 		synchronized (cacheCounters) {
@@ -112,8 +111,33 @@ public class RateCounterFactory {
 				result = new RateCounter();
 				result.setTimer(timer);
 				result.setName(this.name + "-" + name);
-				result.setNumSlots(defaultNumSlots);
+				result.setNumSlots(getDefaultNumSlots());
 				result.setSlotResolution(getDefaultSlotResolution());
+				result.init();
+				cacheCounters.put(name, result);
+			}
+			return result;
+		}
+	}
+
+	/**
+	 * Gets a counter by name and specified its number of slots and slot
+	 * resolution.
+	 * 
+	 * @param name
+	 * @param numSlots
+	 * @param slotResolution
+	 * @return
+	 */
+	public RateCounter getCounter(String name, int numSlots, int slotResolution) {
+		synchronized (cacheCounters) {
+			RateCounter result = cacheCounters.get(name);
+			if (result == null) {
+				result = new RateCounter();
+				result.setTimer(timer);
+				result.setName(this.name + "-" + name);
+				result.setNumSlots(numSlots);
+				result.setSlotResolution(slotResolution);
 				result.init();
 				cacheCounters.put(name, result);
 			}

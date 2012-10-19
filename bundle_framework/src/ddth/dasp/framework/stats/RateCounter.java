@@ -2,6 +2,7 @@ package ddth.dasp.framework.stats;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLongArray;
 
@@ -47,6 +48,13 @@ public class RateCounter {
 	 * Constructs a new {@link RateCounter} instance.
 	 */
 	public RateCounter() {
+	}
+
+	/**
+	 * Constructs a new {@link RateCounter} instance.
+	 */
+	public RateCounter(Timer timer) {
+		setTimer(timer);
 	}
 
 	/**
@@ -444,25 +452,42 @@ public class RateCounter {
 
 	public static void main(String[] atgv) throws InterruptedException {
 		Timer timer = new Timer(true);
-		RateCounter counter = new RateCounter();
+		final RateCounter counter = new RateCounter();
 		counter.setTimer(timer);
 		counter.setNumSlots(128);
 		counter.setSlotResolution(100);
 		counter.init();
-		for (int i = 0; i < 10000; i++) {
-			System.out.println(i);
-			counter.incCounter();
-			Thread.sleep(3);
+		int concurrent = 4;
+		final CountDownLatch latch = new CountDownLatch(concurrent);
+		for (int i = 0; i < concurrent; i++) {
+			new Thread() {
+				@Override
+				public void run() {
+					for (int i = 0; i < 1000; i++) {
+						// System.out.println(i);
+						counter.incCounter(1);
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					latch.countDown();
+				}
+			}.start();
 		}
+		latch.await();
+
 		long resolutionNano = counter.getSlotResolutionNano();
-		double resolutionMillis = resolutionNano / 1000000.0;
+		double resolutionMillis = resolutionNano / 1e6;
 		System.out.println("Resolution Nano  :" + resolutionNano);
 		System.out.println("Resolution Millis:" + resolutionMillis);
 		System.out.println("Rate: " + counter.slots);
-		// System.out.print("Rate: ");
-		// for (int i = 0; i < counter.slots.length(); i++) {
-		// System.out.print((double) counter.slots.get(i) / resolutionMillis);
-		// System.out.print(",");
-		// }
+
+		long slotCounts = 0;
+		for (int i = 0; i < counter.slots.length(); i++) {
+			slotCounts += counter.slots.get(i);
+		}
+		System.out.println(slotCounts);
 	}
 }
