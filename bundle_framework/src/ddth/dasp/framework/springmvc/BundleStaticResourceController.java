@@ -62,6 +62,11 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 
 	public void setResourcePrefix(String resourcePrefix) {
 		this.resourcePrefix = resourcePrefix;
+		if (resourcePrefix.endsWith("/")) {
+			resourcePrefix.replaceAll("\\/+$", "/");
+		} else {
+			resourcePrefix += "/";
+		}
 	}
 
 	// protected BundleResourceLoader getBundleResourceLoader() {
@@ -86,6 +91,9 @@ public class BundleStaticResourceController extends BaseAnnotationController {
 			throws IOException {
 		IRequestParser rp = getRequestParser(request);
 		String requestUri = rp.getRequestUri();
+		if (requestUri.startsWith("/")) {
+			requestUri = requestUri.replaceAll("^\\/+", "");
+		}
 
 		String resourceUri = resourcePrefix != null ? resourcePrefix
 				+ requestUri : requestUri;

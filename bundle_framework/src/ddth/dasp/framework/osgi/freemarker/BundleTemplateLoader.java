@@ -43,6 +43,11 @@ public class BundleTemplateLoader implements TemplateLoader {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+		if (prefix.endsWith("/")) {
+			prefix.replaceAll("\\/+$", "/");
+		} else {
+			prefix += "/";
+		}
 	}
 
 	protected String getSuffix() {
@@ -61,6 +66,9 @@ public class BundleTemplateLoader implements TemplateLoader {
 	 */
 	protected String buildPath(String name) {
 		String path = name;
+		if (name.startsWith("/")) {
+			name = name.replaceAll("^\\/+", "");
+		}
 		if (prefix != null) {
 			path = prefix + name;
 		}
