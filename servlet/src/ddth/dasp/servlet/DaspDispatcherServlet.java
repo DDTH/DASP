@@ -16,6 +16,7 @@ import org.apache.catalina.comet.CometProcessor;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.IRequestHandler;
+import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.ServletUtils;
 
@@ -101,7 +102,10 @@ public class DaspDispatcherServlet extends HttpServlet implements
 		IRequestHandler requestHandler = osgiBootstrap
 				.getService(HANDLER_CLASS);
 		if (requestHandler == null) {
-			ServletUtils.responseHttpError(response, 501, "No handler found!");
+			ServletUtils
+					.responseHttpError(response,
+							IApiHandler.RESULT_CODE_NOT_IMPLEMETED,
+							"No handler found!");
 			return;
 		}
 		requestHandler.handleRequest(request, response);

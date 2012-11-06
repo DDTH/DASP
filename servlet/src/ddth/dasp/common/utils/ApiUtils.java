@@ -66,13 +66,13 @@ public class ApiUtils {
 						// special handler for displaying api statistic
 						// TODO
 						Map<Object, Object> res = ApiUtils.createApiResult(
-								IApiHandler.RESULT_CODE_NOT_FOUND,
+								IApiHandler.RESULT_CODE_NOT_IMPLEMETED,
 								"No handler for [" + moduleName + "/"
 										+ functionName + "]!");
 						result = res;
 					} else {
 						Map<Object, Object> res = ApiUtils.createApiResult(
-								IApiHandler.RESULT_CODE_NOT_FOUND,
+								IApiHandler.RESULT_CODE_NOT_IMPLEMETED,
 								"No handler for [" + moduleName + "/"
 										+ functionName + "]!");
 						result = res;

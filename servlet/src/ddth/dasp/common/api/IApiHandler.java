@@ -16,6 +16,7 @@ public interface IApiHandler {
 	public final static int RESULT_CODE_DENIED = 403;
 	public final static int RESULT_CODE_NOT_FOUND = 404;
 	public final static int RESULT_CODE_ERROR = 500;
+	public final static int RESULT_CODE_NOT_IMPLEMETED = 501;
 
 	/**
 	 * Handles an API call.
