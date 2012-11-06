@@ -7,7 +7,7 @@ import java.util.Properties;
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
-public interface IServiceAutoRegistration {
+public interface IServiceAutoRegister {
 	public String getClassName();
 
 	public Properties getProperties();

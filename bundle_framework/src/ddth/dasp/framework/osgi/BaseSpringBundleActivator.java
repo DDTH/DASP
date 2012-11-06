@@ -148,11 +148,11 @@ public abstract class BaseSpringBundleActivator extends BaseBundleActivator {
 		if (result == null) {
 			result = new ArrayList<ServiceInfo>();
 		}
-		Map<String, IServiceAutoRegistration> autoBeans = applicationContext
-				.getBeansOfType(IServiceAutoRegistration.class);
-		for (Map.Entry<String, IServiceAutoRegistration> entry : autoBeans
+		Map<String, IServiceAutoRegister> autoBeans = applicationContext
+				.getBeansOfType(IServiceAutoRegister.class);
+		for (Map.Entry<String, IServiceAutoRegister> entry : autoBeans
 				.entrySet()) {
-			IServiceAutoRegistration service = entry.getValue();
+			IServiceAutoRegister service = entry.getValue();
 			ServiceInfo serviceInfo = new ServiceInfo(service.getClassName(),
 					service, service.getProperties());
 			result.add(serviceInfo);
