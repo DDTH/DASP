@@ -32,8 +32,7 @@ public class DaspHandlerMapping extends AbstractHandlerMapping {
 		}
 
 		IRequestParser rp = (IRequestParser) temp;
-		String moduleName = rp
-				.getVirtualParameter(DaspConstants.PARAM_INDEX_MODULE);
+		String moduleName = rp.getRequestModule();
 		if (StringUtils.isBlank(moduleName)) {
 			moduleName = "home";
 		}

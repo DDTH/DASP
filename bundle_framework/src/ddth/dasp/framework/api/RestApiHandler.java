@@ -46,7 +46,7 @@ public abstract class RestApiHandler extends AbstractApiHandler implements
 			return null;
 		}
 		IRequestParser rp = (IRequestParser) temp;
-		return rp.getVirtualParameter(DaspConstants.PARAM_INDEX_AUTHKEY);
+		return rp.getRequestAuthKey();
 	}
 
 	/**

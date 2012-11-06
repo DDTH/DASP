@@ -47,6 +47,27 @@ public interface IRequestParser {
 			throws UnsupportedEncodingException;
 
 	/**
+	 * Gets the request module name.
+	 * 
+	 * @return
+	 */
+	public String getRequestModule();
+
+	/**
+	 * Gets the request action name.
+	 * 
+	 * @return
+	 */
+	public String getRequestAction();
+
+	/**
+	 * Gets the request authentication key.
+	 * 
+	 * @return
+	 */
+	public String getRequestAuthKey();
+
+	/**
 	 * Gets all form fields.
 	 * 
 	 * @return Map<String, Object>

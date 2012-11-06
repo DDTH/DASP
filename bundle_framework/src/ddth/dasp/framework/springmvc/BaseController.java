@@ -78,7 +78,7 @@ public abstract class BaseController extends WebApplicationObjectSupport
 	 */
 	protected String getRequestModule(HttpServletRequest request) {
 		IRequestParser rp = getRequestParser(request);
-		return rp.getVirtualParameter(DaspConstants.PARAM_INDEX_MODULE);
+		return rp.getRequestModule();
 	}
 
 	/**
@@ -89,6 +89,6 @@ public abstract class BaseController extends WebApplicationObjectSupport
 	 */
 	protected String getRequestAction(HttpServletRequest request) {
 		IRequestParser rp = getRequestParser(request);
-		return rp.getVirtualParameter(DaspConstants.PARAM_INDEX_ACTION);
+		return rp.getRequestAction();
 	}
 }

@@ -39,7 +39,7 @@ public abstract class AbstractHandlerMapping extends
             LOGGER.warn("No instance of [" + IRequestParser.class + "] found!");
             return null;
         }
-        return rp.getVirtualParameter(DaspConstants.PARAM_INDEX_ACTION);
+        return rp.getRequestAction();
     }
 
     /**

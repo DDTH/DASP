@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,110 +19,91 @@ import ddth.dasp.common.IRequestHandler;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.ServletUtils;
 
-public class DaspDispatcherServlet extends HttpServlet implements CometProcessor {
-    private static final long serialVersionUID = 1L;
-    private final static Class<IRequestHandler> HANDLER_CLASS = IRequestHandler.class;
+public class DaspDispatcherServlet extends HttpServlet implements
+		CometProcessor {
+	private static final long serialVersionUID = 1L;
+	private final static Class<IRequestHandler> HANDLER_CLASS = IRequestHandler.class;
 
-    // private Logger LOGGER =
-    // LoggerFactory.getLogger(DaspDispatcherServlet.class);
+	// private Logger LOGGER =
+	// LoggerFactory.getLogger(DaspDispatcherServlet.class);
 
-    private String contextPath;
-    private Map<String, String> ERROR_PAGE_MAPPING = new HashMap<String, String>();
-    private final static String ERROR_PAGE_403 = "/403.jsp";
-    private final static String ERROR_PAGE_404 = "/404.jsp";
-    private final static String ERROR_PAGE_500 = "/500.jsp";
+	private String contextPath;
+	private Map<String, String> ERROR_PAGE_MAPPING = new HashMap<String, String>();
+	private final static String ERROR_PAGE_403 = "/403.jsp";
+	private final static String ERROR_PAGE_404 = "/404.jsp";
+	private final static String ERROR_PAGE_500 = "/500.jsp";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        contextPath = getServletContext().getContextPath();
-        ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_403, ERROR_PAGE_403);
-        ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_404, ERROR_PAGE_404);
-        ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_500, ERROR_PAGE_500);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		contextPath = getServletContext().getContextPath();
+		ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_403, ERROR_PAGE_403);
+		ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_404, ERROR_PAGE_404);
+		ERROR_PAGE_MAPPING.put(contextPath + ERROR_PAGE_500, ERROR_PAGE_500);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void event(CometEvent event) throws IOException, ServletException {
-        HttpServletRequest request = event.getHttpServletRequest();
-        HttpServletResponse response = event.getHttpServletResponse();
-        switch (event.getEventType()) {
-        case ERROR:
-        case END: {
-            event.close();
-        }
-        case BEGIN: {
-            event.setTimeout(5000);// 5 seconds
-            doHandleRequest(request, response);
-            event.close();
-        }
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void event(CometEvent event) throws IOException, ServletException {
+		HttpServletRequest request = event.getHttpServletRequest();
+		HttpServletResponse response = event.getHttpServletResponse();
+		switch (event.getEventType()) {
+		case ERROR:
+		case END: {
+			event.close();
+		}
+		case BEGIN: {
+			event.setTimeout(5000);// 5 seconds
+			doHandleRequest(request, response);
+			event.close();
+		}
+		default: {
+			break;
+		}
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        doHandleRequest(request, response);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		doHandleRequest(request, response);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        doHandleRequest(request, response);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		doHandleRequest(request, response);
+	}
 
-    private static AtomicLong counter = new AtomicLong();
-
-    // private static Random rand = new Random(System.currentTimeMillis());
-
-    protected void doHandleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        // counter.incrementAndGet();
-        // try {
-        // int value = counter.intValue();
-        // response.getWriter().println(value);
-        // System.out.println(value + ":" + request);
-        // Thread.sleep(Math.abs(rand.nextLong() % 10000));
-        // value = counter.intValue();
-        // response.getWriter().println(value);
-        // System.out.println(value + ":" + request);
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // } finally {
-        // counter.decrementAndGet();
-        // }
-
-        counter.incrementAndGet();
-        try {
-            String uri = request.getRequestURI();
-            for (Entry<String, String> entry : ERROR_PAGE_MAPPING.entrySet()) {
-                if (uri.startsWith(entry.getKey())) {
-                    RequestDispatcher rd = getServletContext().getRequestDispatcher(
-                            entry.getValue());
-                    rd.forward(request, response);
-                    return;
-                }
-            }
-            IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-            IRequestHandler requestHandler = osgiBootstrap.getService(HANDLER_CLASS);
-            if (requestHandler == null) {
-                ServletUtils.responseHttpError(response, 404, "No handler found!");
-                return;
-            }
-            requestHandler.handleRequest(request, response);
-        } finally {
-            counter.decrementAndGet();
-        }
-    }
+	protected void doHandleRequest(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		String uri = request.getRequestURI();
+		for (Entry<String, String> entry : ERROR_PAGE_MAPPING.entrySet()) {
+			if (uri.startsWith(entry.getKey())) {
+				RequestDispatcher rd = getServletContext()
+						.getRequestDispatcher(entry.getValue());
+				rd.forward(request, response);
+				return;
+			}
+		}
+		IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
+		IRequestHandler requestHandler = osgiBootstrap
+				.getService(HANDLER_CLASS);
+		if (requestHandler == null) {
+			ServletUtils.responseHttpError(response, 501, "No handler found!");
+			return;
+		}
+		requestHandler.handleRequest(request, response);
+	}
 }

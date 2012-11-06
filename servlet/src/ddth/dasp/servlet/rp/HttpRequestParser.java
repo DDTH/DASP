@@ -105,6 +105,28 @@ public class HttpRequestParser extends AbstractRequestParser {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public String getRequestModule() {
+		return getVirtualParameter(DaspConstants.PARAM_INDEX_MODULE);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getRequestAction() {
+		return getVirtualParameter(DaspConstants.PARAM_INDEX_ACTION);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getRequestAuthKey() {
+		return getVirtualParameter(DaspConstants.PARAM_INDEX_AUTHKEY);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Map<String, String> getUrlParameters() {
 		return Collections.unmodifiableMap(urlParams);
 	}
