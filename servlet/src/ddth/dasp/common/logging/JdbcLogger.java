@@ -8,7 +8,7 @@ import ddth.dasp.common.RequestLocal;
 /**
  * Application JDBC logger.
  * 
- * @author ThanhNB
+ * @author NBThanh <btnguyen2k@gmail.com>
  */
 public class JdbcLogger {
 

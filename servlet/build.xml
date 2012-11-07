@@ -12,7 +12,7 @@
 	</tstamp>
 	<property name="product.name" value="DASP" />
 	<property name="product.version" value="0.1.0" />
-	<property name="product.version.micro" value="0.1.0.${MICROSTAMP}" />
+	<property name="product.version.micro" value="${product.version}.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -24,10 +24,10 @@
 		<fileset dir="${dir.web.WEB_INF}/lib">
 			<include name="*.jar" />
 		</fileset>
-		<!--
-		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/spring">
+		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/03.spring">
 			<include name="*.jar" />
 		</fileset>
+		<!--
 		<fileset dir="${dir.web.WEB_INF}/osgi-container/bundles/springdm">
 			<include name="*.jar" />
 		</fileset>

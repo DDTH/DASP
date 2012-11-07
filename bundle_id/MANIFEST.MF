@@ -6,12 +6,18 @@ Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.id.osgi.DaspBundleActivator
 Bundle-ClassPath: .
 Require-Bundle: ddth.dasp.framework,
- org.springframework.web.servlet
+ org.springframework.web.servlet,
+ ddth.dasp.osgi.springaop,
+ org.springframework.aop,
+ org.springframework.aspects,
+ com.springsource.org.aopalliance,
+ com.springsource.org.aspectj.runtime,
+ com.springsource.net.sf.cglib
 Import-Package: ddth.dasp.common.api,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,
  ddth.dasp.common.rp,
  ddth.dasp.common.spring,
  ddth.dasp.common.utils,
- org.osgi.framework
-
+ org.osgi.framework,
+ sun.reflect

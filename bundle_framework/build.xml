@@ -5,6 +5,8 @@
 	<property name="dir.lib" value="lib" />
 	<property name="dir.META-INF" value="META-INF" />
 	<property name="dir.resources" value="../resources" />
+	<property name="dir.bundle_springaop" value="../bundle_springaop" />
+	<property name="dir.bundle_springaop.build" value="${dir.bundle_springaop}/build" />
 	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
@@ -28,6 +30,9 @@
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.platform_libs}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.bundle_springaop.build}">
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${dir.platform_bundles}/00.log">

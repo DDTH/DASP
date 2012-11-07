@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="servlet/classes" path="servlet/src"/>
+	<classpathentry kind="src" output="bundle_springaop/classes" path="bundle_springaop/src"/>
 	<classpathentry kind="src" output="bundle_handlersocket/classes" path="bundle_handlersocket/src"/>
 	<classpathentry kind="src" output="bundle_springmvc/classes" path="bundle_springmvc/src"/>
 	<classpathentry kind="src" output="bundle_status/classes" path="bundle_status/src"/>
@@ -63,5 +64,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/netty-3.5.3.Final.jar"/>
 	<classpathentry kind="lib" path="bundle_framework/lib/hazelcast-client-2.2.jar"/>
 	<classpathentry kind="lib" path="bundle_framework/lib/hazelcast-2.2.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.runtime-1.6.12.RELEASE.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.weaver-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

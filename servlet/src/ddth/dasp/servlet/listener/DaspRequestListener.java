@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.RequestLocal;
-import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.logging.JdbcConnLogger;
 import ddth.dasp.common.logging.JdbcLogEntry;
 import ddth.dasp.common.logging.JdbcLogger;
@@ -27,17 +26,18 @@ import ddth.dasp.servlet.rp.MalformedRequestException;
 public class DaspRequestListener implements ServletRequestListener {
 
 	private Logger LOGGER = LoggerFactory.getLogger(DaspRequestListener.class);
-	private static final IdGenerator idGen = IdGenerator
-			.getInstance(IdGenerator.getMacAddr());
 
-	protected static String generateId() {
-		long id = idGen.generateId64();
-		StringBuffer hex = new StringBuffer(Long.toHexString(id));
-		while (hex.length() < 16) {
-			hex.insert(0, '0');
-		}
-		return hex.toString();
-	}
+	// private static final IdGenerator idGen = IdGenerator
+	// .getInstance(IdGenerator.getMacAddr());
+
+	// protected static String generateId() {
+	// long id = idGen.generateId64();
+	// StringBuffer hex = new StringBuffer(Long.toHexString(id));
+	// while (hex.length() < 16) {
+	// hex.insert(0, '0');
+	// }
+	// return hex.toString();
+	// }
 
 	/**
 	 * {@inheritDoc}
@@ -101,14 +101,15 @@ public class DaspRequestListener implements ServletRequestListener {
 		HttpServletRequest request = (HttpServletRequest) event
 				.getServletRequest();
 
-		// init the request local and bound it to the current thread if needed.
+		// init the request local
 		RequestLocal requestLocal = RequestLocal.get();
 		if (requestLocal == null) {
 			requestLocal = new RequestLocal();
 			RequestLocal.set(requestLocal);
 		}
+		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_LOCAL, requestLocal);
 
-		String reqId = generateId();
+		String reqId = requestLocal.getId();
 		ProfileLogEntry logEntry = ProfileLogger.push(reqId);
 		logEntry.setRequestId(reqId);
 		logEntry.setClientId(request.getRemoteAddr());

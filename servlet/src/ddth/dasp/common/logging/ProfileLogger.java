@@ -23,7 +23,7 @@ import ddth.dasp.common.RequestLocal;
  * // do something with logEntry
  * </pre>
  * 
- * @author ThanhNB
+ * @author NBThanh <btnguyen2k@gmail.com>
  */
 public class ProfileLogger {
 

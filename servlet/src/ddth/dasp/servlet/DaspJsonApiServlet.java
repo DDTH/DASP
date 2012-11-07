@@ -118,9 +118,9 @@ public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 
 	protected void doHandleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		// init the request local and bound it to the current thread if needed.
 		RequestLocal oldRequestLocal = RequestLocal.get();
-		RequestLocal.set(new RequestLocal());
+		RequestLocal.set((RequestLocal) request
+				.getAttribute(DaspConstants.REQ_ATTR_REQUEST_LOCAL));
 		try {
 			String uri = request.getRequestURI();
 			if (uri.startsWith(contextPath)) {

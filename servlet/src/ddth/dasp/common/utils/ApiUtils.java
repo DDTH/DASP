@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.api.IApiGroupHandler;
 import ddth.dasp.common.api.IApiHandler;
+import ddth.dasp.common.logging.ProfileLogEntry;
+import ddth.dasp.common.logging.ProfileLogger;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 
 public class ApiUtils {
@@ -36,14 +38,35 @@ public class ApiUtils {
 	/**
 	 * Convenient to execute an API.
 	 * 
-	 * @param module
-	 * @param apiName
+	 * @param moduleName
+	 * @param functionName
+	 * @param apiParams
+	 * @param authKey
+	 * @param remoteAddr
+	 * @return
+	 */
+	public static Object executeApi(String moduleName, String functionName,
+			Object apiParams, String authKey, String remoteAddr) {
+		return executeApi(moduleName, functionName, apiParams, authKey,
+				remoteAddr, false);
+	}
+
+	/**
+	 * Convenient to execute an API.
+	 * 
+	 * @param moduleName
+	 * @param functionName
+	 * @param apiParams
+	 * @param authKey
+	 * @param remoteAddr
+	 * @param debugOutput
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static Object executeApi(String moduleName, String functionName,
-			Object apiParams, String authKey, String remoteAddr) {
-		long timestampStart = System.currentTimeMillis();
+			Object apiParams, String authKey, String remoteAddr,
+			boolean debugOutput) {
+		long timestampStart = System.nanoTime();
 		IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
 		Object result;
 		try {
@@ -86,18 +109,32 @@ public class ApiUtils {
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			ex.printStackTrace(printWriter);
+			Throwable rootCause = ex.getCause();
+			while (rootCause != null) {
+				rootCause.printStackTrace(printWriter);
+				rootCause = rootCause.getCause();
+			}
 			res.put("stacktrace", writer.toString());
 			result = res;
 			printWriter.close();
 		} finally {
 		}
+
 		if (result instanceof Map) {
 			Map<Object, Object> temp = (Map<Object, Object>) result;
 			Map<Object, Object> debug = new HashMap<Object, Object>();
 			temp.put("debug", debug);
 
-			long timestampEnd = System.currentTimeMillis();
-			debug.put("execution_time", (timestampEnd - timestampStart));
+			long timestampEnd = System.nanoTime();
+			debug.put("execution_time_millis",
+					(timestampEnd - timestampStart) / 1e6);
+
+			if (debugOutput || true) {
+				ProfileLogEntry profileLog = ProfileLogger.get();
+				if (profileLog != null) {
+					debug.put("profiling", profileLog.getProfiling());
+				}
+			}
 		}
 		return result;
 	}

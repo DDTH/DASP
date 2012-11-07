@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DASP Spring AOP
+Bundle-SymbolicName: ddth.dasp.osgi.springaop
+Bundle-Version: 0.1.0
+Export-Package: ddth.dasp.osgi.springaop,
+ ddth.dasp.osgi.springaop.profiling
+Require-Bundle: org.apache.commons.lang3,
+ com.springsource.org.aspectj.runtime
+Import-Package: ddth.dasp.common.logging

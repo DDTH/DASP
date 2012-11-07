@@ -5,6 +5,8 @@
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
 	<property name="dir.bundle_log4j" value="bundle_log4j" />
 	<property name="dir.bundle_log4j.build" value="${dir.bundle_log4j}/build" />
+	<property name="dir.bundle_springaop" value="bundle_springaop" />
+	<property name="dir.bundle_springaop.build" value="${dir.bundle_springaop}/build" />
 	<property name="dir.bundle_services" value="bundle_services" />
 	<property name="dir.bundle_services.build" value="${dir.bundle_services}/build" />
 	<property name="dir.bundle_id" value="bundle_id" />
@@ -20,10 +22,12 @@
 
 	<target name="release-interim" depends="build-development">
 		<antcall target="post-build" />
-		<copy todir="release/interim/jar" overwrite="true"
-			includeemptydirs="true">
+		<copy todir="release/interim/jar" overwrite="true" includeemptydirs="true">
 			<fileset dir="${dir.servlet.build}/web/WEB-INF/lib">
 				<include name="**/DASP-*.*" />
+			</fileset>
+			<fileset dir="${dir.bundle_springaop}/build">
+				<include name="**/ddth*.*" />
 			</fileset>
 			<fileset dir="${dir.bundle_framework}/build">
 				<include name="**/ddth*.*" />
@@ -37,6 +41,11 @@
 	<target name="clean">
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-springaop]...</echo>
+		<ant dir="${dir.bundle_springaop}" target="clean" />
 
 		<echo>
 		</echo>
@@ -67,6 +76,11 @@
 	<target name="build-development">
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-springaop]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_springaop}" target="build-development" />
 
 		<echo>
 		</echo>
@@ -104,6 +118,11 @@
 	<target name="build-production" depends="clean">
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-springaop]...</echo>
+		<ant dir="${dir.bundle_springaop}" target="build-production" />
 
 		<echo>
 		</echo>
@@ -155,6 +174,9 @@
 			<fileset dir="${dir.bundle_status.build}">
 				<include name="**/*.jar" />
 			</fileset>
+			<fileset dir="${dir.bundle_springaop.build}">
+				<include name="**/*.jar" />
+			</fileset>
 			<fileset dir="${dir.bundle_springmvc.build}">
 				<include name="**/*.jar" />
 			</fileset>
@@ -178,9 +200,7 @@
 		<property name="NUM_THREADS" value="4" />
 		<delete dir="test/classes" includeemptydirs="true" quiet="true" />
 		<mkdir dir="test/classes" />
-		<javac includeantruntime="false" srcdir="test/src" destdir="test/classes"
-			encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern"
-			source="1.6" target="1.6">
+		<javac includeantruntime="false" srcdir="test/src" destdir="test/classes" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
 			<classpath>
 				<path refid="path.lib" />
 			</classpath>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<bean id="_methodProfilerAspect" class="ddth.dasp.osgi.springaop.profiling.MethodProfilerAspect" />
+
+	<bean id="_idGen" class="ddth.dasp.common.id.IdGenerator"
+		factory-method="getInstance" scope="singleton">
+		<constructor-arg value="#{T(ddth.dasp.common.id.IdGenerator).getMacAddr()}">
+		</constructor-arg>
+	</bean>
+
+	<bean id="apiId64" class="ddth.dasp.id.api.Id64ApiHandler" scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId64" />
+	</bean>
+	<bean id="apiId64hex" class="ddth.dasp.id.api.Id64HexApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId64hex" />
+	</bean>
+	<bean id="apiId128" class="ddth.dasp.id.api.Id128ApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId128" />
+	</bean>
+	<bean id="apiId128hex" class="ddth.dasp.id.api.Id128HexApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId128hex" />
+	</bean>
+	<bean id="apiId48" class="ddth.dasp.id.api.Id48ApiHandler" scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId48" />
+	</bean>
+	<bean id="apiId48hex" class="ddth.dasp.id.api.Id48HexApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId48hex" />
+	</bean>
+</beans>

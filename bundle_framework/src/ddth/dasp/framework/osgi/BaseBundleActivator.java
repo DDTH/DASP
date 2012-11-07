@@ -46,241 +46,251 @@ import ddth.dasp.common.osgi.IRequireCleanupService;
  */
 public abstract class BaseBundleActivator implements BundleActivator {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(BaseBundleActivator.class);
-    private BundleContext bundleContext;
-    private Bundle bundle;
-    private Properties properties;
-    private List<ServiceRegistration<?>> registeredServices = new LinkedList<ServiceRegistration<?>>();
+	private final Logger LOGGER = LoggerFactory
+			.getLogger(BaseBundleActivator.class);
+	private BundleContext bundleContext;
+	private Bundle bundle;
+	private Properties properties;
+	private List<ServiceRegistration<?>> registeredServices = new LinkedList<ServiceRegistration<?>>();
 
-    /**
-     * Gets name of the associated bundle.
-     * 
-     * This method returns the bundle's symbolic name.
-     * 
-     * @return
-     */
-    public String getBundleName() {
-        return bundle.getSymbolicName();
-    }
+	/**
+	 * Gets name of the associated bundle.
+	 * 
+	 * This method returns the bundle's symbolic name.
+	 * 
+	 * @return
+	 */
+	public String getBundleName() {
+		return bundle.getSymbolicName();
+	}
 
-    protected BundleContext getBundleContext() {
-        return bundleContext;
-    }
+	protected BundleContext getBundleContext() {
+		return bundleContext;
+	}
 
-    protected void setBundleContext(BundleContext bundeContext) {
-        this.bundleContext = bundeContext;
-    }
+	protected void setBundleContext(BundleContext bundeContext) {
+		this.bundleContext = bundeContext;
+	}
 
-    protected Bundle getBundle() {
-        return bundle;
-    }
+	protected Bundle getBundle() {
+		return bundle;
+	}
 
-    protected void setBundle(Bundle bundle) {
-        this.bundle = bundle;
-    }
+	protected void setBundle(Bundle bundle) {
+		this.bundle = bundle;
+	}
 
-    protected Properties getProperties() {
-        return properties;
-    }
+	protected Properties getProperties() {
+		return properties;
+	}
 
-    protected void setProperties(Properties properties) {
-        this.properties = properties;
-    }
+	protected void setProperties(Properties properties) {
+		this.properties = properties;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        setBundleContext(bundleContext);
-        setBundle(bundleContext.getBundle());
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void start(BundleContext bundleContext) throws Exception {
+		setBundleContext(bundleContext);
+		setBundle(bundleContext.getBundle());
 
-        long myId = this.bundle.getBundleId();
-        String myName = this.bundle.getSymbolicName();
-        Bundle[] currentBundles = bundleContext.getBundles();
-        for (Bundle bundle : currentBundles) {
-            if (myId != bundle.getBundleId() && myName.equals(bundle.getSymbolicName())) {
-                // found another version of me
-                handlerAnotherVersionAtStartup(bundle);
-            }
-        }
+		long myId = this.bundle.getBundleId();
+		String myName = this.bundle.getSymbolicName();
+		Bundle[] currentBundles = bundleContext.getBundles();
+		for (Bundle bundle : currentBundles) {
+			if (myId != bundle.getBundleId()
+					&& myName.equals(bundle.getSymbolicName())) {
+				// found another version of me
+				handlerAnotherVersionAtStartup(bundle);
+			}
+		}
 
-        Properties props = new Properties();
-        // String version = (String) bundle.getHeaders().get(
-        // Constants.BUNDLE_VERSION);
-        props.put("Version", bundle.getVersion().toString());
-        String moduleName = getModuleName();
-        if (!StringUtils.isEmpty(moduleName)) {
-            props.put("Module", moduleName);
-        }
-        setProperties(props);
+		Properties props = new Properties();
+		// String version = (String) bundle.getHeaders().get(
+		// Constants.BUNDLE_VERSION);
+		props.put("Version", bundle.getVersion().toString());
+		String moduleName = getModuleName();
+		if (!StringUtils.isEmpty(moduleName)) {
+			props.put("Module", moduleName);
+		}
+		setProperties(props);
 
-        registerSpringMvcHandlerMapping();
-        registerSpringMvcViewResolver();
+		registerSpringMvcHandlerMapping();
+		registerSpringMvcViewResolver();
 
-        registerServices();
-    }
+		registerServices();
+	}
 
-    /**
-     * Called when another version of this bundle is found in the bundle
-     * context.
-     * 
-     * This method stops the other bundle if it's an old version of the current
-     * bundle. Sub-class may override this method to implement its own business
-     * logic.
-     * 
-     * @param bundle
-     * @throws BundleException
-     */
-    protected void handlerAnotherVersionAtStartup(Bundle bundle) throws BundleException {
-        Version myVersion = this.bundle.getVersion();
-        Version otherVersion = bundle.getVersion();
-        if (myVersion.compareTo(otherVersion) > 0) {
-            String msg = "Found an older version of me [" + bundle + "], stopping it!";
-            LOGGER.info(msg);
-            bundle.stop();
-        }
-    }
+	/**
+	 * Called when another version of this bundle is found in the bundle
+	 * context.
+	 * 
+	 * This method stops the other bundle if it's an old version of the current
+	 * bundle. Sub-class may override this method to implement its own business
+	 * logic.
+	 * 
+	 * @param bundle
+	 * @throws BundleException
+	 */
+	protected void handlerAnotherVersionAtStartup(Bundle bundle)
+			throws BundleException {
+		Version myVersion = this.bundle.getVersion();
+		Version otherVersion = bundle.getVersion();
+		if (myVersion.compareTo(otherVersion) > 0) {
+			String msg = "Found an older version of me [" + bundle
+					+ "], stopping it!";
+			LOGGER.info(msg);
+			bundle.stop();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        unregisterServices();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void stop(BundleContext bundleContext) throws Exception {
+		unregisterServices();
+	}
 
-    /**
-     * Registers module's Spring's {@link HandlerMapping}.
-     */
-    protected void registerSpringMvcHandlerMapping() {
-        String moduleName = getModuleName();
-        HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
-        if (StringUtils.isEmpty(moduleName) || handlerMapping == null) {
-            return;
-        }
-        registerService(HandlerMapping.class.getName(), handlerMapping, getProperties());
-    }
+	/**
+	 * Registers module's Spring's {@link HandlerMapping}.
+	 */
+	protected void registerSpringMvcHandlerMapping() {
+		String moduleName = getModuleName();
+		HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
+		if (StringUtils.isEmpty(moduleName) || handlerMapping == null) {
+			return;
+		}
+		registerService(HandlerMapping.class.getName(), handlerMapping,
+				getProperties());
+	}
 
-    /**
-     * Registers module's Spring's {@link ViewResolver}.
-     */
-    protected void registerSpringMvcViewResolver() {
-        String moduleName = getModuleName();
-        ViewResolver viewResolver = getSpringMvcViewResolver();
-        if (StringUtils.isEmpty(moduleName) || viewResolver == null) {
-            return;
-        }
-        registerService(ViewResolver.class.getName(), viewResolver, getProperties());
-    }
+	/**
+	 * Registers module's Spring's {@link ViewResolver}.
+	 */
+	protected void registerSpringMvcViewResolver() {
+		String moduleName = getModuleName();
+		ViewResolver viewResolver = getSpringMvcViewResolver();
+		if (StringUtils.isEmpty(moduleName) || viewResolver == null) {
+			return;
+		}
+		registerService(ViewResolver.class.getName(), viewResolver,
+				getProperties());
+	}
 
-    /**
-     * Gets the module's name.
-     * 
-     * This method simply returns <code>null</code>.
-     * 
-     * @return
-     */
-    protected String getModuleName() {
-        return null;
-    }
+	/**
+	 * Gets the module's name.
+	 * 
+	 * This method simply returns <code>null</code>.
+	 * 
+	 * @return
+	 */
+	protected String getModuleName() {
+		return null;
+	}
 
-    /**
-     * Gets the module's SpringMVC's {@link HandlerMapping}.
-     * 
-     * This method simply returns <code>null</code>.
-     * 
-     * @return
-     */
-    protected HandlerMapping getSpringMvcHandlerMapping() {
-        return null;
-    }
+	/**
+	 * Gets the module's SpringMVC's {@link HandlerMapping}.
+	 * 
+	 * This method simply returns <code>null</code>.
+	 * 
+	 * @return
+	 */
+	protected HandlerMapping getSpringMvcHandlerMapping() {
+		return null;
+	}
 
-    /**
-     * Gets the module's SpringMVC's {@link ViewResolver}.
-     * 
-     * This method simply returns <code>null</code>.
-     * 
-     * @return
-     */
-    protected ViewResolver getSpringMvcViewResolver() {
-        return null;
-    }
+	/**
+	 * Gets the module's SpringMVC's {@link ViewResolver}.
+	 * 
+	 * This method simply returns <code>null</code>.
+	 * 
+	 * @return
+	 */
+	protected ViewResolver getSpringMvcViewResolver() {
+		return null;
+	}
 
-    protected List<ServiceInfo> getServiceInfoList() {
-        return null;
-    }
+	protected List<ServiceInfo> getServiceInfoList() {
+		return null;
+	}
 
-    /**
-     * Registers OSGi services provided by this module.
-     */
-    protected void registerServices() {
-        List<ServiceInfo> serviceInfoList = getServiceInfoList();
-        if (serviceInfoList == null || serviceInfoList.size() == 0) {
-            return;
-        }
-        for (ServiceInfo serviceInfo : serviceInfoList) {
-            Properties props = serviceInfo.getProperties();
-            props.putAll(getProperties());
-            registerService(serviceInfo.getClassName(), serviceInfo.getService(), props);
-        }
-    }
+	/**
+	 * Registers OSGi services provided by this module.
+	 */
+	protected void registerServices() {
+		List<ServiceInfo> serviceInfoList = getServiceInfoList();
+		if (serviceInfoList == null || serviceInfoList.size() == 0) {
+			return;
+		}
+		for (ServiceInfo serviceInfo : serviceInfoList) {
+			Properties props = new Properties();
+			props.putAll(getProperties());
+			props.putAll(serviceInfo.getProperties());
+			registerService(serviceInfo.getClassName(),
+					serviceInfo.getService(), props);
+		}
+	}
 
-    /**
-     * Unregisters registered services. Services registered via
-     * {@link #registerService(String, Object, Properties)} will be
-     * unregistered.
-     * 
-     * This method is automatically called by {@link #stop(BundleContext)}.
-     * 
-     */
-    protected void unregisterServices() {
-        for (ServiceRegistration<?> sr : registeredServices) {
-            try {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Unregistering service [" + sr + "]...");
-                }
-                Object service = bundleContext.getService(sr.getReference());
-                if (service instanceof IRequireCleanupService) {
-                    ((IRequireCleanupService) service).destroy();
-                }
-            } catch (Exception e) {
-                LOGGER.warn(e.getMessage(), e);
-            } finally {
-                sr.unregister();
-            }
-        }
-    }
+	/**
+	 * Unregisters registered services. Services registered via
+	 * {@link #registerService(String, Object, Properties)} will be
+	 * unregistered.
+	 * 
+	 * This method is automatically called by {@link #stop(BundleContext)}.
+	 * 
+	 */
+	protected void unregisterServices() {
+		for (ServiceRegistration<?> sr : registeredServices) {
+			try {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Unregistering service [" + sr + "]...");
+				}
+				Object service = bundleContext.getService(sr.getReference());
+				if (service instanceof IRequireCleanupService) {
+					((IRequireCleanupService) service).destroy();
+				}
+			} catch (Exception e) {
+				LOGGER.warn(e.getMessage(), e);
+			} finally {
+				sr.unregister();
+			}
+		}
+	}
 
-    /**
-     * Convenient method for sub-class to register one service.
-     * 
-     * @param className
-     *            String
-     * @param service
-     *            Object
-     * @param props
-     *            properties
-     * @return ServiceRegistration
-     */
-    protected ServiceRegistration<?> registerService(String className, Object service,
-            Properties props) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Registering service [" + className + "] with properties " + props);
-        }
-        if (service instanceof IBundleAwareService) {
-            ((IBundleAwareService) service).setBundle(bundle);
-        }
-        // ServiceRegistration sr = bundleContext.registerService(name, service,
-        // props);
-        Dictionary<String, Object> dProps = new Hashtable<String, Object>();
-        for (Entry<Object, Object> entry : props.entrySet()) {
-            dProps.put(entry.getKey().toString(), entry.getValue());
-        }
-        ServiceRegistration<?> sr = bundleContext.registerService(className, service, dProps);
-        if (sr != null) {
-            registeredServices.add(sr);
-        }
-        return sr;
-    }
+	/**
+	 * Convenient method for sub-class to register one service.
+	 * 
+	 * @param className
+	 *            String
+	 * @param service
+	 *            Object
+	 * @param props
+	 *            properties
+	 * @return ServiceRegistration
+	 */
+	protected ServiceRegistration<?> registerService(String className,
+			Object service, Properties props) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Registering service [" + className
+					+ "] with properties " + props);
+		}
+		if (service instanceof IBundleAwareService) {
+			((IBundleAwareService) service).setBundle(bundle);
+		}
+		// ServiceRegistration sr = bundleContext.registerService(name, service,
+		// props);
+		Dictionary<String, Object> dProps = new Hashtable<String, Object>();
+		for (Entry<Object, Object> entry : props.entrySet()) {
+			dProps.put(entry.getKey().toString(), entry.getValue());
+		}
+		ServiceRegistration<?> sr = bundleContext.registerService(className,
+				service, dProps);
+		if (sr != null) {
+			registeredServices.add(sr);
+		}
+		return sr;
+	}
 }
