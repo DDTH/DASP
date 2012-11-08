@@ -12,7 +12,9 @@
 		http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<aop:aspectj-autoproxy proxy-target-class="true">
+		<aop:include name="_methodProfilerAspect" />
+	</aop:aspectj-autoproxy>
 	<bean id="_methodProfilerAspect" class="ddth.dasp.osgi.springaop.profiling.MethodProfilerAspect" />
 
 	<bean id="_idGen" class="ddth.dasp.common.id.IdGenerator"
