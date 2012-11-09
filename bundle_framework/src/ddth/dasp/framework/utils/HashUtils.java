@@ -7,7 +7,7 @@ import com.google.common.hash.Hashing;
 
 public class HashUtils {
 
-	private final static HashFunction hashFunction = Hashing.goodFastHash(128);
+	private final static HashFunction hashFunction = Hashing.murmur3_128(0);
 	private final static Charset UTF8 = Charset.forName("UTF-8");
 
 	/**
