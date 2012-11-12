@@ -12,6 +12,8 @@
 		<property name="handlerMapping">
 			<map>
 				<entry key="*" value-ref="controllerHome" />
+				<entry key="server" value-ref="controllerServerStatus" />
+				<entry key="osgi" value-ref="controllerOsgiStatus" />
 			</map>
 		</property>
 	</bean>
@@ -41,5 +43,9 @@
 	</bean>
 
 	<bean id="controllerHome" class="ddth.dasp.status.controller.HomeController"
+		scope="singleton" lazy-init="true"></bean>
+	<bean id="controllerServerStatus" class="ddth.dasp.status.controller.ServerStatusController"
+		scope="singleton" lazy-init="true"></bean>
+	<bean id="controllerOsgiStatus" class="ddth.dasp.status.controller.OsgiStatusController"
 		scope="singleton" lazy-init="true"></bean>
 </beans>

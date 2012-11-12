@@ -1,0 +1,1 @@
+<#assign CONTENT_FILE="content_osgi.ftl"><#include "inc_layout.ftl">

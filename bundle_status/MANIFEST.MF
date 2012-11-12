@@ -5,7 +5,9 @@ Bundle-SymbolicName: ddth.dasp.status
 Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.status.osgi.DaspBundleActivator
 Bundle-ClassPath: .
-Require-Bundle: ddth.dasp.framework,org.springframework.web.servlet
+Require-Bundle: ddth.dasp.framework,
+ org.springframework.web.servlet,
+ org.springframework.web
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,

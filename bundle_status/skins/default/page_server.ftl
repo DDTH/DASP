@@ -1,0 +1,1 @@
+<#assign CONTENT_FILE="content_server.ftl"><#include "inc_layout.ftl">

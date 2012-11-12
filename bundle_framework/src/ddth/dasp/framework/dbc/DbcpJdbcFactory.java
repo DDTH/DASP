@@ -18,68 +18,6 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(DbcpJdbcFactory.class);
 
-	protected final static int DEFAULT_MAX_ACTIVE = 8;
-	protected final static int DEFAULT_MAX_IDLE = 4;
-	protected final static long DEFAULT_MAX_WAIT = DEFAULT_MAX_CONNECTION_LIFETIME + 1000;
-	protected final static int DEFAULT_MIN_IDLE = 1;
-
-	private int maxActive = DEFAULT_MAX_ACTIVE, maxIdle = DEFAULT_MAX_IDLE,
-			minIdle = DEFAULT_MIN_IDLE;
-	private long maxWait = DEFAULT_MAX_WAIT;
-
-	/**
-	 * Gets default pool's max active connections.
-	 * 
-	 * @return int
-	 */
-	public int getMaxActive() {
-		return maxActive;
-	}
-
-	/**
-	 * Sets default pool's max active connections.
-	 * 
-	 * @param maxActive
-	 *            int
-	 */
-	public void setMaxActive(int maxActive) {
-		this.maxActive = maxActive;
-	}
-
-	/**
-	 * Gets default pool's max idle connections.
-	 * 
-	 * @return int
-	 */
-	public int getMaxIdle() {
-		return maxIdle;
-	}
-
-	/**
-	 * Sets default pool's max idle connections.
-	 * 
-	 * @param maxIdle
-	 */
-	public void setMaxIdle(int maxIdle) {
-		this.maxIdle = maxIdle;
-	}
-
-	public int getMinIdle() {
-		return minIdle;
-	}
-
-	public void setMinIdle(int minIdle) {
-		this.minIdle = minIdle;
-	}
-
-	public long getMaxWait() {
-		return maxWait;
-	}
-
-	public void setMaxWait(long maxWait) {
-		this.maxWait = maxWait;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -100,10 +38,27 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
 	@Override
 	protected DataSource buildDataSource(String driver, String connUrl,
 			String username, String password) {
+		return buildDataSource(driver, connUrl, username, password, null);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected DataSource buildDataSource(String driver, String connUrl,
+			String username, String password, DbcpInfo dbcpInfo) {
+		int maxActive = dbcpInfo != null ? dbcpInfo.getMaxActive()
+				: DbcpInfo.DEFAULT_MAX_ACTIVE;
+		long maxWaitTime = dbcpInfo != null ? dbcpInfo.getMaxWaitTime()
+				: DbcpInfo.DEFAULT_MAX_WAIT_TIME;
+		int maxIdle = dbcpInfo != null ? dbcpInfo.getMaxIdle()
+				: DbcpInfo.DEFAULT_MAX_IDLE;
+		int minIdle = dbcpInfo != null ? dbcpInfo.getMinIdle()
+				: DbcpInfo.DEFAULT_MIN_IDLE;
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Building a datasource {driver:" + driver
 					+ ";connUrl:" + connUrl + ";username:" + username
-					+ ";maxActive:" + maxActive + ";maxWait:" + maxWait
+					+ ";maxActive:" + maxActive + ";maxWait:" + maxWaitTime
 					+ ";minIdle:" + minIdle + ";maxIdle:" + maxIdle + "}...");
 		}
 		BasicDataSource ds = new BasicDataSource();
@@ -113,15 +68,15 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
 		ds.setPassword(password);
 		ds.setMaxActive(maxActive);
 		ds.setMaxIdle(maxIdle);
-		ds.setMaxWait(maxWait);
+		ds.setMaxWait(maxWaitTime);
 		ds.setMinIdle(minIdle);
 		String validationQuery = getValidationQuery(driver);
 		if (!StringUtils.isBlank(validationQuery)) {
 			ds.setValidationQuery(validationQuery);
 			// PostgreSQL still not support the set query timeout method
 			if (driver != null && !driver.contains("postgresql")) {
-				// set the validation query timeout to 2 seconds
-				ds.setValidationQueryTimeout(2);
+				// set the validation query timeout to 1 second
+				ds.setValidationQueryTimeout(1);
 			}
 		}
 		return ds;

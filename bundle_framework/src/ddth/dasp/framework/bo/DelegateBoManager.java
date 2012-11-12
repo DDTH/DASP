@@ -9,26 +9,28 @@ import java.lang.reflect.Method;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class DelegateBoManager extends CachedBoManager {
+public abstract class DelegateBoManager extends CacheBoManager {
 
-    private BaseBoManager delegatedBoManager;
+	private BaseBoManager delegatedBoManager;
 
-    protected BaseBoManager getDelegatedBoManager() {
-        return delegatedBoManager;
-    }
+	protected BaseBoManager getDelegatedBoManager() {
+		return delegatedBoManager;
+	}
 
-    public void setDelegatedBoManager(BaseBoManager delegatedBoManager) {
-        this.delegatedBoManager = delegatedBoManager;
-    }
+	public void setDelegatedBoManager(BaseBoManager delegatedBoManager) {
+		this.delegatedBoManager = delegatedBoManager;
+	}
 
-    protected Object delegate(String methodName, Object[] params, Class<?>[] paramTypes)
-            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            IllegalAccessException, InvocationTargetException {
-        if (delegatedBoManager == null) {
-            return null;
-        }
-        Method m = delegatedBoManager.getClass().getMethod(methodName, paramTypes);
-        Object result = m.invoke(delegatedBoManager, params);
-        return result;
-    }
+	protected Object delegate(String methodName, Object[] params,
+			Class<?>[] paramTypes) throws SecurityException,
+			NoSuchMethodException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException {
+		if (delegatedBoManager == null) {
+			return null;
+		}
+		Method m = delegatedBoManager.getClass().getMethod(methodName,
+				paramTypes);
+		Object result = m.invoke(delegatedBoManager, params);
+		return result;
+	}
 }
