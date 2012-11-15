@@ -67,7 +67,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements
 		 */
 		BundleContext bundleContext = getBundleContext();
 		if (bundleContext != null) {
-			OsgiUtils.getService(bundleContext, IJdbcFactory.class);
+			return OsgiUtils.getService(bundleContext, IJdbcFactory.class);
 		}
 		return null;
 	}
