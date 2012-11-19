@@ -25,6 +25,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import ddth.dasp.common.rp.IRequestParser;
+import ddth.dasp.common.rp.MalformedRequestException;
 import ddth.dasp.common.rp.RequestParsingInteruptedException;
 import ddth.dasp.common.utils.DaspConstants;
 import ddth.dasp.common.utils.ServletUtils;

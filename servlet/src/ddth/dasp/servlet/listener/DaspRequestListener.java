@@ -16,12 +16,12 @@ import ddth.dasp.common.logging.JdbcLogger;
 import ddth.dasp.common.logging.ProfileLogEntry;
 import ddth.dasp.common.logging.ProfileLogger;
 import ddth.dasp.common.rp.IRequestParser;
+import ddth.dasp.common.rp.MalformedRequestException;
 import ddth.dasp.common.rp.RequestParsingInteruptedException;
 import ddth.dasp.common.tempdir.TempDir;
 import ddth.dasp.common.utils.DaspConstants;
 import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.servlet.rp.HttpRequestParser;
-import ddth.dasp.servlet.rp.MalformedRequestException;
 
 public class DaspRequestListener implements ServletRequestListener {
 

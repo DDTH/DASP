@@ -1,4 +1,4 @@
-package ddth.dasp.servlet.rp;
+package ddth.dasp.common.rp;
 
 /**
  * This exception indicates that the request is malformed.
