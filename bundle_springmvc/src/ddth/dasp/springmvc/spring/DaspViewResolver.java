@@ -19,6 +19,7 @@ public class DaspViewResolver extends AbstractCachingViewResolver {
 
     private Logger LOGGER = LoggerFactory.getLogger(DaspViewResolver.class);
     private final static Class<ViewResolver> SERVICE_CLASS = ViewResolver.class;
+    public final static String REDIRECT_WITH_MODELS = "redirectModels:";
 
     @Override
     protected View loadView(String viewName, Locale locale) throws Exception {
@@ -35,6 +36,8 @@ public class DaspViewResolver extends AbstractCachingViewResolver {
         String moduleName = tokens[0];
 
         if ("redirect".equalsIgnoreCase(moduleName) || "forward".equalsIgnoreCase(moduleName)) {
+            return new RedirectView(tokens[1], true, true, false);
+        } else if (REDIRECT_WITH_MODELS.equalsIgnoreCase(moduleName)) {
             return new RedirectView(tokens[1]);
         }
 
