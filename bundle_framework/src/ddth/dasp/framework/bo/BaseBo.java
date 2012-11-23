@@ -57,6 +57,14 @@ public abstract class BaseBo implements IBo {
         return Boolean.parseBoolean(value.toString());
     }
 
+    protected Character toCharacter(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String str = value.toString();
+        return str.length() > 0 ? str.charAt(0) : null;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -71,8 +79,12 @@ public abstract class BaseBo implements IBo {
             Class<?> boAttrType = (Class<?>) boInfo[1];
             Object boValue = data.get(externalField);
 
-            if (boAttrType == boolean.class || boAttrType == Boolean.class) {
+            if ((boAttrType == boolean.class || boAttrType == Boolean.class)
+                    && !(boValue instanceof Boolean)) {
                 boValue = toBoolean(boValue);
+            } else if ((boAttrType == char.class || boAttrType == Character.class)
+                    && !(boValue instanceof Character)) {
+                boValue = toCharacter(boValue);
             }
 
             String methodName = "set" + WordUtils.capitalize(boAttr);
