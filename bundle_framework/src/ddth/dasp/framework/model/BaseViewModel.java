@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -30,12 +31,19 @@ public class BaseViewModel<T> implements InvocationHandler {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private IUrlCreator urlCreator;
+    private List<Object> optionalAttrs = new LinkedList<Object>();
 
-    private static <T> BaseViewModel<T> initModelObj(BaseViewModel<T> model,
-            HttpServletRequest request, HttpServletResponse response, IUrlCreator urlCreator) {
+    protected static <T> BaseViewModel<T> initModelObj(BaseViewModel<T> model,
+            HttpServletRequest request, HttpServletResponse response, IUrlCreator urlCreator,
+            Object... optionalAttrs) {
         model.setHttpRequest(request);
         model.setHttpResponse(response);
         model.setUrlCreator(urlCreator);
+        if (optionalAttrs != null) {
+            for (Object obj : optionalAttrs) {
+                model.optionalAttrs.add(obj);
+            }
+        }
         return model;
     }
 
@@ -46,12 +54,13 @@ public class BaseViewModel<T> implements InvocationHandler {
      * @param response
      * @param urlCreator
      * @param obj
+     * @param optionalAttrs
      * @return
      */
     public static <T> BaseViewModel<T> createModelNoProxy(HttpServletRequest request,
-            HttpServletResponse response, IUrlCreator urlCreator, T obj) {
+            HttpServletResponse response, IUrlCreator urlCreator, T obj, Object... optionalAttrs) {
         BaseViewModel<T> model = new BaseViewModel<T>(obj);
-        return initModelObj(model, request, response, urlCreator);
+        return initModelObj(model, request, response, urlCreator, optionalAttrs);
     }
 
     /**
@@ -61,14 +70,16 @@ public class BaseViewModel<T> implements InvocationHandler {
      * @param response
      * @param urlCreator
      * @param objs
+     * @param optionalAttrs
      * @return
      */
     @SuppressWarnings("unchecked")
     public static <T> BaseViewModel<T>[] createModelNoProxy(HttpServletRequest request,
-            HttpServletResponse response, IUrlCreator urlCreator, T[] objs) {
+            HttpServletResponse response, IUrlCreator urlCreator, T[] objs, Object... optionalAttrs) {
         List<BaseViewModel<T>> result = new ArrayList<BaseViewModel<T>>();
         for (T obj : objs) {
-            BaseViewModel<T> t = createModelNoProxy(request, response, urlCreator, obj);
+            BaseViewModel<T> t = createModelNoProxy(request, response, urlCreator, obj,
+                    optionalAttrs);
             if (t != null) {
                 result.add(t);
             }
@@ -85,12 +96,14 @@ public class BaseViewModel<T> implements InvocationHandler {
      * @param response
      * @param urlCreator
      * @param obj
+     * @param optionalAttrs
      * @return
      */
     @SuppressWarnings("unchecked")
     public static <T> T createModel(HttpServletRequest request, HttpServletResponse response,
-            IUrlCreator urlCreator, T obj) {
-        BaseViewModel<T> model = createModelNoProxy(request, response, urlCreator, obj);
+            IUrlCreator urlCreator, T obj, Object... optionalAttrs) {
+        BaseViewModel<T> model = createModelNoProxy(request, response, urlCreator, obj,
+                optionalAttrs);
         return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass()
                 .getInterfaces(), model);
     }
@@ -105,13 +118,14 @@ public class BaseViewModel<T> implements InvocationHandler {
      * @param response
      * @param urlCreator
      * @param objs
+     * @param optionalAttrs
      * @return
      */
     public static <T> Object[] createModel(HttpServletRequest request,
-            HttpServletResponse response, IUrlCreator urlCreator, T[] objs) {
+            HttpServletResponse response, IUrlCreator urlCreator, T[] objs, Object... optionalAttrs) {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(request, response, urlCreator, obj);
+            T t = createModel(request, response, urlCreator, obj, optionalAttrs);
             if (t != null) {
                 result.add(t);
             }
@@ -122,9 +136,9 @@ public class BaseViewModel<T> implements InvocationHandler {
     @SuppressWarnings("unchecked")
     public static <T> T createModel(HttpServletRequest request, HttpServletResponse response,
             IUrlCreator urlCreator, Class<? extends BaseViewModel<T>> modelClazz,
-            Class<?> targetClass, T obj) throws SecurityException, NoSuchMethodException,
-            IllegalArgumentException, InstantiationException, IllegalAccessException,
-            InvocationTargetException {
+            Class<?> targetClass, T obj, Object... optionalAttrs) throws SecurityException,
+            NoSuchMethodException, IllegalArgumentException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
         // interfaces that the proxy will implement
         List<Class<?>> proxyInterfaceList = new ArrayList<Class<?>>();
 
@@ -159,7 +173,7 @@ public class BaseViewModel<T> implements InvocationHandler {
                 .getDeclaredConstructor(targetClass);
         c.setAccessible(true);
         BaseViewModel<T> model = c.newInstance(obj);
-        initModelObj(model, request, response, urlCreator);
+        initModelObj(model, request, response, urlCreator, optionalAttrs);
 
         // create a combined class loader for the proxy to use.
         CombinedClassLoader combinedClassLoader = new CombinedClassLoader();
@@ -174,12 +188,14 @@ public class BaseViewModel<T> implements InvocationHandler {
 
     public static <T> Object[] createModel(HttpServletRequest request,
             HttpServletResponse response, IUrlCreator urlCreator,
-            Class<? extends BaseViewModel<T>> modelClazz, Class<?> targetClass, T[] objs)
-            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
+            Class<? extends BaseViewModel<T>> modelClazz, Class<?> targetClass, T[] objs,
+            Object... optionalAttrs) throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, InstantiationException, IllegalAccessException,
+            InvocationTargetException {
         List<T> result = new ArrayList<T>();
         for (T obj : objs) {
-            T t = createModel(request, response, urlCreator, modelClazz, targetClass, obj);
+            T t = createModel(request, response, urlCreator, modelClazz, targetClass, obj,
+                    optionalAttrs);
             if (t != null) {
                 result.add(t);
             }
@@ -221,6 +237,16 @@ public class BaseViewModel<T> implements InvocationHandler {
 
     protected IUrlCreator getUrlCreator() {
         return urlCreator;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <K> K getOptionalAttr(Class<K> clazz) {
+        for (Object obj : optionalAttrs) {
+            if (clazz.isAssignableFrom(obj.getClass())) {
+                return (K) obj;
+            }
+        }
+        return null;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
