@@ -33,7 +33,7 @@ public class BaseViewModel<T> implements InvocationHandler {
     private IUrlCreator urlCreator;
     private List<Object> optionalAttrs = new LinkedList<Object>();
 
-    protected static <T> BaseViewModel<T> initModelObj(BaseViewModel<T> model,
+    private static <T> BaseViewModel<T> initModelObj(BaseViewModel<T> model,
             HttpServletRequest request, HttpServletResponse response, IUrlCreator urlCreator,
             Object... optionalAttrs) {
         model.setHttpRequest(request);
@@ -44,7 +44,12 @@ public class BaseViewModel<T> implements InvocationHandler {
                 model.optionalAttrs.add(obj);
             }
         }
+        model.init();
         return model;
+    }
+
+    protected void init() {
+        // EMPTY
     }
 
     /**
