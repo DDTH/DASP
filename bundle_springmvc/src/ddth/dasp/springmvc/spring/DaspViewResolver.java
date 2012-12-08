@@ -34,11 +34,13 @@ public class DaspViewResolver extends AbstractCachingViewResolver {
         }
 
         String moduleName = tokens[0];
-
-        if ("redirect".equalsIgnoreCase(moduleName) || "forward".equalsIgnoreCase(moduleName)) {
-            return new RedirectView(tokens[1], true, true, false);
-        } else if (REDIRECT_WITH_MODELS.equalsIgnoreCase(moduleName)) {
-            return new RedirectView(tokens[1]);
+        if ("redirect".equalsIgnoreCase(moduleName) || "forward".equalsIgnoreCase(moduleName)
+                || REDIRECT_WITH_MODELS.equalsIgnoreCase(moduleName)) {
+            boolean contextRelative = !tokens[1].startsWith("/");
+            boolean http10Compatible = true;
+            boolean exposeModels = !("redirect".equalsIgnoreCase(moduleName) || "forward"
+                    .equalsIgnoreCase(moduleName));
+            return new RedirectView(tokens[1], contextRelative, http10Compatible, exposeModels);
         }
 
         if (StringUtils.isBlank(moduleName)) {
