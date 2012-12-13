@@ -85,8 +85,8 @@ public class JdbcUtils {
         if (params != null && params.length > 0) {
             int index = 1;
             for (Object param : params) {
-                if (param instanceof String) {
-                    stmt.setString(index, (String) param);
+                if (param instanceof String || param instanceof Character) {
+                    stmt.setString(index, param.toString());
                 } else if (param instanceof Integer) {
                     stmt.setInt(index, (Integer) param);
                 } else if (param instanceof Long) {
