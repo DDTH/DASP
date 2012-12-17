@@ -94,7 +94,9 @@ public abstract class BaseBo implements IBo {
                 LOGGER.debug(msg);
             }
             try {
-                Method method = myClass.getDeclaredMethod(methodName, boAttrType);
+                // Method method = myClass.getDeclaredMethod(methodName,
+                // boAttrType);
+                Method method = myClass.getMethod(methodName, boAttrType);
                 if (method != null) {
                     method.setAccessible(true);
                     method.invoke(this, boValue);
