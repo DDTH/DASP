@@ -47,6 +47,9 @@
 		<fileset dir="${dir.platform_bundles}/04.springdm">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${dir.platform_bundles}/05.google">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<target name="clean">
