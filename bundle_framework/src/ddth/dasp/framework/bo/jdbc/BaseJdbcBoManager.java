@@ -457,9 +457,12 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 while (rs.next()) {
                     Map<String, Object> obj = new HashMap<String, Object>();
                     for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
-                        String colName = rsMetaData.getColumnName(i);
-                        Object value = rs.getObject(colName);
-                        obj.put(colName, value);
+                        String colLabel = rsMetaData.getColumnLabel(i);
+                        if (StringUtils.isEmpty(colLabel)) {
+                            colLabel = rsMetaData.getColumnName(i);
+                        }
+                        Object value = rs.getObject(colLabel);
+                        obj.put(colLabel, value);
                     }
                     result.add(obj);
                 }
