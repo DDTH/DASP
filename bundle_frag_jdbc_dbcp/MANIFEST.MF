@@ -5,5 +5,7 @@ Bundle-SymbolicName: ddth.dasp.osgi.jdbcdbcpfrag
 Bundle-Version: 0.1.0
 Fragment-Host: org.apache.commons.dbcp
 Bundle-ClassPath: .,
- jdbc-mysql-5.1.22-bin.jar
-
+ jdbc-mysql-5.1.22-bin.jar,
+ jdbc-mssql.jar,
+ jdbc-oracle6.jar,
+ jdbc-postgresql-9.0-801.jar
