@@ -5,6 +5,8 @@
 	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
 	<property name="dir.bundle_log4j" value="bundle_log4j" />
 	<property name="dir.bundle_log4j.build" value="${dir.bundle_log4j}/build" />
+	<property name="dir.bundle_frag_jdbc_dbcp" value="bundle_frag_jdbc_dbcp" />
+	<property name="dir.bundle_frag_jdbc_dbcp.build" value="${dir.bundle_frag_jdbc_dbcp}/build" />
 	<property name="dir.bundle_springaop" value="bundle_springaop" />
 	<property name="dir.bundle_springaop.build" value="${dir.bundle_springaop}/build" />
 	<property name="dir.bundle_services" value="bundle_services" />
@@ -74,6 +76,11 @@
 
 		<echo>
 		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-frag_jdbc_dbcp]...</echo>
+		<ant dir="${dir.bundle_frag_jdbc_dbcp}" target="clean" />
+
+		<echo>
+		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-handlersocket]...</echo>
 		<ant dir="${dir.bundle_handlersocket}" target="clean" />
 
@@ -101,6 +108,11 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-log4j]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_log4j}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-frag_jdbc_dbcp]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_frag_jdbc_dbcp}" target="build-development" />
 
 		<echo>
 		</echo>
@@ -151,6 +163,11 @@
 
 		<echo>
 		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-frag_jdbc_dbcp]...</echo>
+		<ant dir="${dir.bundle_frag_jdbc_dbcp}" target="build-production" />
+
+		<echo>
+		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-id]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_id}" target="build-production" />
 
@@ -180,6 +197,11 @@
 	<target name="post-build">
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/00.log">
 			<fileset dir="${dir.bundle_log4j.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/01.apachecommons">
+			<fileset dir="${dir.bundle_frag_jdbc_dbcp.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>

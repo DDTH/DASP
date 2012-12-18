@@ -57,7 +57,16 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
                     + maxWaitTime + ";minIdle:" + minIdle + ";maxIdle:" + maxIdle + "}...");
         }
         BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassLoader(this.getClass().getClassLoader());
+        ds.setTestOnBorrow(true);
+        int maxConnLifetime = (int) (getMaxConnectionLifetime() / 1000);
+        if (maxConnLifetime > 0) {
+            ds.setRemoveAbandoned(true);
+            ds.setRemoveAbandonedTimeout(maxConnLifetime);
+        }
+        // CombinedClassLoader cl = new CombinedClassLoader();
+        // cl.addLoader(DbcpJdbcFactory.class);
+        // cl.addLoader(BasicDataSource.class);
+        // ds.setDriverClassLoader(cl);
         ds.setDriverClassName(driver);
         ds.setUrl(connUrl);
         ds.setUsername(username);

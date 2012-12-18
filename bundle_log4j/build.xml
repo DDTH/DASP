@@ -1,5 +1,4 @@
 <project name="Log4jFragment" basedir="." default="build-development">
-	<property name="dir.src" value="src" />
 	<property name="dir.classes" value="classes" />
 	<property name="dir.lib" value="lib" />
 	<property name="dir.build" value="build" />
@@ -41,11 +40,6 @@
 	</target>
 
 	<target name="compile" depends="prepare">
-		<javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.classes}" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
-			<classpath>
-				<path refid="path.lib" />
-			</classpath>
-		</javac>
 	</target>
 
 	<target name="build-development">

@@ -5,46 +5,53 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CombinedClassLoader extends ClassLoader {
-	private Set<ClassLoader> loaders = new HashSet<ClassLoader>();
+    private final Logger LOGGER = LoggerFactory.getLogger(CombinedClassLoader.class);
 
-	public CombinedClassLoader() {
-	}
+    private Set<ClassLoader> loaders = new HashSet<ClassLoader>();
 
-	public CombinedClassLoader(Collection<ClassLoader> classLoaders) {
-		for (ClassLoader classLoader : classLoaders) {
-			addLoader(classLoader);
-		}
-	}
+    public CombinedClassLoader() {
+    }
 
-	public void addLoader(ClassLoader loader) {
-		if (loader != null) {
-			loaders.add(loader);
-		}
-	}
+    public CombinedClassLoader(Collection<ClassLoader> classLoaders) {
+        for (ClassLoader classLoader : classLoaders) {
+            addLoader(classLoader);
+        }
+    }
 
-	public void addLoader(Class<?> clazz) {
-		addLoader(clazz.getClassLoader());
-	}
+    public void addLoader(ClassLoader loader) {
+        if (loader != null) {
+            loaders.add(loader);
+        }
+    }
 
-	public Class<?> findClass(String name) throws ClassNotFoundException {
-		for (ClassLoader loader : loaders) {
-			try {
-				return loader.loadClass(name);
-			} catch (ClassNotFoundException cnfe) {
-				// Try next
-			}
-		}
-		throw new ClassNotFoundException(name);
-	}
+    public void addLoader(Class<?> clazz) {
+        addLoader(clazz.getClassLoader());
+    }
 
-	public URL getResource(String name) {
-		for (ClassLoader loader : loaders) {
-			URL url = loader.getResource(name);
-			if (url != null) {
-				return url;
-			}
-		}
-		return null;
-	}
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        for (ClassLoader loader : loaders) {
+            try {
+                return loader.loadClass(name);
+            } catch (ClassNotFoundException cnfe) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(cnfe.getMessage());
+                }
+            }
+        }
+        throw new ClassNotFoundException(name);
+    }
+
+    public URL getResource(String name) {
+        for (ClassLoader loader : loaders) {
+            URL url = loader.getResource(name);
+            if (url != null) {
+                return url;
+            }
+        }
+        return null;
+    }
 }

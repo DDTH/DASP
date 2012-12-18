@@ -8,7 +8,6 @@
 	<classpathentry kind="src" output="bundle_status/classes" path="bundle_status/src"/>
 	<classpathentry kind="src" output="test/classes" path="test/src"/>
 	<classpathentry kind="src" output="bundle_id/classes" path="bundle_id/src"/>
-	<classpathentry kind="src" output="bundle_log4j/classes" path="bundle_log4j/src"/>
 	<classpathentry kind="src" output="bundle_framework/classes" path="bundle_framework/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
@@ -26,7 +25,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-dbcp-1.4.jar" sourcepath="/JavaSources/apache/commons/dbcp/1.4/commons-dbcp-1.4-sources.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-dbutils-1.4.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-fileupload-1.2.2.jar"/>
@@ -67,9 +66,5 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.runtime-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.weaver-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/05.google/guava-13.0.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/jdbc-mssql.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/jdbc-mysql-5.1.22-bin.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/jdbc-oracle6.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/jdbc-postgresql-9.0-801.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
