@@ -17,6 +17,8 @@
 	<property name="dir.bundle_springmvc.build" value="${dir.bundle_springmvc}/build" />
 	<property name="dir.bundle_handlersocket" value="bundle_handlersocket" />
 	<property name="dir.bundle_handlersocket.build" value="${dir.bundle_handlersocket}/build" />
+	<property name="dir.bundle_config" value="bundle_config" />
+	<property name="dir.bundle_config.build" value="${dir.bundle_config}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
 
@@ -33,6 +35,9 @@
 				<include name="**/ddth*.*" />
 			</fileset>
 			<fileset dir="${dir.bundle_handlersocket}/build">
+				<include name="**/ddth*.*" />
+			</fileset>
+			<fileset dir="${dir.bundle_config}/build">
 				<include name="**/ddth*.*" />
 			</fileset>
 		</copy>
@@ -71,6 +76,11 @@
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-handlersocket]...</echo>
 		<ant dir="${dir.bundle_handlersocket}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-config]...</echo>
+		<ant dir="${dir.bundle_config}" target="clean" />
 	</target>
 
 	<target name="build-development">
@@ -111,6 +121,11 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-handlersocket]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_handlersocket}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-config]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_config}" target="build-development" />
 
 		<antcall target="post-build" />
 	</target>
@@ -154,6 +169,11 @@
 		<echo>BUILDING SUB-PROJECT [bundle-handlersocket]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_handlersocket}" target="build-production" />
 
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-config]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_config}" target="build-production" />
+
 		<antcall target="post-build" />
 	</target>
 
@@ -181,6 +201,9 @@
 				<include name="**/*.jar" />
 			</fileset>
 			<fileset dir="${dir.bundle_handlersocket.build}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${dir.bundle_config.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>

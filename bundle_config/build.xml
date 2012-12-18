@@ -1,0 +1,106 @@
+<project name="DASP - Bundle: Config" basedir="." default="build-development">
+	<property name="dir.src" value="src" />
+	<property name="dir.build" value="build" />
+	<property name="dir.classes" value="classes" />
+	<property name="dir.lib" value="lib" />
+	<property name="dir.META-INF" value="META-INF" />
+	<property name="dir.resources" value="../resources" />
+	<property name="dir.bundle_framework" value="../bundle_framework" />
+	<property name="dir.bundle_framework.build" value="${dir.bundle_framework}/build" />
+	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
+	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
+	<tstamp>
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
+	</tstamp>
+	<property name="product.name" value="ddth.dasp.config" />
+	<property name="product.version" value="0.1.0" />
+	<property name="product.version.micro" value="${product.version}.${MICROSTAMP}" />
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${dir.resources}/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<path id="path.lib">
+		<fileset dir="${dir.lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.resources}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.platform_libs}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.bundle_framework.build}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.platform_bundles}/01.apachecommons">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.platform_bundles}/03.spring">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.platform_bundles}/04.springdm">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${dir.platform_bundles}/05.google">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${dir.classes}" includeemptydirs="true" quiet="true">
+		</delete>
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${dir.build}">
+				<include name="**/*" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- make temporary and distribution directories -->
+	<target name="prepare">
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.classes}" />
+	</target>
+
+	<target name="compile" depends="prepare">
+		<javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.classes}" encoding="utf-8" optimize="on" debug="on" fork="true" compiler="modern" source="1.6" target="1.6">
+			<classpath>
+				<path refid="path.lib" />
+			</classpath>
+		</javac>
+		<copy todir="${dir.classes}">
+			<fileset dir="${dir.src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build-development">
+		<antcall target="jar" inheritall="false" />
+	</target>
+
+	<target name="build-production">
+		<antcall target="jar" inheritall="false" />
+	</target>
+
+	<target name="jar" depends="compile">
+		<delete>
+			<fileset dir="${dir.build}">
+				<include name="**/*.*" />
+			</fileset>
+		</delete>
+		<copy todir="${dir.classes}" overwrite="true">
+			<fileset dir="${dir.lib}">
+			</fileset>
+		</copy>
+		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF" overwrite="true" />
+		<replaceregexp file="${dir.META-INF}/MANIFEST.MF" match="Bundle-Version(.*)" replace="Bundle-Version: ${product.version.micro}" byline="true" />
+		<jar jarfile="${dir.build}/${product.name}-${product.version}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
+			<metainf dir="${dir.META-INF}">
+			</metainf>
+		</jar>
+	</target>
+</project>

@@ -11,7 +11,7 @@
 	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
-		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.springmvc" />
 	<property name="product.version" value="0.1.0" />
@@ -119,7 +119,7 @@
 		</copy>
 		<copy tofile="${dir.META-INF}/MANIFEST.MF" file="MANIFEST.MF" overwrite="true" />
 		<replaceregexp file="${dir.META-INF}/MANIFEST.MF" match="Bundle-Version(.*)" replace="Bundle-Version: ${product.version.micro}" byline="true" />
-		<jar jarfile="${dir.build}/${product.name}-${product.version.micro}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
+		<jar jarfile="${dir.build}/${product.name}-${product.version}.jar" basedir="${dir.classes}" duplicate="add" manifest="${dir.META-INF}/MANIFEST.MF">
 			<metainf dir="${dir.META-INF}">
 			</metainf>
 		</jar>

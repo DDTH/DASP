@@ -8,7 +8,7 @@
 	<property name="dir.platform_bundles" value="../servlet/build/web/WEB-INF/osgi-container/bundles" />
 	<property name="dir.platform_libs" value="../servlet/build/web/WEB-INF/lib" />
 	<tstamp>
-		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.osgi.springaop" />
 	<property name="product.version" value="0.1.0" />

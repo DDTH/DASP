@@ -6,7 +6,7 @@
 	<property name="dir.META-INF" value="META-INF" />
 	<property name="dir.resources" value="../resources" />
 	<tstamp>
-		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.osgi.log4jfrag" />
 	<property name="product.version" value="0.1.0" />

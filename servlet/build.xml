@@ -8,7 +8,7 @@
 	<property name="dir.resources" value="../resources" />
 	<property name="dir.release" value="release" />
 	<tstamp>
-		<format property="MICROSTAMP" pattern="yyMMddhhmm" />
+		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="DASP" />
 	<property name="product.version" value="0.1.0" />
