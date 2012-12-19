@@ -32,6 +32,12 @@
 		<constructor-arg ref="_idGen" />
 		<property name="me" ref="apiId64hex" />
 	</bean>
+	<bean id="apiId64ascii" class="ddth.dasp.id.api.Id64AsciiApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId64ascii" />
+	</bean>
+
 	<bean id="apiId128" class="ddth.dasp.id.api.Id128ApiHandler"
 		scope="singleton">
 		<constructor-arg ref="_idGen" />
@@ -42,6 +48,12 @@
 		<constructor-arg ref="_idGen" />
 		<property name="me" ref="apiId128hex" />
 	</bean>
+	<bean id="apiId128ascii" class="ddth.dasp.id.api.Id128AsciiApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId128ascii" />
+	</bean>
+
 	<bean id="apiId48" class="ddth.dasp.id.api.Id48ApiHandler" scope="singleton">
 		<constructor-arg ref="_idGen" />
 		<property name="me" ref="apiId48" />
@@ -50,5 +62,10 @@
 		scope="singleton">
 		<constructor-arg ref="_idGen" />
 		<property name="me" ref="apiId48hex" />
+	</bean>
+	<bean id="apiId48ascii" class="ddth.dasp.id.api.Id48AsciiApiHandler"
+		scope="singleton">
+		<constructor-arg ref="_idGen" />
+		<property name="me" ref="apiId48ascii" />
 	</bean>
 </beans>

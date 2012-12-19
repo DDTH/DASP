@@ -13,6 +13,7 @@ Require-Bundle: ddth.dasp.framework,
  com.springsource.org.aopalliance,
  com.springsource.org.aspectj.runtime,
  com.springsource.net.sf.cglib
+Spring-Context: *;create-asynchronously:=false
 Import-Package: ddth.dasp.common.api,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,
