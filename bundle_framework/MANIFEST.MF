@@ -10,6 +10,7 @@ Require-Bundle: org.springframework.web.servlet,
  org.springframework.context,
  org.springframework.osgi.core,
  org.apache.commons.lang3,
+ org.apache.commons.codec,
  ddth.dasp.osgi.springaop,
  com.google.guava
 Export-Package: com.google.protobuf,
