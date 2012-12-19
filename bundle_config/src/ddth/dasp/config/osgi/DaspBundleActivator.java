@@ -25,14 +25,12 @@ public class DaspBundleActivator extends BaseBundleActivator {
     @SuppressWarnings("unchecked")
     @Override
     public void start(BundleContext bundleContext) throws Exception {
-        super.start(bundleContext);
         String daoClass = bundleContext.getProperty(OSGI_PROP_DAO_CLASS);
         Class<IConfigDao> clazz = (Class<IConfigDao>) Class.forName(daoClass);
-        // Class<IConfigDao> clazz = (Class<IConfigDao>)
-        // bundleContext.getClass().getClassLoader()
-        // .loadClass(daoClass);
         configDao = clazz.newInstance();
         configDao.init(bundleContext);
+
+        super.start(bundleContext);
     }
 
     /**
