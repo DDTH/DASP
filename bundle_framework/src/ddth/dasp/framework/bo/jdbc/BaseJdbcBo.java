@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ddth.dasp.framework.bo.BaseBo;
 
 /**
@@ -31,9 +33,12 @@ public abstract class BaseJdbcBo extends BaseBo implements IJdbcBo {
     public void populate(ResultSet rs, ResultSetMetaData rsMetaData) throws SQLException {
         Map<String, Object> data = new HashMap<String, Object>();
         for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
-            String colName = rsMetaData.getColumnName(i);
-            Object colValue = rs.getObject(colName);
-            data.put(colName, colValue);
+            String colLabel = rsMetaData.getColumnLabel(i);
+            if (StringUtils.isEmpty(colLabel)) {
+                colLabel = rsMetaData.getColumnName(i);
+            }
+            Object value = rs.getObject(colLabel);
+            data.put(colLabel, value);
         }
         populate(data);
     }
