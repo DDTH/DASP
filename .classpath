@@ -66,5 +66,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.runtime-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.weaver-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/05.google/guava-13.0.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/activemq-all-5.6.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
