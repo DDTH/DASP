@@ -5,7 +5,7 @@ A Java platform for applications & services. See sub-folders' readme files for m
 
 * **servlet**: DASP bootstrap
 * **bundle_config**: configuration settings APIs for other bundles to use
-* **bundle_frag_jdbc_dbcp**: JDBC drivers for Apache Commons DBCP
+* **bundle\_frag\_jdbc_dbcp**: JDBC drivers for Apache Commons DBCP
 * **bundle_framework**: framework to develop bundles for DASP
 * **bundle_handlersocket**: [HandlerSocket](https://github.com/killme2008/hs4j) library for Java
 * **bundle_id**: ID generator
@@ -16,9 +16,13 @@ A Java platform for applications & services. See sub-folders' readme files for m
 
 Disclaimer
 ----------
+DASP is developed to be used within DDTH/VNIT. You may use DASP freely but it is provided "as is", without warranty of any kind. 
 
 License
 -------
+Distributed under the [MIT License](http://opensource.org/licenses/mit-license.php). Copyright (c) 2012 Thanh Ba Nguyen (aka btnguyen2k).
+
+Third party libraries are distributed under their own license(s).
 
 Dependency
 ----------
