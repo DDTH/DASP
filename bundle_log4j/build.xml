@@ -36,6 +36,7 @@
 	<!-- make temporary and distribution directories -->
 	<target name="prepare">
 		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.META-INF}" />
 		<mkdir dir="${dir.classes}" />
 	</target>
 
