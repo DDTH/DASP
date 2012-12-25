@@ -1,0 +1,40 @@
+servlet - DASP bootstrap
+========================
+
+# web.xml #
+## OSGi remote shell configurations ##
+The remote shell provides a simple telnet interface to manage OSGi bundles. The IP and Port to bind can be configured via `servlet/common/web.xml`:
+
+    <context-param>
+		<description>IP address to bind, used by OSGI remote shell</description>
+		<param-name>osgiRemoteShellListenIp</param-name>
+		<param-value>127.0.0.1</param-value>
+	</context-param>
+	<context-param>
+		<description>Port to bind, used by OSGI remote shell. Multiple ports are separated by commas, the first available port will be chosen</description>
+		<param-name>osgiRemoteShellListenPort</param-name>
+		<param-value>16666,16667,16668,16669</param-value>
+	</context-param>
+
+## Thrift-based APIs ##
+APIs can be called via Apache Thrift protocol. Thrift is enabled and configured via `servlet/common/web.xml`:
+
+    <servlet>
+		<description>DASP Thrift API Servlet</description>
+		<servlet-name>daspThriftApiServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.thrift.ThriftApiBootstrapServlet</servlet-class>
+		<init-param>
+			<description>Set to true to start non-blocking Thrift server, false to start threaded server</description>
+			<param-name>nonblockingServer</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<description>Multiple ports are separated by commas, the first available port will be chosen</description>
+			<param-name>port</param-name>
+			<param-value>9090,9091,9092,9093</param-value>
+		</init-param>
+		<load-on-startup>30</load-on-startup>
+	</servlet>
+
+## REST-based APIs ##
+APIs can call via HTTP/HTTPS (REST-like interface).

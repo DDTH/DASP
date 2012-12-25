@@ -20,7 +20,7 @@
 		<param-value>127.0.0.1</param-value>
 	</context-param>
 	<context-param>
-		<description>Port to bind, used by OSGI remote shell</description>
+		<description>Port to bind, used by OSGI remote shell. Multiple ports are separated by commas, the first available port will be chosen</description>
 		<param-name>osgiRemoteShellListenPort</param-name>
 		<param-value>16666,16667,16668,16669</param-value>
 	</context-param>
@@ -39,17 +39,19 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-    <!-- Uncomment the next section to enable API Thrift interface -->
-    <!--
+	<!-- Uncomment the next section to enable API Thrift interface -->
+	<!--
 	<servlet>
 		<description>DASP Thrift API Servlet</description>
 		<servlet-name>daspThriftApiServlet</servlet-name>
 		<servlet-class>ddth.dasp.servlet.thrift.ThriftApiBootstrapServlet</servlet-class>
 		<init-param>
+			<description>Set to true to start non-blocking Thrift server, false to start threaded server</description>
 			<param-name>nonblockingServer</param-name>
 			<param-value>true</param-value>
 		</init-param>
 		<init-param>
+			<description>Multiple ports are separated by commas, the first available port will be chosen</description>
 			<param-name>port</param-name>
 			<param-value>9090,9091,9092,9093</param-value>
 		</init-param>
@@ -79,15 +81,10 @@
 		<load-on-startup>30</load-on-startup>
 	</servlet>
 
-    <!-- Uncomment the next section to enable the API Servlet -->
-    <!--
-	<servlet>
-		<description>DASP JSON API Servlet</description>
-		<servlet-name>daspJsonApiServlet</servlet-name>
-		<servlet-class>ddth.dasp.servlet.DaspJsonApiServlet</servlet-class>
-		<load-on-startup>10</load-on-startup>
-	</servlet>
-	-->
+	<!-- Uncomment the next section to enable the API Servlet -->
+	<!-- <servlet> <description>DASP JSON API Servlet</description> <servlet-name>daspJsonApiServlet</servlet-name> 
+		<servlet-class>ddth.dasp.servlet.DaspJsonApiServlet</servlet-class> <load-on-startup>10</load-on-startup> 
+		</servlet> -->
 	<servlet>
 		<description>DASP Dispatcher Servlet</description>
 		<servlet-name>daspDispatcherServlet</servlet-name>
@@ -108,12 +105,8 @@
 		<url-pattern>/500.jsp</url-pattern>
 	</servlet-mapping>
 	<!-- Uncomment the next section to enable the API Servlet -->
-	<!--
-	<servlet-mapping>
-		<servlet-name>daspJsonApiServlet</servlet-name>
-		<url-pattern>/api/*</url-pattern>
-	</servlet-mapping>
-	-->
+	<!-- <servlet-mapping> <servlet-name>daspJsonApiServlet</servlet-name> <url-pattern>/api/*</url-pattern> 
+		</servlet-mapping> -->
 	<servlet-mapping>
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
