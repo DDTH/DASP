@@ -12,9 +12,9 @@ Require-Bundle: org.springframework.web.servlet,
  org.apache.commons.lang3,
  org.apache.commons.codec,
  ddth.dasp.osgi.springaop,
- com.google.guava
-Export-Package: com.google.protobuf,
- ddth.dasp.framework,
+ com.google.guava,
+ com.google.protobuf
+Export-Package: ddth.dasp.framework,
  ddth.dasp.framework.api,
  ddth.dasp.framework.bo,
  ddth.dasp.framework.bo.jdbc,

@@ -23,6 +23,8 @@
 	<property name="dir.bundle_config.build" value="${dir.bundle_config}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
+	<property name="dir.hetty" value="hetty" />
+	<property name="dir.hetty.build" value="${dir.hetty}/build" />
 
 	<target name="release-interim" depends="build-development">
 		<antcall target="post-build" />
@@ -48,6 +50,11 @@
 	<target name="clean">
 		<echo>CLEANING SUB-PROJECT [servlet]...</echo>
 		<ant dir="${dir.servlet}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [hetty]...</echo>
+		<ant dir="${dir.hetty}" target="clean" />
 
 		<echo>
 		</echo>
@@ -93,6 +100,11 @@
 	<target name="build-development">
 		<echo>BUILDING SUB-PROJECT [servlet]...</echo>
 		<ant inheritall="false" dir="${dir.servlet}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [hetty]...</echo>
+		<ant dir="${dir.hetty}" target="build-development" />
 
 		<echo>
 		</echo>
@@ -148,6 +160,11 @@
 
 		<echo>
 		</echo>
+		<echo>CLEANING SUB-PROJECT [hetty]...</echo>
+		<ant dir="${dir.hetty}" target="build-production" />
+
+		<echo>
+		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-springaop]...</echo>
 		<ant dir="${dir.bundle_springaop}" target="build-production" />
 
@@ -195,6 +212,12 @@
 	</target>
 
 	<target name="post-build">
+		<copy todir="${dir.servlet.build}/web/WEB-INF/lib">
+			<fileset dir="${dir.hetty.build}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+
 		<copy todir="${dir.servlet.build}/web/WEB-INF/osgi-container/bundles/00.log">
 			<fileset dir="${dir.bundle_log4j.build}">
 				<include name="**/*.jar" />
