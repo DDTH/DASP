@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+	default-lazy-init="false">
+
+	<bean id="hettyConnServer" class="ddth.dasp.hetty.front.HettyConnServer"
+		scope="singleton" init-method="start" destroy-method="destroy">
+		<property name="queueWriter" ref="queueWriter" />
+		<property name="readTimeoutMillisecs" value="10000" />
+		<property name="writeTimeoutMillisecs" value="10000" />
+		<property name="port" value="8083" />
+		<property name="numWorkers" ref="_numWorkersConn" />
+	</bean>
+
+	<bean id="hettyRequestHandlerServer" class="ddth.dasp.hetty.back.HettyRequestHandlerServer"
+		scope="singleton" init-method="start" destroy-method="destroy">
+		<property name="queueReader" ref="queueReader" />
+		<property name="readTimeoutMillisecs" value="10000" />
+		<property name="topicPublisher" ref="topicPublisher" />
+		<property name="numWorkers" ref="_numWorkersRequestHandler" />
+		<property name="requestParser" ref="requestParser" />
+	</bean>
+
+	<beans default-lazy-init="false" profile="dev">
+		<bean id="requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+			scope="singleton"></bean>
+		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="128" />
+		</bean>
+		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
+			scope="singleton">
+			<constructor-arg value="2" />
+		</bean>
+		<bean id="responseService" class="ddth.dasp.hetty.qnt.GuavaResponseService"
+			scope="singleton" init-method="init" destroy-method="destroy" />
+		<bean id="queueReader" class="ddth.dasp.hetty.qnt.InProcessQueue"
+			scope="singleton" />
+		<bean id="queueWriter" class="ddth.dasp.hetty.qnt.InProcessQueue"
+			scope="singleton" />
+		<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.GuavaTopicPublisher"
+			scope="singleton" />
+	</beans>
+
+	<beans default-lazy-init="false" profile="prod,production">
+		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="1024" />
+		</bean>
+		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
+			scope="singleton">
+			<constructor-arg value="4" />
+		</bean>
+
+		<bean id="responseService" class="ddth.dasp.hetty.qnt.GuavaResponseService"
+			scope="singleton" init-method="init" destroy-method="destroy" />
+		<bean id="queueReader" class="ddth.dasp.hetty.qnt.InProcessQueue"
+			scope="singleton" />
+		<bean id="queueWriter" class="ddth.dasp.hetty.qnt.InProcessQueue"
+			scope="singleton" />
+		<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.GuavaTopicPublisher"
+			scope="singleton" />
+	</beans>
+</beans>
