@@ -13,6 +13,7 @@ A Java platform for applications & services. See sub-folders' readme files for m
 * **bundle_springaop**: Spring AOP utils
 * **bundle_springmvc**: utils to develop Sprind MVC applications on DASP
 * **bundle_status**: embedded simple status page for DASP
+* **hetty**: an async, distributed http server and web application framework based on [Netty](https://netty.io/).
 
 Disclaimer
 ----------
