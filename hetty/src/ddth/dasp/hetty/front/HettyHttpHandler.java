@@ -69,7 +69,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     protected void handleRequest(HttpRequest request, byte[] requestContent, Channel userChannel)
             throws Exception {
         String uri = request.getUri();
-        if (uri.startsWith("/status")) {
+        if (uri.startsWith("/status/") || uri.startsWith("/status?") || uri.equals("/status")) {
             StringBuilder content = new StringBuilder();
             content.append("Connections: " + HettyConnServer.ALL_CHANNELS.size());
 
@@ -196,6 +196,10 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
             e.getFuture().cancel();
         }
         e.getChannel().close();
+        if (LOGGER.isDebugEnabled()) {
+            String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
+            LOGGER.debug(msg);
+        }
     }
 
     /**
