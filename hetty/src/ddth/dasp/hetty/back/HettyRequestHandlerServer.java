@@ -94,6 +94,12 @@ public class HettyRequestHandlerServer {
         IRequestActionHandler handler = osgiBootstrap.getService(IRequestActionHandler.class,
                 filter);
         if (handler == null) {
+            // fallback 1: lookup for wildcard handler
+            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "*");
+            handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
+        }
+        if (handler == null) {
+            // fallback 2: lookup for non-action handler
             filter.remove(IRequestActionHandler.FILTER_KEY_ACTION);
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
@@ -104,24 +110,6 @@ public class HettyRequestHandlerServer {
             topicPublisher.publishToTopic(responseProtobuf, writeTimeoutMillisecs,
                     TimeUnit.MILLISECONDS);
         }
-
-        // QueryStringDecoder queryStringDecoder = new
-        // QueryStringDecoder(requestProtobuf.getUri());
-        // Map<String, List<String>> urlParams =
-        // queryStringDecoder.getParameters();
-        // String path = queryStringDecoder.getPath();
-        // String[] tokens = queryStringDecoder.getPath().replaceAll("^\\/+",
-        // "")
-        // .replaceAll("\\/+$", "").split("\\/");
-        //
-        // HettyProtoBuf.Response.Builder responseBuilder =
-        // HettyProtoBuf.Response.newBuilder();
-        // responseBuilder.setRequestId(requestProtobuf.getId());
-        // responseBuilder.setDuration(System.currentTimeMillis() -
-        // requestProtobuf.getTimestamp());
-        // responseBuilder.setChannelId(requestProtobuf.getChannelId());
-        // responseBuilder.setContent(ByteString.copyFromUtf8(requestProtobuf.toString()));
-        // return responseBuilder.build();
     }
 
     public void destroy() {
