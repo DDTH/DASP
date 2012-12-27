@@ -18,10 +18,21 @@ public class ResponseUtils {
      * @return
      */
     public static HettyProtoBuf.Response response404(HettyProtoBuf.Request request) {
+        return response404(request, "Not found");
+    }
+
+    /**
+     * Helper method to create a 404 response.
+     * 
+     * @param request
+     * @param message
+     * @return
+     */
+    public static HettyProtoBuf.Response response404(HettyProtoBuf.Request request, String message) {
         HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(404);
         builder.addHeaders(newHeader("Date", new Date()));
         builder.addHeaders(newHeader("Content-Type", "text/html; charset=UTF-8"));
-        ByteString content = ByteString.copyFromUtf8("Not found");
+        ByteString content = ByteString.copyFromUtf8(message);
         builder.addHeaders(newHeader("Content-Length", content.size()));
         builder.setContent(content);
         return builder.build();
