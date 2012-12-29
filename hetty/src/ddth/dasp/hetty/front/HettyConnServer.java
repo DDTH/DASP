@@ -1,15 +1,18 @@
 package ddth.dasp.hetty.front;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerBossPool;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioWorkerPool;
 import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.ThreadNameDeterminer;
 import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,6 @@ public class HettyConnServer {
     private int numWorkers = 32, port = 8083;
 
     private Timer timer;
-    private ExecutorService bossExecutor, workerExecutor;
     private ServerBootstrap nettyServer;
 
     public HettyConnServer() {
@@ -80,16 +82,44 @@ public class HettyConnServer {
     public void start() {
         timer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS,
                 8192);
-        bossExecutor = Executors.newCachedThreadPool();
-        workerExecutor = Executors.newCachedThreadPool();
-        nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(bossExecutor,
-                workerExecutor, numWorkers));
+        // ExecutorService bossExecutor = Executors.newCachedThreadPool();
+        NioServerBossPool serverBossPool = new NioServerBossPool(Executors.newCachedThreadPool(),
+                1, new ThreadNameDeterminer() {
+                    private AtomicInteger COUNTER = new AtomicInteger(1);
+                    @Override
+                    public String determineThreadName(String currentThreadName,
+                            String proposedThreadName) throws Exception {
+                        int counter = COUNTER.getAndIncrement();
+                        return "Hetty server boss #" + counter;
+                    }
+                });
+
+        // ExecutorService workerExecutor = Executors.newCachedThreadPool();
+        NioWorkerPool workerPool = new NioWorkerPool(Executors.newCachedThreadPool(), numWorkers,
+                new ThreadNameDeterminer() {
+                    private AtomicInteger COUNTER = new AtomicInteger(1);
+                    @Override
+                    public String determineThreadName(String currentThreadName,
+                            String proposedThreadName) throws Exception {
+                        int counter = COUNTER.getAndIncrement();
+                        return "Hetty worker #" + counter;
+                    }
+                });
+        // nettyServer = new ServerBootstrap(new
+        // NioServerSocketChannelFactory(bossExecutor,
+        // workerExecutor, numWorkers));
+        nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
+                workerPool));
         nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter, timer,
                 readTimeoutMillisecs, writeTimeoutMillisecs));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
         nettyServer.bind(new InetSocketAddress(port));
-        LOGGER.info("Hetty interface is listening on port " + port);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Hetty interface is listening on port: " + port + " / Read timeout: "
+                    + readTimeoutMillisecs + " / Write timeout: " + writeTimeoutMillisecs
+                    + " / Num workers: " + numWorkers);
+        }
     }
 
     public void destroy() {
@@ -100,20 +130,20 @@ public class HettyConnServer {
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
         }
-        try {
-            if (bossExecutor != null) {
-                bossExecutor.shutdown();
-            }
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);
-        }
-        try {
-            if (workerExecutor != null) {
-                workerExecutor.shutdown();
-            }
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);
-        }
+        // try {
+        // if (bossExecutor != null) {
+        // bossExecutor.shutdown();
+        // }
+        // } catch (Exception e) {
+        // LOGGER.warn(e.getMessage(), e);
+        // }
+        // try {
+        // if (workerExecutor != null) {
+        // workerExecutor.shutdown();
+        // }
+        // } catch (Exception e) {
+        // LOGGER.warn(e.getMessage(), e);
+        // }
         try {
             if (timer != null) {
                 timer.stop();
