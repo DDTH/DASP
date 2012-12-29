@@ -31,7 +31,6 @@ public class HettyBootstrapServlet extends GenericServlet {
         ServletConfig servletConfig = getServletConfig();
 
         String springConfigFile = servletConfig.getInitParameter("springConfigFile");
-        // URL url = this.getServletContext().getResource(springConfigFile);
         Resource resource = new ServletContextResource(getServletContext(), springConfigFile);
         applicationContext = new GenericXmlApplicationContext(resource);
     }
