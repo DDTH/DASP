@@ -1,25 +1,24 @@
 package ddth.dasp.servlet.thrift.serverfactory;
 
 import org.apache.thrift.TProcessor;
-import org.apache.thrift.TProcessorFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.transport.TTransportException;
 
 import ddth.dasp.servlet.thrift.ThriftUtils;
 
-public class ThreadedSelectorServerFactory implements IServerFactory {
-	private int port;
-	private TProcessorFactory processorFactory;
+public class ThreadedSelectorServerFactory extends AbstractServerFactory {
+    private long maxReadBufferSize;
 
-	public ThreadedSelectorServerFactory(int port, TProcessor processor) {
-		this.port = port;
-		processorFactory = new TProcessorFactory(processor);
-	}
+    public ThreadedSelectorServerFactory(int port, TProcessor processor,
+            int clientTimeoutMillisecs, int maxFrameSize, long maxReadBufferSize) {
+        super(port, processor, clientTimeoutMillisecs, maxFrameSize);
+        this.maxReadBufferSize = maxReadBufferSize;
+    }
 
-	@Override
-	public TServer createServer() throws TTransportException {
-		TServer server = ThriftUtils.createThreadedSelectorServer(
-				processorFactory, port);
-		return server;
-	}
+    @Override
+    public TServer createServer() throws TTransportException {
+        TServer server = ThriftUtils.createThreadedSelectorServer(getProcessorFactory(), getPort(),
+                getClientTimeoutMillisecs(), getMaxFrameSize(), maxReadBufferSize);
+        return server;
+    }
 }

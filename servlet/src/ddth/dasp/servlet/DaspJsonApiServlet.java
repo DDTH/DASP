@@ -22,6 +22,7 @@ import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.DaspConstants;
 import ddth.dasp.common.utils.JsonUtils;
 
+@Deprecated
 public class DaspJsonApiServlet extends HttpServlet implements CometProcessor {
 	private static final long serialVersionUID = "$Id$"
 			.hashCode();

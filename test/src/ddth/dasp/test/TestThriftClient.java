@@ -12,8 +12,8 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
-import ddth.dasp.servlet.thrift.DaspJsonApi;
-import ddth.dasp.servlet.thrift.DaspJsonApi.Client;
+import ddth.dasp.servlet.thrift.api.DaspJsonApi;
+import ddth.dasp.servlet.thrift.api.DaspJsonApi.Client;
 import ddth.dasp.test.utils.Benchmark;
 import ddth.dasp.test.utils.BenchmarkResult;
 import ddth.dasp.test.utils.Operation;

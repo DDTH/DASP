@@ -12,6 +12,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_springaop/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_config/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/hetty/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/bundle_status_hetty/src"/>
         <property name="context-root" value="DASP"/>
         <property name="java-output-path" value="/DASP/servlet/build/classes"/>
     </wb-module>

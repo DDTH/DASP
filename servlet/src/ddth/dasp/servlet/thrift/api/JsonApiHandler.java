@@ -1,11 +1,11 @@
-package ddth.dasp.servlet.thrift;
+package ddth.dasp.servlet.thrift.api;
 
 import ddth.dasp.common.RequestLocal;
 import ddth.dasp.common.api.IApiHandler;
 import ddth.dasp.common.utils.ApiUtils;
 import ddth.dasp.common.utils.JsonUtils;
 
-public class DaspJsonApiHandler implements DaspJsonApi.Iface {
+public class JsonApiHandler implements DaspJsonApi.Iface {
 	@Override
 	public String callApi(String moduleName, String functionName,
 			String jsonEncodedInput, String authKey)

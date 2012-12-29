@@ -39,35 +39,13 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	<!-- Uncomment the next section to enable API Thrift interface -->
-	<!-- <servlet> <description>DASP Thrift API Servlet</description> <servlet-name>daspThriftApiServlet</servlet-name> 
-		<servlet-class>ddth.dasp.servlet.thrift.ThriftApiBootstrapServlet</servlet-class> 
-		<init-param> <description>Set to true to start non-blocking Thrift server, 
-		false to start threaded server</description> <param-name>nonblockingServer</param-name> 
-		<param-value>true</param-value> </init-param> <init-param> <description>Multiple 
-		ports are separated by commas, the first available port will be chosen</description> 
-		<param-name>port</param-name> <param-value>9090,9091,9092,9093</param-value> 
-		</init-param> <load-on-startup>30</load-on-startup> </servlet> -->
 	<servlet>
-		<description>DASP Netty JSON API Servlet</description>
-		<servlet-name>daspNettyJsonApiServlet</servlet-name>
-		<servlet-class>ddth.dasp.servlet.netty.api.JsonApiBootstrapServlet</servlet-class>
+		<description>DASP JSON API Servlet</description>
+		<servlet-name>daspJsonApiServlet</servlet-name>
+		<servlet-class>ddth.dasp.servlet.JsonApiBootstrapServlet</servlet-class>
 		<init-param>
-			<description>Multiple ports are separated by commas, the first available port will be chosen</description>
-			<param-name>port</param-name>
-			<param-value>8082,8084,8086</param-value>
-		</init-param>
-		<init-param>
-			<param-name>numWorkers</param-name>
-			<param-value>128</param-value>
-		</init-param>
-		<init-param>
-			<param-name>readTimeout</param-name>
-			<param-value>5</param-value>
-		</init-param>
-		<init-param>
-			<param-name>writeTimeout</param-name>
-			<param-value>5</param-value>
+			<param-name>springConfigFile</param-name>
+			<param-value>/WEB-INF/dasp-spring.xml</param-value>
 		</init-param>
 		<load-on-startup>30</load-on-startup>
 	</servlet>

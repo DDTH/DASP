@@ -4,7 +4,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package ddth.dasp.servlet.thrift;
+package ddth.dasp.servlet.thrift.api;
 
 import java.util.BitSet;
 import java.util.Collections;
