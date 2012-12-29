@@ -23,8 +23,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
             long writeTimeoutMillisecs) {
         this.queueWriter = queueWriter;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
-                writeTimeoutMillisecs, (readTimeoutMillisecs + writeTimeoutMillisecs) / 2,
-                TimeUnit.MILLISECONDS);
+                writeTimeoutMillisecs, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
