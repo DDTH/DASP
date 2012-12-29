@@ -12,14 +12,15 @@
 		<property name="queueWriter" ref="queueWriter" />
 		<property name="readTimeoutMillisecs" ref="_nettyReadTimeout" />
 		<property name="writeTimeoutMillisecs" ref="_nettyWriteTimeout" />
-		<property name="port" value="8083" />
+		<property name="port" value="8083,8085,8087" /> <!-- server chooses first available port -->
 		<property name="numWorkers" ref="_numWorkersConn" />
 	</bean>
 
 	<bean id="hettyRequestHandlerServer" class="ddth.dasp.hetty.back.HettyRequestHandlerServer"
 		scope="singleton" init-method="start" destroy-method="destroy">
 		<property name="queueReader" ref="queueReader" />
-		<property name="readTimeoutMillisecs" value="10000" />
+		<property name="readTimeoutMillisecs" value="5000" />
+		<property name="writeTimeoutMillisecs" value="5000" />
 		<property name="topicPublisher" ref="topicPublisher" />
 		<property name="numWorkers" ref="_numWorkersRequestHandler" />
 		<property name="requestParser" ref="requestParser" />
@@ -35,7 +36,7 @@
 			<constructor-arg value="60000" />
 		</bean>
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="128" />
+			<constructor-arg value="16" />
 		</bean>
 		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
 			scope="singleton">
@@ -61,7 +62,7 @@
 			<constructor-arg value="10000" />
 		</bean>
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="1024" />
+			<constructor-arg value="128" />
 		</bean>
 		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
 			scope="singleton">

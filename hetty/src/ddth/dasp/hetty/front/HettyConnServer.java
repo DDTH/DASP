@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.hetty.qnt.IQueueWriter;
+import ddth.dasp.servlet.utils.NetUtils;
 
 public class HettyConnServer {
     public static ChannelGroup ALL_CHANNELS = new DefaultChannelGroup(
@@ -26,7 +28,8 @@ public class HettyConnServer {
 
     private IQueueWriter queueWriter;
     private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
-    private int numWorkers = 32, port = 8083;
+    private int numWorkers = 32;
+    private String portStr = "8083";
 
     private Timer timer;
     private ServerBootstrap nettyServer;
@@ -70,22 +73,34 @@ public class HettyConnServer {
         return this;
     }
 
-    public int getPort() {
-        return port;
+    public String getPort() {
+        return portStr;
     }
 
-    public HettyConnServer setPort(int port) {
-        this.port = port;
+    public HettyConnServer setPort(String portStr) {
+        this.portStr = portStr;
         return this;
     }
 
     public void start() {
+        Integer port = 8083;
+        if (!StringUtils.isBlank(portStr)) {
+            // find free port
+            String[] tokens = portStr.split("[\\s,]+");
+            int[] ports = new int[tokens.length];
+            for (int i = 0; i < tokens.length; i++) {
+                ports[i] = Integer.parseInt(tokens[i]);
+            }
+            port = NetUtils.getFreePort(ports);
+        }
+
         timer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS,
                 8192);
         // ExecutorService bossExecutor = Executors.newCachedThreadPool();
         NioServerBossPool serverBossPool = new NioServerBossPool(Executors.newCachedThreadPool(),
                 1, new ThreadNameDeterminer() {
                     private AtomicInteger COUNTER = new AtomicInteger(1);
+
                     @Override
                     public String determineThreadName(String currentThreadName,
                             String proposedThreadName) throws Exception {
@@ -98,6 +113,7 @@ public class HettyConnServer {
         NioWorkerPool workerPool = new NioWorkerPool(Executors.newCachedThreadPool(), numWorkers,
                 new ThreadNameDeterminer() {
                     private AtomicInteger COUNTER = new AtomicInteger(1);
+
                     @Override
                     public String determineThreadName(String currentThreadName,
                             String proposedThreadName) throws Exception {
@@ -116,7 +132,7 @@ public class HettyConnServer {
         nettyServer.setOption("child.keepAlive", false);
         nettyServer.bind(new InetSocketAddress(port));
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Hetty interface is listening on port: " + port + " / Read timeout: "
+            LOGGER.info("Hetty interface is listening on port: " + portStr + " / Read timeout: "
                     + readTimeoutMillisecs + " / Write timeout: " + writeTimeoutMillisecs
                     + " / Num workers: " + numWorkers);
         }
