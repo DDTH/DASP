@@ -96,7 +96,6 @@ public class HettyConnServer {
 
         timer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS,
                 8192);
-        // ExecutorService bossExecutor = Executors.newCachedThreadPool();
         NioServerBossPool serverBossPool = new NioServerBossPool(Executors.newCachedThreadPool(),
                 1, new ThreadNameDeterminer() {
                     private AtomicInteger COUNTER = new AtomicInteger(1);
@@ -108,8 +107,6 @@ public class HettyConnServer {
                         return "Hetty server boss #" + counter;
                     }
                 });
-
-        // ExecutorService workerExecutor = Executors.newCachedThreadPool();
         NioWorkerPool workerPool = new NioWorkerPool(Executors.newCachedThreadPool(), numWorkers,
                 new ThreadNameDeterminer() {
                     private AtomicInteger COUNTER = new AtomicInteger(1);
@@ -121,9 +118,6 @@ public class HettyConnServer {
                         return "Hetty worker #" + counter;
                     }
                 });
-        // nettyServer = new ServerBootstrap(new
-        // NioServerSocketChannelFactory(bossExecutor,
-        // workerExecutor, numWorkers));
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
         nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter, timer,
@@ -132,7 +126,7 @@ public class HettyConnServer {
         nettyServer.setOption("child.keepAlive", false);
         nettyServer.bind(new InetSocketAddress(port));
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Hetty interface is listening on port: " + portStr + " / Read timeout: "
+            LOGGER.info("Hetty interface is listening on port: " + port + " / Read timeout: "
                     + readTimeoutMillisecs + " / Write timeout: " + writeTimeoutMillisecs
                     + " / Num workers: " + numWorkers);
         }
@@ -146,20 +140,6 @@ public class HettyConnServer {
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
         }
-        // try {
-        // if (bossExecutor != null) {
-        // bossExecutor.shutdown();
-        // }
-        // } catch (Exception e) {
-        // LOGGER.warn(e.getMessage(), e);
-        // }
-        // try {
-        // if (workerExecutor != null) {
-        // workerExecutor.shutdown();
-        // }
-        // } catch (Exception e) {
-        // LOGGER.warn(e.getMessage(), e);
-        // }
         try {
             if (timer != null) {
                 timer.stop();
