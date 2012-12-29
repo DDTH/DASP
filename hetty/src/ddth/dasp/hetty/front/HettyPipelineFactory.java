@@ -15,8 +15,6 @@ import ddth.dasp.hetty.qnt.IQueueWriter;
 
 public class HettyPipelineFactory implements ChannelPipelineFactory {
 
-    // private final Timer timer;
-    // private final long readTimeoutMillisecs, writeTimeoutMillisecs;
     private final ChannelHandler idleStateHandler;
 
     private IQueueWriter queueWriter;
@@ -24,9 +22,6 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
     public HettyPipelineFactory(IQueueWriter queueWriter, Timer timer, long readTimeoutMillisecs,
             long writeTimeoutMillisecs) {
         this.queueWriter = queueWriter;
-        // this.timer = timer;
-        // this.readTimeoutMillisecs = readTimeoutMillisecs;
-        // this.writeTimeoutMillisecs = writeTimeoutMillisecs;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
                 writeTimeoutMillisecs, (readTimeoutMillisecs + writeTimeoutMillisecs) / 2,
                 TimeUnit.MILLISECONDS);
