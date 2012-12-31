@@ -19,34 +19,70 @@ public class ResponseUtils {
     public final static String SERVER = "Hetty Server v0.1.0";
     private final static ByteString EMPTY_CONTENT = ByteString.EMPTY;
 
-    public static HettyProtoBuf.Response response200(HettyProtoBuf.Request request,
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
             String contentString) {
         return response200(request, contentString, "text/html; charset=utf-8");
     }
 
-    public static HettyProtoBuf.Response response200(HettyProtoBuf.Request request,
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
             byte[] contentBin) {
         return response200(request, contentBin, "text/html; charset=utf-8");
     }
 
-    public static HettyProtoBuf.Response response200(HettyProtoBuf.Request request,
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
             String contentString, String contentType) {
+        return response200(request, contentString, contentType, null, null);
+    }
+
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
+            String contentString, String contentType, HettyProtoBuf.NameValue[] headers,
+            HettyProtoBuf.Cookie[] cookies) {
         HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(200);
         builder.addHeaders(newHeader("Content-Type", contentType));
         ByteString content = ByteString.copyFromUtf8(contentString);
         builder.addHeaders(newHeader("Content-Length", content.size()));
         builder.setContent(content);
-        return builder.build();
+        // headers
+        if (headers != null) {
+            for (HettyProtoBuf.NameValue header : headers) {
+                builder.addHeaders(header);
+            }
+        }
+        // cookies
+        if (cookies != null) {
+            for (HettyProtoBuf.Cookie cookie : cookies) {
+                builder.addCookies(cookie);
+            }
+        }
+        return builder;
     }
 
-    public static HettyProtoBuf.Response response200(HettyProtoBuf.Request request,
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
             byte[] contentBin, String contentType) {
+        return response200(request, contentBin, contentType, null, null);
+    }
+
+    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
+            byte[] contentBin, String contentType, HettyProtoBuf.NameValue[] headers,
+            HettyProtoBuf.Cookie[] cookies) {
         HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(200);
         builder.addHeaders(newHeader("Content-Type", contentType));
         ByteString content = ByteString.copyFrom(contentBin);
         builder.addHeaders(newHeader("Content-Length", content.size()));
         builder.setContent(content);
-        return builder.build();
+        // headers
+        if (headers != null) {
+            for (HettyProtoBuf.NameValue header : headers) {
+                builder.addHeaders(header);
+            }
+        }
+        // cookies
+        if (cookies != null) {
+            for (HettyProtoBuf.Cookie cookie : cookies) {
+                builder.addCookies(cookie);
+            }
+        }
+        return builder;
     }
 
     /**
@@ -56,10 +92,11 @@ public class ResponseUtils {
      * @param url
      * @return
      */
-    public static HettyProtoBuf.Response response301(HettyProtoBuf.Request request, String url) {
+    public static HettyProtoBuf.Response.Builder response301(HettyProtoBuf.Request request,
+            String url) {
         HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(301);
         builder.addHeaders(newHeader("Location", url));
-        return builder.build();
+        return builder;
     }
 
     private static String loadContent(String path) {
@@ -81,7 +118,7 @@ public class ResponseUtils {
      * @param request
      * @return
      */
-    public static HettyProtoBuf.Response response404(HettyProtoBuf.Request request) {
+    public static HettyProtoBuf.Response.Builder response404(HettyProtoBuf.Request request) {
         return response404(request, "Not found");
     }
 
@@ -92,7 +129,8 @@ public class ResponseUtils {
      * @param message
      * @return
      */
-    public static HettyProtoBuf.Response response404(HettyProtoBuf.Request request, String message) {
+    public static HettyProtoBuf.Response.Builder response404(HettyProtoBuf.Request request,
+            String message) {
         if (content404 == null) {
             content404 = loadContent("/ddth/dasp/hetty/message/404.tpl");
         }
@@ -105,7 +143,7 @@ public class ResponseUtils {
         ByteString content = ByteString.copyFromUtf8(htmlContent);
         builder.addHeaders(newHeader("Content-Length", content.size()));
         builder.setContent(content);
-        return builder.build();
+        return builder;
     }
 
     private static String content500 = null;
@@ -116,7 +154,7 @@ public class ResponseUtils {
      * @param request
      * @return
      */
-    public static HettyProtoBuf.Response response500(HettyProtoBuf.Request request) {
+    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request) {
         return response500(request, null, null);
     }
 
@@ -127,7 +165,8 @@ public class ResponseUtils {
      * @param message
      * @return
      */
-    public static HettyProtoBuf.Response response500(HettyProtoBuf.Request request, String message) {
+    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request,
+            String message) {
         return response500(request, message, null);
     }
 
@@ -139,8 +178,8 @@ public class ResponseUtils {
      * @param t
      * @return
      */
-    public static HettyProtoBuf.Response response500(HettyProtoBuf.Request request, String message,
-            Throwable t) {
+    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request,
+            String message, Throwable t) {
         if (content500 == null) {
             content500 = loadContent("/ddth/dasp/hetty/message/500.tpl");
         }
@@ -181,26 +220,63 @@ public class ResponseUtils {
         ByteString content = ByteString.copyFromUtf8(htmlContent);
         builder.addHeaders(newHeader("Content-Length", content.size()));
         builder.setContent(content);
-        return builder.build();
+        return builder;
     }
 
     public static HettyProtoBuf.NameValue newHeader(String name, String value) {
-        return HettyProtoBuf.NameValue.newBuilder().setName(name).setValue(value).build();
+        return newHeader(name, value, null);
+    }
+
+    public static HettyProtoBuf.NameValue newHeader(String name, String value,
+            HettyProtoBuf.Response.Builder responseBuilder) {
+        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
+                .setValue(value).build();
+        if (responseBuilder != null) {
+            responseBuilder.addHeaders(header);
+        }
+        return header;
     }
 
     public static HettyProtoBuf.NameValue newHeader(String name, Date value) {
-        return HettyProtoBuf.NameValue.newBuilder().setName(name).setValue(DF_HEADER.format(value))
-                .build();
+        return newHeader(name, value, null);
+    }
+
+    public static HettyProtoBuf.NameValue newHeader(String name, Date value,
+            HettyProtoBuf.Response.Builder responseBuilder) {
+        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
+                .setValue(DF_HEADER.format(value)).build();
+        if (responseBuilder != null) {
+            responseBuilder.addHeaders(header);
+        }
+        return header;
     }
 
     public static HettyProtoBuf.NameValue newHeader(String name, int value) {
-        return HettyProtoBuf.NameValue.newBuilder().setName(name).setValue(String.valueOf(value))
-                .build();
+        return newHeader(name, value, null);
+    }
+
+    public static HettyProtoBuf.NameValue newHeader(String name, int value,
+            HettyProtoBuf.Response.Builder responseBuilder) {
+        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
+                .setValue(String.valueOf(value)).build();
+        if (responseBuilder != null) {
+            responseBuilder.addHeaders(header);
+        }
+        return header;
     }
 
     public static HettyProtoBuf.NameValue newHeader(String name, long value) {
-        return HettyProtoBuf.NameValue.newBuilder().setName(name).setValue(String.valueOf(value))
-                .build();
+        return newHeader(name, value, null);
+    }
+
+    public static HettyProtoBuf.NameValue newHeader(String name, long value,
+            HettyProtoBuf.Response.Builder responseBuilder) {
+        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
+                .setValue(String.valueOf(value)).build();
+        if (responseBuilder != null) {
+            responseBuilder.addHeaders(header);
+        }
+        return header;
     }
 
     public static HettyProtoBuf.Response.Builder newResponse(HettyProtoBuf.Request request) {

@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.framework.resource.IResourceLoader;
 import ddth.dasp.hetty.IRequestActionHandler;
@@ -126,11 +128,11 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         if (resourceLoader.resourceExists(path)) {
             byte[] resourceContent = resourceLoader.loadResourceAsBinary(path);
             String resourceMimeType = detectMimeType(path);
-            HettyProtoBuf.Response response = ResponseUtils.response200(request, resourceContent,
-                    resourceMimeType + "; charset=utf-8");
-            topicPublisher.publishToTopic(response);
+            HettyProtoBuf.Response.Builder response = ResponseUtils.response200(request,
+                    resourceContent, resourceMimeType + "; charset=utf-8");
+            topicPublisher.publishToTopic(response.build());
         } else {
-            HettyProtoBuf.Response response = ResponseUtils.response404(request);
+            HettyProtoBuf.Response response = ResponseUtils.response404(request).build();
             topicPublisher.publishToTopic(response);
         }
     }

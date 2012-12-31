@@ -62,7 +62,7 @@ public class FreeMarkerView implements IView {
         out.flush();
         byte[] content = baos.toByteArray();
         HettyProtoBuf.Response response = ResponseUtils.response200(request, content,
-                getContentType());
+                getContentType()).build();
         topicPublisher.publishToTopic(response);
     }
 }

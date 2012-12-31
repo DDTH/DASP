@@ -34,7 +34,8 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         // pipeline.addLast("aggregator", new HttpChunkAggregator(128 * 1024));
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("timeout", idleStateHandler);
-        pipeline.addLast("deflater", new HttpContentCompressor(9, 15, 9));
+        // compression with minimum memory usage
+        pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
         pipeline.addLast("handler", new HettyHttpHandler(this.queueWriter));
         return pipeline;
     }

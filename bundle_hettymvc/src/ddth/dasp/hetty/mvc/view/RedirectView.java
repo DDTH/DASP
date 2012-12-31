@@ -20,7 +20,7 @@ public class RedirectView implements IView {
      * {@inheritDoc}
      */
     public void render(HettyProtoBuf.Request request, Object model, ITopicPublisher topicPublisher) {
-        HettyProtoBuf.Response response = ResponseUtils.response301(request, getUrl());
+        HettyProtoBuf.Response response = ResponseUtils.response301(request, getUrl()).build();
         topicPublisher.publishToTopic(response);
     }
 }

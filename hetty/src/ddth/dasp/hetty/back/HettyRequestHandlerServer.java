@@ -106,7 +106,8 @@ public class HettyRequestHandlerServer {
         if (handler != null) {
             handler.handleRequest(requestProtobuf, topicPublisher);
         } else {
-            HettyProtoBuf.Response responseProtobuf = ResponseUtils.response404(requestProtobuf);
+            HettyProtoBuf.Response responseProtobuf = ResponseUtils.response404(requestProtobuf)
+                    .build();
             topicPublisher.publishToTopic(responseProtobuf, writeTimeoutMillisecs,
                     TimeUnit.MILLISECONDS);
         }
@@ -137,7 +138,7 @@ public class HettyRequestHandlerServer {
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
                                 HettyProtoBuf.Response response = ResponseUtils.response500(
-                                        requestProtobuf, e.getMessage(), e);
+                                        requestProtobuf, e.getMessage(), e).build();
                                 topicPublisher.publishToTopic(response);
                             }
                         }
