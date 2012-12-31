@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Spring Configurations for bundle ddth.dasp.status -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	default-lazy-init="true">
+
+	<bean id="_rahStatic" class="ddth.dasp.hetty.mvc.BundleStaticResourceActionHandler"
+		scope="singleton">
+		<property name="module" value="statushetty" />
+		<property name="action" value="static" />
+		<property name="resourceLoader" ref="skinResourceLoader" />
+		<property name="prefix" ref="_skinLocation" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[static]]></prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="rahHome" class="ddth.dasp.hetty.mvc.SimpleActionHandler"
+		scope="singleton">
+		<property name="viewName" value="redirect:/statushetty/server/" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[*]]></prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="rahServer" class="ddth.dasp.statushetty.actionhandler.ServerStatusActionHandler"
+		scope="singleton">
+		<property name="viewName" value="server" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[server]]></prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="rahOsgi" class="ddth.dasp.statushetty.actionhandler.OsgiStatusActionHandler"
+        scope="singleton">
+        <property name="viewName" value="osgi" />
+        <property name="properties">
+            <props>
+                <prop key="Action"><![CDATA[osgi]]></prop>
+            </props>
+        </property>
+    </bean>
+
+	<bean id="_requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+		scope="singleton">
+		<property name="urlSuffix" value=".html" />
+	</bean>
+
+	<bean id="_urlCreator" class="ddth.dasp.hetty.DefaultUrlCreator"
+		scope="singleton">
+		<property name="urlSuffix" value=".html" />
+	</bean>
+
+	<!-- Note: use FreeMarkerViewResolver provided by HettyMVC! Template loader 
+		can be used the one provided from ddth.dasp.framework -->
+	<bean id="_viewResolver"
+		class="ddth.dasp.hetty.mvc.view.freemarker.FreeMarkerViewResolver"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="defaultContentType" value="text/html; charset=utf-8" />
+		<property name="dateFormat" value="yyyy-MM-dd" />
+		<property name="dateTimeFormat" value="yyyy-MM-dd HH:mm:ss" />
+		<property name="prefix" value="${skin}/page_" />
+		<property name="suffix" value=".ftl" />
+		<property name="templateLoader" ref="_freemarkerTemplateLoader" />
+		<property name="enableCache" ref="_viewResolverEnableCache" />
+		<property name="cacheNull" ref="_viewResolverEnableCacheNull" />
+	</bean>
+
+	<beans default-lazy-init="false" profile="dev">
+		<bean id="_viewResolverEnableCache" class="java.lang.Boolean">
+			<constructor-arg value="false" />
+		</bean>
+		<bean id="_viewResolverEnableCacheNull" class="java.lang.Boolean">
+			<constructor-arg value="false" />
+		</bean>
+		<bean id="_skinLocation" class="java.lang.String">
+			<constructor-arg
+				value="D:\Workspace\Eclipse-4.2\DASP\bundle_status_hetty\skins" />
+		</bean>
+		<bean id="_freemarkerTemplateLoader"
+			class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader"
+			scope="singleton">
+			<property name="resourceLoader" ref="skinResourceLoader" />
+		</bean>
+		<bean id="skinResourceLoader" class="ddth.dasp.framework.resource.FsResourceLoader"
+			scope="singleton">
+			<property name="rootDir" ref="_skinLocation" />
+		</bean>
+	</beans>
+
+	<beans default-lazy-init="false" profile="prod,production">
+		<bean id="_viewResolverEnableCache" class="java.lang.Boolean">
+			<constructor-arg value="true" />
+		</bean>
+		<bean id="_viewResolverEnableCacheNull" class="java.lang.Boolean">
+			<constructor-arg value="true" />
+		</bean>
+		<bean id="_skinLocation" class="java.lang.String">
+			<constructor-arg value="/META-INF/skins" />
+		</bean>
+
+		<bean id="_freemarkerTemplateLoader"
+			class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader"
+			scope="singleton">
+			<property name="resourceLoader" ref="skinResourceLoader" />
+			<property name="prefix" ref="_skinLocation" />
+		</bean>
+		<bean id="skinResourceLoader" class="ddth.dasp.framework.osgi.BundleResourceLoader"
+			scope="singleton"></bean>
+	</beans>
+</beans>
