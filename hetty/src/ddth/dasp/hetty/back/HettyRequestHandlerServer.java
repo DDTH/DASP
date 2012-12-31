@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
-import ddth.dasp.hetty.framework.IRequestActionHandler;
+import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.message.HettyProtoBuf;
 import ddth.dasp.hetty.message.IRequestParser;
 import ddth.dasp.hetty.message.ResponseUtils;
@@ -22,7 +22,7 @@ public class HettyRequestHandlerServer {
 
     private IQueueReader queueReader;
     private ITopicPublisher topicPublisher;
-    private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
+    private long readTimeoutMillisecs = 5000, writeTimeoutMillisecs = 5000;
     private IRequestParser requestParser;
     private int numWorkers = Runtime.getRuntime().availableProcessors();
     private Thread[] workerThreads;
@@ -84,7 +84,7 @@ public class HettyRequestHandlerServer {
         return this;
     }
 
-    protected void handleRequest(HettyProtoBuf.Request requestProtobuf) {
+    protected void handleRequest(HettyProtoBuf.Request requestProtobuf) throws Exception {
         String module = requestParser.getModule(requestProtobuf);
         String action = requestParser.getAction(requestProtobuf);
         Map<String, String> filter = new HashMap<String, String>();
@@ -130,12 +130,15 @@ public class HettyRequestHandlerServer {
                         Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
                         if (obj != null && obj instanceof byte[]) {
+                            HettyProtoBuf.Request requestProtobuf = null;
                             try {
-                                HettyProtoBuf.Request requestProtobuf = HettyProtoBuf.Request
-                                        .parseFrom((byte[]) obj);
+                                requestProtobuf = HettyProtoBuf.Request.parseFrom((byte[]) obj);
                                 handleRequest(requestProtobuf);
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
+                                HettyProtoBuf.Response response = ResponseUtils.response500(
+                                        requestProtobuf, e.getMessage(), e);
+                                topicPublisher.publishToTopic(response);
                             }
                         }
                     }
@@ -144,6 +147,10 @@ public class HettyRequestHandlerServer {
             t.setDaemon(true);
             t.start();
             workerThreads[i - 1] = t;
+        }
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Hetty request handler workers: " + numWorkers + " / Read timeout: "
+                    + readTimeoutMillisecs + " / Write timeout: " + writeTimeoutMillisecs);
         }
     }
 }

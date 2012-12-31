@@ -1299,7 +1299,11 @@ public final class HettyProtoBuf {
     boolean hasPort();
     int getPort();
     
-    // repeated .NameValue urlParams = 9;
+    // required string path = 9;
+    boolean hasPath();
+    String getPath();
+    
+    // repeated .NameValue urlParams = 10;
     java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> 
         getUrlParamsList();
     ddth.dasp.hetty.message.HettyProtoBuf.NameValue getUrlParams(int index);
@@ -1309,12 +1313,12 @@ public final class HettyProtoBuf {
     ddth.dasp.hetty.message.HettyProtoBuf.NameValueOrBuilder getUrlParamsOrBuilder(
         int index);
     
-    // repeated string pathParams = 10;
+    // repeated string pathParams = 11;
     java.util.List<String> getPathParamsList();
     int getPathParamsCount();
     String getPathParams(int index);
     
-    // repeated .Cookie cookies = 11;
+    // repeated .Cookie cookies = 12;
     java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.Cookie> 
         getCookiesList();
     ddth.dasp.hetty.message.HettyProtoBuf.Cookie getCookies(int index);
@@ -1324,7 +1328,7 @@ public final class HettyProtoBuf {
     ddth.dasp.hetty.message.HettyProtoBuf.CookieOrBuilder getCookiesOrBuilder(
         int index);
     
-    // repeated .NameValue headers = 12;
+    // repeated .NameValue headers = 13;
     java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> 
         getHeadersList();
     ddth.dasp.hetty.message.HettyProtoBuf.NameValue getHeaders(int index);
@@ -1334,15 +1338,15 @@ public final class HettyProtoBuf {
     ddth.dasp.hetty.message.HettyProtoBuf.NameValueOrBuilder getHeadersOrBuilder(
         int index);
     
-    // optional bytes content = 13;
+    // optional bytes content = 14;
     boolean hasContent();
     com.google.protobuf.ByteString getContent();
     
-    // optional bool isChunk = 14 [default = false];
+    // optional bool isChunk = 15 [default = false];
     boolean hasIsChunk();
     boolean getIsChunk();
     
-    // optional int32 chunkSeq = 15 [default = 0];
+    // optional int32 chunkSeq = 16 [default = 0];
     boolean hasChunkSeq();
     int getChunkSeq();
   }
@@ -1565,8 +1569,40 @@ public final class HettyProtoBuf {
       return port_;
     }
     
-    // repeated .NameValue urlParams = 9;
-    public static final int URLPARAMS_FIELD_NUMBER = 9;
+    // required string path = 9;
+    public static final int PATH_FIELD_NUMBER = 9;
+    private java.lang.Object path_;
+    public boolean hasPath() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public String getPath() {
+      java.lang.Object ref = path_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          path_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getPathBytes() {
+      java.lang.Object ref = path_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        path_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // repeated .NameValue urlParams = 10;
+    public static final int URLPARAMS_FIELD_NUMBER = 10;
     private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> urlParams_;
     public java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> getUrlParamsList() {
       return urlParams_;
@@ -1586,8 +1622,8 @@ public final class HettyProtoBuf {
       return urlParams_.get(index);
     }
     
-    // repeated string pathParams = 10;
-    public static final int PATHPARAMS_FIELD_NUMBER = 10;
+    // repeated string pathParams = 11;
+    public static final int PATHPARAMS_FIELD_NUMBER = 11;
     private com.google.protobuf.LazyStringList pathParams_;
     public java.util.List<String>
         getPathParamsList() {
@@ -1600,8 +1636,8 @@ public final class HettyProtoBuf {
       return pathParams_.get(index);
     }
     
-    // repeated .Cookie cookies = 11;
-    public static final int COOKIES_FIELD_NUMBER = 11;
+    // repeated .Cookie cookies = 12;
+    public static final int COOKIES_FIELD_NUMBER = 12;
     private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.Cookie> cookies_;
     public java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.Cookie> getCookiesList() {
       return cookies_;
@@ -1621,8 +1657,8 @@ public final class HettyProtoBuf {
       return cookies_.get(index);
     }
     
-    // repeated .NameValue headers = 12;
-    public static final int HEADERS_FIELD_NUMBER = 12;
+    // repeated .NameValue headers = 13;
+    public static final int HEADERS_FIELD_NUMBER = 13;
     private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> headers_;
     public java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> getHeadersList() {
       return headers_;
@@ -1642,31 +1678,31 @@ public final class HettyProtoBuf {
       return headers_.get(index);
     }
     
-    // optional bytes content = 13;
-    public static final int CONTENT_FIELD_NUMBER = 13;
+    // optional bytes content = 14;
+    public static final int CONTENT_FIELD_NUMBER = 14;
     private com.google.protobuf.ByteString content_;
     public boolean hasContent() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     public com.google.protobuf.ByteString getContent() {
       return content_;
     }
     
-    // optional bool isChunk = 14 [default = false];
-    public static final int ISCHUNK_FIELD_NUMBER = 14;
+    // optional bool isChunk = 15 [default = false];
+    public static final int ISCHUNK_FIELD_NUMBER = 15;
     private boolean isChunk_;
     public boolean hasIsChunk() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     public boolean getIsChunk() {
       return isChunk_;
     }
     
-    // optional int32 chunkSeq = 15 [default = 0];
-    public static final int CHUNKSEQ_FIELD_NUMBER = 15;
+    // optional int32 chunkSeq = 16 [default = 0];
+    public static final int CHUNKSEQ_FIELD_NUMBER = 16;
     private int chunkSeq_;
     public boolean hasChunkSeq() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     public int getChunkSeq() {
       return chunkSeq_;
@@ -1681,6 +1717,7 @@ public final class HettyProtoBuf {
       uri_ = "";
       domain_ = "";
       port_ = 0;
+      path_ = "";
       urlParams_ = java.util.Collections.emptyList();
       pathParams_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       cookies_ = java.util.Collections.emptyList();
@@ -1723,6 +1760,10 @@ public final class HettyProtoBuf {
         return false;
       }
       if (!hasPort()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPath()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1775,26 +1816,29 @@ public final class HettyProtoBuf {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeInt32(8, port_);
       }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, getPathBytes());
+      }
       for (int i = 0; i < urlParams_.size(); i++) {
-        output.writeMessage(9, urlParams_.get(i));
+        output.writeMessage(10, urlParams_.get(i));
       }
       for (int i = 0; i < pathParams_.size(); i++) {
-        output.writeBytes(10, pathParams_.getByteString(i));
+        output.writeBytes(11, pathParams_.getByteString(i));
       }
       for (int i = 0; i < cookies_.size(); i++) {
-        output.writeMessage(11, cookies_.get(i));
+        output.writeMessage(12, cookies_.get(i));
       }
       for (int i = 0; i < headers_.size(); i++) {
-        output.writeMessage(12, headers_.get(i));
-      }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeBytes(13, content_);
+        output.writeMessage(13, headers_.get(i));
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeBool(14, isChunk_);
+        output.writeBytes(14, content_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeInt32(15, chunkSeq_);
+        output.writeBool(15, isChunk_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeInt32(16, chunkSeq_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1837,9 +1881,13 @@ public final class HettyProtoBuf {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(8, port_);
       }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getPathBytes());
+      }
       for (int i = 0; i < urlParams_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, urlParams_.get(i));
+          .computeMessageSize(10, urlParams_.get(i));
       }
       {
         int dataSize = 0;
@@ -1852,23 +1900,23 @@ public final class HettyProtoBuf {
       }
       for (int i = 0; i < cookies_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(11, cookies_.get(i));
+          .computeMessageSize(12, cookies_.get(i));
       }
       for (int i = 0; i < headers_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(12, headers_.get(i));
-      }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(13, content_);
+          .computeMessageSize(13, headers_.get(i));
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(14, isChunk_);
+          .computeBytesSize(14, content_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(15, chunkSeq_);
+          .computeBoolSize(15, isChunk_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(16, chunkSeq_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2013,32 +2061,34 @@ public final class HettyProtoBuf {
         bitField0_ = (bitField0_ & ~0x00000040);
         port_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
+        path_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
         if (urlParamsBuilder_ == null) {
           urlParams_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000200);
         } else {
           urlParamsBuilder_.clear();
         }
         pathParams_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (cookiesBuilder_ == null) {
           cookies_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000400);
+          bitField0_ = (bitField0_ & ~0x00000800);
         } else {
           cookiesBuilder_.clear();
         }
         if (headersBuilder_ == null) {
           headers_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
+          bitField0_ = (bitField0_ & ~0x00001000);
         } else {
           headersBuilder_.clear();
         }
         content_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00001000);
-        isChunk_ = false;
         bitField0_ = (bitField0_ & ~0x00002000);
-        chunkSeq_ = 0;
+        isChunk_ = false;
         bitField0_ = (bitField0_ & ~0x00004000);
+        chunkSeq_ = 0;
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
       
@@ -2109,49 +2159,53 @@ public final class HettyProtoBuf {
           to_bitField0_ |= 0x00000080;
         }
         result.port_ = port_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.path_ = path_;
         if (urlParamsBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          if (((bitField0_ & 0x00000200) == 0x00000200)) {
             urlParams_ = java.util.Collections.unmodifiableList(urlParams_);
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000200);
           }
           result.urlParams_ = urlParams_;
         } else {
           result.urlParams_ = urlParamsBuilder_.build();
         }
-        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
           pathParams_ = new com.google.protobuf.UnmodifiableLazyStringList(
               pathParams_);
-          bitField0_ = (bitField0_ & ~0x00000200);
+          bitField0_ = (bitField0_ & ~0x00000400);
         }
         result.pathParams_ = pathParams_;
         if (cookiesBuilder_ == null) {
-          if (((bitField0_ & 0x00000400) == 0x00000400)) {
+          if (((bitField0_ & 0x00000800) == 0x00000800)) {
             cookies_ = java.util.Collections.unmodifiableList(cookies_);
-            bitField0_ = (bitField0_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00000800);
           }
           result.cookies_ = cookies_;
         } else {
           result.cookies_ = cookiesBuilder_.build();
         }
         if (headersBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          if (((bitField0_ & 0x00001000) == 0x00001000)) {
             headers_ = java.util.Collections.unmodifiableList(headers_);
-            bitField0_ = (bitField0_ & ~0x00000800);
+            bitField0_ = (bitField0_ & ~0x00001000);
           }
           result.headers_ = headers_;
         } else {
           result.headers_ = headersBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00000100;
-        }
-        result.content_ = content_;
         if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
           to_bitField0_ |= 0x00000200;
         }
-        result.isChunk_ = isChunk_;
+        result.content_ = content_;
         if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
           to_bitField0_ |= 0x00000400;
+        }
+        result.isChunk_ = isChunk_;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00000800;
         }
         result.chunkSeq_ = chunkSeq_;
         result.bitField0_ = to_bitField0_;
@@ -2194,11 +2248,14 @@ public final class HettyProtoBuf {
         if (other.hasPort()) {
           setPort(other.getPort());
         }
+        if (other.hasPath()) {
+          setPath(other.getPath());
+        }
         if (urlParamsBuilder_ == null) {
           if (!other.urlParams_.isEmpty()) {
             if (urlParams_.isEmpty()) {
               urlParams_ = other.urlParams_;
-              bitField0_ = (bitField0_ & ~0x00000100);
+              bitField0_ = (bitField0_ & ~0x00000200);
             } else {
               ensureUrlParamsIsMutable();
               urlParams_.addAll(other.urlParams_);
@@ -2211,7 +2268,7 @@ public final class HettyProtoBuf {
               urlParamsBuilder_.dispose();
               urlParamsBuilder_ = null;
               urlParams_ = other.urlParams_;
-              bitField0_ = (bitField0_ & ~0x00000100);
+              bitField0_ = (bitField0_ & ~0x00000200);
               urlParamsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getUrlParamsFieldBuilder() : null;
@@ -2223,7 +2280,7 @@ public final class HettyProtoBuf {
         if (!other.pathParams_.isEmpty()) {
           if (pathParams_.isEmpty()) {
             pathParams_ = other.pathParams_;
-            bitField0_ = (bitField0_ & ~0x00000200);
+            bitField0_ = (bitField0_ & ~0x00000400);
           } else {
             ensurePathParamsIsMutable();
             pathParams_.addAll(other.pathParams_);
@@ -2234,7 +2291,7 @@ public final class HettyProtoBuf {
           if (!other.cookies_.isEmpty()) {
             if (cookies_.isEmpty()) {
               cookies_ = other.cookies_;
-              bitField0_ = (bitField0_ & ~0x00000400);
+              bitField0_ = (bitField0_ & ~0x00000800);
             } else {
               ensureCookiesIsMutable();
               cookies_.addAll(other.cookies_);
@@ -2247,7 +2304,7 @@ public final class HettyProtoBuf {
               cookiesBuilder_.dispose();
               cookiesBuilder_ = null;
               cookies_ = other.cookies_;
-              bitField0_ = (bitField0_ & ~0x00000400);
+              bitField0_ = (bitField0_ & ~0x00000800);
               cookiesBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getCookiesFieldBuilder() : null;
@@ -2260,7 +2317,7 @@ public final class HettyProtoBuf {
           if (!other.headers_.isEmpty()) {
             if (headers_.isEmpty()) {
               headers_ = other.headers_;
-              bitField0_ = (bitField0_ & ~0x00000800);
+              bitField0_ = (bitField0_ & ~0x00001000);
             } else {
               ensureHeadersIsMutable();
               headers_.addAll(other.headers_);
@@ -2273,7 +2330,7 @@ public final class HettyProtoBuf {
               headersBuilder_.dispose();
               headersBuilder_ = null;
               headers_ = other.headers_;
-              bitField0_ = (bitField0_ & ~0x00000800);
+              bitField0_ = (bitField0_ & ~0x00001000);
               headersBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getHeadersFieldBuilder() : null;
@@ -2325,6 +2382,10 @@ public final class HettyProtoBuf {
           return false;
         }
         if (!hasPort()) {
+          
+          return false;
+        }
+        if (!hasPath()) {
           
           return false;
         }
@@ -2413,40 +2474,45 @@ public final class HettyProtoBuf {
               break;
             }
             case 74: {
+              bitField0_ |= 0x00000100;
+              path_ = input.readBytes();
+              break;
+            }
+            case 82: {
               ddth.dasp.hetty.message.HettyProtoBuf.NameValue.Builder subBuilder = ddth.dasp.hetty.message.HettyProtoBuf.NameValue.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addUrlParams(subBuilder.buildPartial());
               break;
             }
-            case 82: {
+            case 90: {
               ensurePathParamsIsMutable();
               pathParams_.add(input.readBytes());
               break;
             }
-            case 90: {
+            case 98: {
               ddth.dasp.hetty.message.HettyProtoBuf.Cookie.Builder subBuilder = ddth.dasp.hetty.message.HettyProtoBuf.Cookie.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addCookies(subBuilder.buildPartial());
               break;
             }
-            case 98: {
+            case 106: {
               ddth.dasp.hetty.message.HettyProtoBuf.NameValue.Builder subBuilder = ddth.dasp.hetty.message.HettyProtoBuf.NameValue.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addHeaders(subBuilder.buildPartial());
               break;
             }
-            case 106: {
-              bitField0_ |= 0x00001000;
-              content_ = input.readBytes();
-              break;
-            }
-            case 112: {
+            case 114: {
               bitField0_ |= 0x00002000;
-              isChunk_ = input.readBool();
+              content_ = input.readBytes();
               break;
             }
             case 120: {
               bitField0_ |= 0x00004000;
+              isChunk_ = input.readBool();
+              break;
+            }
+            case 128: {
+              bitField0_ |= 0x00008000;
               chunkSeq_ = input.readInt32();
               break;
             }
@@ -2699,13 +2765,49 @@ public final class HettyProtoBuf {
         return this;
       }
       
-      // repeated .NameValue urlParams = 9;
+      // required string path = 9;
+      private java.lang.Object path_ = "";
+      public boolean hasPath() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public String getPath() {
+        java.lang.Object ref = path_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          path_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setPath(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearPath() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        path_ = getDefaultInstance().getPath();
+        onChanged();
+        return this;
+      }
+      void setPath(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000100;
+        path_ = value;
+        onChanged();
+      }
+      
+      // repeated .NameValue urlParams = 10;
       private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> urlParams_ =
         java.util.Collections.emptyList();
       private void ensureUrlParamsIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
           urlParams_ = new java.util.ArrayList<ddth.dasp.hetty.message.HettyProtoBuf.NameValue>(urlParams_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000200;
          }
       }
       
@@ -2821,7 +2923,7 @@ public final class HettyProtoBuf {
       public Builder clearUrlParams() {
         if (urlParamsBuilder_ == null) {
           urlParams_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000200);
           onChanged();
         } else {
           urlParamsBuilder_.clear();
@@ -2877,7 +2979,7 @@ public final class HettyProtoBuf {
           urlParamsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ddth.dasp.hetty.message.HettyProtoBuf.NameValue, ddth.dasp.hetty.message.HettyProtoBuf.NameValue.Builder, ddth.dasp.hetty.message.HettyProtoBuf.NameValueOrBuilder>(
                   urlParams_,
-                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  ((bitField0_ & 0x00000200) == 0x00000200),
                   getParentForChildren(),
                   isClean());
           urlParams_ = null;
@@ -2885,12 +2987,12 @@ public final class HettyProtoBuf {
         return urlParamsBuilder_;
       }
       
-      // repeated string pathParams = 10;
+      // repeated string pathParams = 11;
       private com.google.protobuf.LazyStringList pathParams_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePathParamsIsMutable() {
-        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
+        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
           pathParams_ = new com.google.protobuf.LazyStringArrayList(pathParams_);
-          bitField0_ |= 0x00000200;
+          bitField0_ |= 0x00000400;
          }
       }
       public java.util.List<String>
@@ -2931,7 +3033,7 @@ public final class HettyProtoBuf {
       }
       public Builder clearPathParams() {
         pathParams_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         onChanged();
         return this;
       }
@@ -2941,13 +3043,13 @@ public final class HettyProtoBuf {
         onChanged();
       }
       
-      // repeated .Cookie cookies = 11;
+      // repeated .Cookie cookies = 12;
       private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.Cookie> cookies_ =
         java.util.Collections.emptyList();
       private void ensureCookiesIsMutable() {
-        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
           cookies_ = new java.util.ArrayList<ddth.dasp.hetty.message.HettyProtoBuf.Cookie>(cookies_);
-          bitField0_ |= 0x00000400;
+          bitField0_ |= 0x00000800;
          }
       }
       
@@ -3063,7 +3165,7 @@ public final class HettyProtoBuf {
       public Builder clearCookies() {
         if (cookiesBuilder_ == null) {
           cookies_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000400);
+          bitField0_ = (bitField0_ & ~0x00000800);
           onChanged();
         } else {
           cookiesBuilder_.clear();
@@ -3119,7 +3221,7 @@ public final class HettyProtoBuf {
           cookiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ddth.dasp.hetty.message.HettyProtoBuf.Cookie, ddth.dasp.hetty.message.HettyProtoBuf.Cookie.Builder, ddth.dasp.hetty.message.HettyProtoBuf.CookieOrBuilder>(
                   cookies_,
-                  ((bitField0_ & 0x00000400) == 0x00000400),
+                  ((bitField0_ & 0x00000800) == 0x00000800),
                   getParentForChildren(),
                   isClean());
           cookies_ = null;
@@ -3127,13 +3229,13 @@ public final class HettyProtoBuf {
         return cookiesBuilder_;
       }
       
-      // repeated .NameValue headers = 12;
+      // repeated .NameValue headers = 13;
       private java.util.List<ddth.dasp.hetty.message.HettyProtoBuf.NameValue> headers_ =
         java.util.Collections.emptyList();
       private void ensureHeadersIsMutable() {
-        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
+        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
           headers_ = new java.util.ArrayList<ddth.dasp.hetty.message.HettyProtoBuf.NameValue>(headers_);
-          bitField0_ |= 0x00000800;
+          bitField0_ |= 0x00001000;
          }
       }
       
@@ -3249,7 +3351,7 @@ public final class HettyProtoBuf {
       public Builder clearHeaders() {
         if (headersBuilder_ == null) {
           headers_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
+          bitField0_ = (bitField0_ & ~0x00001000);
           onChanged();
         } else {
           headersBuilder_.clear();
@@ -3305,7 +3407,7 @@ public final class HettyProtoBuf {
           headersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ddth.dasp.hetty.message.HettyProtoBuf.NameValue, ddth.dasp.hetty.message.HettyProtoBuf.NameValue.Builder, ddth.dasp.hetty.message.HettyProtoBuf.NameValueOrBuilder>(
                   headers_,
-                  ((bitField0_ & 0x00000800) == 0x00000800),
+                  ((bitField0_ & 0x00001000) == 0x00001000),
                   getParentForChildren(),
                   isClean());
           headers_ = null;
@@ -3313,10 +3415,10 @@ public final class HettyProtoBuf {
         return headersBuilder_;
       }
       
-      // optional bytes content = 13;
+      // optional bytes content = 14;
       private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasContent() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       public com.google.protobuf.ByteString getContent() {
         return content_;
@@ -3325,55 +3427,55 @@ public final class HettyProtoBuf {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00001000;
+  bitField0_ |= 0x00002000;
         content_ = value;
         onChanged();
         return this;
       }
       public Builder clearContent() {
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         content_ = getDefaultInstance().getContent();
         onChanged();
         return this;
       }
       
-      // optional bool isChunk = 14 [default = false];
+      // optional bool isChunk = 15 [default = false];
       private boolean isChunk_ ;
       public boolean hasIsChunk() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00004000) == 0x00004000);
       }
       public boolean getIsChunk() {
         return isChunk_;
       }
       public Builder setIsChunk(boolean value) {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         isChunk_ = value;
         onChanged();
         return this;
       }
       public Builder clearIsChunk() {
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         isChunk_ = false;
         onChanged();
         return this;
       }
       
-      // optional int32 chunkSeq = 15 [default = 0];
+      // optional int32 chunkSeq = 16 [default = 0];
       private int chunkSeq_ ;
       public boolean hasChunkSeq() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00008000) == 0x00008000);
       }
       public int getChunkSeq() {
         return chunkSeq_;
       }
       public Builder setChunkSeq(int value) {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         chunkSeq_ = value;
         onChanged();
         return this;
       }
       public Builder clearChunkSeq() {
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         chunkSeq_ = 0;
         onChanged();
         return this;
@@ -3397,9 +3499,9 @@ public final class HettyProtoBuf {
     boolean hasRequestId();
     String getRequestId();
     
-    // required int64 duration = 2;
-    boolean hasDuration();
-    long getDuration();
+    // required int64 requestTimestamp = 2;
+    boolean hasRequestTimestamp();
+    long getRequestTimestamp();
     
     // required int32 channelId = 3;
     boolean hasChannelId();
@@ -3502,14 +3604,14 @@ public final class HettyProtoBuf {
       }
     }
     
-    // required int64 duration = 2;
-    public static final int DURATION_FIELD_NUMBER = 2;
-    private long duration_;
-    public boolean hasDuration() {
+    // required int64 requestTimestamp = 2;
+    public static final int REQUESTTIMESTAMP_FIELD_NUMBER = 2;
+    private long requestTimestamp_;
+    public boolean hasRequestTimestamp() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public long getDuration() {
-      return duration_;
+    public long getRequestTimestamp() {
+      return requestTimestamp_;
     }
     
     // required int32 channelId = 3;
@@ -3606,7 +3708,7 @@ public final class HettyProtoBuf {
     
     private void initFields() {
       requestId_ = "";
-      duration_ = 0L;
+      requestTimestamp_ = 0L;
       channelId_ = 0;
       status_ = 200;
       cookies_ = java.util.Collections.emptyList();
@@ -3624,7 +3726,7 @@ public final class HettyProtoBuf {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasDuration()) {
+      if (!hasRequestTimestamp()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3655,7 +3757,7 @@ public final class HettyProtoBuf {
         output.writeBytes(1, getRequestIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt64(2, duration_);
+        output.writeInt64(2, requestTimestamp_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeInt32(3, channelId_);
@@ -3693,7 +3795,7 @@ public final class HettyProtoBuf {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, duration_);
+          .computeInt64Size(2, requestTimestamp_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -3851,7 +3953,7 @@ public final class HettyProtoBuf {
         super.clear();
         requestId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        duration_ = 0L;
+        requestTimestamp_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
         channelId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -3920,7 +4022,7 @@ public final class HettyProtoBuf {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.duration_ = duration_;
+        result.requestTimestamp_ = requestTimestamp_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -3978,8 +4080,8 @@ public final class HettyProtoBuf {
         if (other.hasRequestId()) {
           setRequestId(other.getRequestId());
         }
-        if (other.hasDuration()) {
-          setDuration(other.getDuration());
+        if (other.hasRequestTimestamp()) {
+          setRequestTimestamp(other.getRequestTimestamp());
         }
         if (other.hasChannelId()) {
           setChannelId(other.getChannelId());
@@ -4057,7 +4159,7 @@ public final class HettyProtoBuf {
           
           return false;
         }
-        if (!hasDuration()) {
+        if (!hasRequestTimestamp()) {
           
           return false;
         }
@@ -4110,7 +4212,7 @@ public final class HettyProtoBuf {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              duration_ = input.readInt64();
+              requestTimestamp_ = input.readInt64();
               break;
             }
             case 24: {
@@ -4192,23 +4294,23 @@ public final class HettyProtoBuf {
         onChanged();
       }
       
-      // required int64 duration = 2;
-      private long duration_ ;
-      public boolean hasDuration() {
+      // required int64 requestTimestamp = 2;
+      private long requestTimestamp_ ;
+      public boolean hasRequestTimestamp() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public long getDuration() {
-        return duration_;
+      public long getRequestTimestamp() {
+        return requestTimestamp_;
       }
-      public Builder setDuration(long value) {
+      public Builder setRequestTimestamp(long value) {
         bitField0_ |= 0x00000002;
-        duration_ = value;
+        requestTimestamp_ = value;
         onChanged();
         return this;
       }
-      public Builder clearDuration() {
+      public Builder clearRequestTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        duration_ = 0L;
+        requestTimestamp_ = 0L;
         onChanged();
         return this;
       }
@@ -4737,21 +4839,21 @@ public final class HettyProtoBuf {
       "\005value\030\002 \001(\t\022\016\n\006domain\030\003 \001(\t\022\017\n\004port\030\004 \001" +
       "(\005:\0010\022\014\n\004path\030\005 \001(\t\022\022\n\006maxAge\030\006 \001(\005:\002-1\"" +
       "(\n\tNameValue\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \001(" +
-      "\t\"\265\002\n\007Request\022\n\n\002id\030\001 \002(\t\022\025\n\rresponseTop" +
+      "\t\"\303\002\n\007Request\022\n\n\002id\030\001 \002(\t\022\025\n\rresponseTop" +
       "ic\030\002 \002(\t\022\021\n\tchannelId\030\003 \002(\005\022\021\n\ttimestamp" +
       "\030\004 \002(\003\022\016\n\006method\030\005 \002(\t\022\013\n\003uri\030\006 \002(\t\022\016\n\006d" +
-      "omain\030\007 \002(\t\022\014\n\004port\030\010 \002(\005\022\035\n\turlParams\030\t" +
-      " \003(\0132\n.NameValue\022\022\n\npathParams\030\n \003(\t\022\030\n\007" +
-      "cookies\030\013 \003(\0132\007.Cookie\022\033\n\007headers\030\014 \003(\0132",
-      "\n.NameValue\022\017\n\007content\030\r \001(\014\022\026\n\007isChunk\030" +
-      "\016 \001(\010:\005false\022\023\n\010chunkSeq\030\017 \001(\005:\0010\"\314\001\n\010Re" +
-      "sponse\022\021\n\trequestId\030\001 \002(\t\022\020\n\010duration\030\002 " +
-      "\002(\003\022\021\n\tchannelId\030\003 \002(\005\022\023\n\006status\030\004 \001(\005:\003" +
-      "200\022\030\n\007cookies\030\005 \003(\0132\007.Cookie\022\033\n\007headers" +
-      "\030\006 \003(\0132\n.NameValue\022\017\n\007content\030\007 \001(\014\022\026\n\007i" +
-      "sChunk\030\010 \001(\010:\005false\022\023\n\010chunkSeq\030\t \001(\005:\0010" +
-      "B*\n\027ddth.dasp.hetty.messageB\rHettyProtoB" +
-      "ufH\001"
+      "omain\030\007 \002(\t\022\014\n\004port\030\010 \002(\005\022\014\n\004path\030\t \002(\t\022" +
+      "\035\n\turlParams\030\n \003(\0132\n.NameValue\022\022\n\npathPa" +
+      "rams\030\013 \003(\t\022\030\n\007cookies\030\014 \003(\0132\007.Cookie\022\033\n\007",
+      "headers\030\r \003(\0132\n.NameValue\022\017\n\007content\030\016 \001" +
+      "(\014\022\026\n\007isChunk\030\017 \001(\010:\005false\022\023\n\010chunkSeq\030\020" +
+      " \001(\005:\0010\"\324\001\n\010Response\022\021\n\trequestId\030\001 \002(\t\022" +
+      "\030\n\020requestTimestamp\030\002 \002(\003\022\021\n\tchannelId\030\003" +
+      " \002(\005\022\023\n\006status\030\004 \001(\005:\003200\022\030\n\007cookies\030\005 \003" +
+      "(\0132\007.Cookie\022\033\n\007headers\030\006 \003(\0132\n.NameValue" +
+      "\022\017\n\007content\030\007 \001(\014\022\026\n\007isChunk\030\010 \001(\010:\005fals" +
+      "e\022\023\n\010chunkSeq\030\t \001(\005:\0010B*\n\027ddth.dasp.hett" +
+      "y.messageB\rHettyProtoBufH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4779,7 +4881,7 @@ public final class HettyProtoBuf {
           internal_static_Request_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Request_descriptor,
-              new java.lang.String[] { "Id", "ResponseTopic", "ChannelId", "Timestamp", "Method", "Uri", "Domain", "Port", "UrlParams", "PathParams", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
+              new java.lang.String[] { "Id", "ResponseTopic", "ChannelId", "Timestamp", "Method", "Uri", "Domain", "Port", "Path", "UrlParams", "PathParams", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
               ddth.dasp.hetty.message.HettyProtoBuf.Request.class,
               ddth.dasp.hetty.message.HettyProtoBuf.Request.Builder.class);
           internal_static_Response_descriptor =
@@ -4787,7 +4889,7 @@ public final class HettyProtoBuf {
           internal_static_Response_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Response_descriptor,
-              new java.lang.String[] { "RequestId", "Duration", "ChannelId", "Status", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
+              new java.lang.String[] { "RequestId", "RequestTimestamp", "ChannelId", "Status", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
               ddth.dasp.hetty.message.HettyProtoBuf.Response.class,
               ddth.dasp.hetty.message.HettyProtoBuf.Response.Builder.class);
           return null;

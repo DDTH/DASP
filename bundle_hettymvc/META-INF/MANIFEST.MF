@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DASP Hetty MVC
+Bundle-SymbolicName: ddth.dasp.hetty.mvc
+Bundle-Version: 0.1.0.1301010019
+Require-Bundle: ddth.dasp.framework,
+ org.apache.commons.lang3,
+ org.apache.commons.io,
+ com.google.guava,
+ com.google.protobuf,
+ org.springframework.context,
+ org.springframework.web,
+ org.springframework.osgi.core
+Export-Package: ddth.dasp.hetty.mvc,
+ ddth.dasp.hetty.mvc.resource,
+ ddth.dasp.hetty.mvc.view,
+ ddth.dasp.hetty.mvc.view.freemarker
+Bundle-ClassPath: .
+Import-Package: ddth.dasp.common,
+ ddth.dasp.common.id,
+ ddth.dasp.hetty,
+ ddth.dasp.hetty.message,
+ ddth.dasp.hetty.qnt,
+ freemarker.cache,
+ freemarker.template,
+ org.osgi.framework,
+ org.slf4j

@@ -2,10 +2,28 @@ package ddth.dasp.hetty.message;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * This request parser assumes the first (index 0) path parameter is the request
+ * module and the second (index 1) path parameter is the request action.
+ * 
+ * @author Thanh Ba Nguyen <btnguyen2k@gmail.com>
+ */
 public class DefaultRequestParser implements IRequestParser {
 
     public final static int PATH_PARAM_INDEX_MODULE = 0;
     public final static int PATH_PARAM_INDEX_ACTION = 1;
+
+    private String urlSuffix;
+
+    public void setUrlSuffix(String urlSuffix) {
+        this.urlSuffix = urlSuffix;
+    }
+
+    protected String getUrlSuffix() {
+        return urlSuffix;
+    }
 
     /**
      * {@inheritDoc}
@@ -29,7 +47,12 @@ public class DefaultRequestParser implements IRequestParser {
     @Override
     public String getPathParam(HettyProtoBuf.Request requestProtobuf, int index) {
         List<String> pathParams = requestProtobuf.getPathParamsList();
-        return (0 <= index && index < pathParams.size()) ? pathParams.get(index) : null;
+        String result = (0 <= index && index < pathParams.size()) ? pathParams.get(index) : null;
+        if (!StringUtils.isBlank(result) && !StringUtils.isBlank(urlSuffix)
+                && result.endsWith(urlSuffix)) {
+            return result.substring(0, result.length() - urlSuffix.length());
+        }
+        return result;
     }
 
     /**

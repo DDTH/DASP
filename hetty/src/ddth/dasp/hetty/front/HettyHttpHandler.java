@@ -89,7 +89,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         String requestId = IdGenerator.getInstance(IdGenerator.getMacAddr()).generateId64Ascii();
 
         // populate required fields
-        requestProtoBuf.setTimestamp(System.currentTimeMillis());
+        requestProtoBuf.setTimestamp(System.nanoTime());
         requestProtoBuf.setId(requestId);
         requestProtoBuf.setResponseTopic(requestId);
         requestProtoBuf.setChannelId(userChannel.getId());
@@ -98,6 +98,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         // parse path parameters
         QueryStringDecoder qsd = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
         String path = qsd.getPath();
+        requestProtoBuf.setPath(path);
         String[] pathTokens = path.replaceAll("^\\/+", "").replaceAll("\\/+$", "").split("\\/");
         requestProtoBuf.addAllPathParams(Arrays.asList(pathTokens));
         // parse url parameters

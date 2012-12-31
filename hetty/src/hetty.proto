@@ -25,23 +25,24 @@ message Request {
     required string    uri           =  6;
     required string    domain        =  7;
     required int32     port          =  8;
-    repeated NameValue urlParams     =  9;
-    repeated string    pathParams    = 10;
-    repeated Cookie    cookies       = 11;
-    repeated NameValue headers       = 12;
-    optional bytes     content       = 13;
-    optional bool      isChunk       = 14 [default = false];
-    optional int32     chunkSeq      = 15 [default = 0];
+    required string    path          =  9;
+    repeated NameValue urlParams     = 10;
+    repeated string    pathParams    = 11;
+    repeated Cookie    cookies       = 12;
+    repeated NameValue headers       = 13;
+    optional bytes     content       = 14;
+    optional bool      isChunk       = 15 [default = false];
+    optional int32     chunkSeq      = 16 [default = 0];
 }
 
 message Response {
-    required string    requestId    = 1;
-    required int64     duration     = 2;
-    required int32     channelId    = 3;
-    optional int32     status       = 4 [default = 200];
-    repeated Cookie    cookies      = 5;
-    repeated NameValue headers      = 6;
-    optional bytes     content      = 7;
-    optional bool      isChunk      = 8 [default = false];
-    optional int32     chunkSeq     = 9 [default = 0];
+    required string    requestId        = 1;
+    required int64     requestTimestamp = 2;
+    required int32     channelId        = 3;
+    optional int32     status           = 4 [default = 200];
+    repeated Cookie    cookies          = 5;
+    repeated NameValue headers          = 6;
+    optional bytes     content          = 7;
+    optional bool      isChunk          = 8 [default = false];
+    optional int32     chunkSeq         = 9 [default = 0];
 }

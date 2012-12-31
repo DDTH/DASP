@@ -13,10 +13,16 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ddth.dasp.hetty.message.HettyProtoBuf;
 
 public abstract class AbstractHettyResponseService implements IHettyResponseService {
+
+    private final static Logger LOGGER = LoggerFactory
+            .getLogger(AbstractHettyResponseService.class);
+
     /**
      * {@inheritDoc}
      */
@@ -67,6 +73,15 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
             }
 
             channel.write(response).addListener(ChannelFutureListener.CLOSE);
+
+            long timestamp = System.nanoTime();
+            StringBuilder logMsg = new StringBuilder(responseProtobuf.getRequestId()).append("/")
+                    .append(responseProtobuf.getStatus()).append("/")
+                    .append((timestamp - responseProtobuf.getRequestTimestamp()) / 1E6)
+                    .append(" ms");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(logMsg.toString());
+            }
         }
     }
 }
