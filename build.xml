@@ -15,12 +15,16 @@
 	<property name="dir.bundle_id.build" value="${dir.bundle_id}/build" />
 	<property name="dir.bundle_status" value="bundle_status" />
 	<property name="dir.bundle_status.build" value="${dir.bundle_status}/build" />
+	<property name="dir.bundle_statushetty" value="bundle_status_hetty" />
+	<property name="dir.bundle_statushetty.build" value="${dir.bundle_statushetty}/build" />
 	<property name="dir.bundle_springmvc" value="bundle_springmvc" />
 	<property name="dir.bundle_springmvc.build" value="${dir.bundle_springmvc}/build" />
 	<property name="dir.bundle_handlersocket" value="bundle_handlersocket" />
 	<property name="dir.bundle_handlersocket.build" value="${dir.bundle_handlersocket}/build" />
 	<property name="dir.bundle_config" value="bundle_config" />
 	<property name="dir.bundle_config.build" value="${dir.bundle_config}/build" />
+	<property name="dir.bundle_hettymvc" value="bundle_hettymvc" />
+	<property name="dir.bundle_hettymvc.build" value="${dir.bundle_hettymvc}/build" />
 	<property name="dir.servlet" value="servlet" />
 	<property name="dir.servlet.build" value="${dir.servlet}/build" />
 	<property name="dir.hetty" value="hetty" />
@@ -31,6 +35,7 @@
 		<copy todir="release/interim/jar" overwrite="true" includeemptydirs="true">
 			<fileset dir="${dir.servlet.build}/web/WEB-INF/lib">
 				<include name="**/DASP-*.*" />
+				<include name="**/Hetty-*.*" />
 			</fileset>
 			<fileset dir="${dir.bundle_springaop}/build">
 				<include name="**/ddth*.*" />
@@ -42,6 +47,9 @@
 				<include name="**/ddth*.*" />
 			</fileset>
 			<fileset dir="${dir.bundle_config}/build">
+				<include name="**/ddth*.*" />
+			</fileset>
+			<fileset dir="${dir.bundle_hettymvc}/build">
 				<include name="**/ddth*.*" />
 			</fileset>
 		</copy>
@@ -95,6 +103,16 @@
 		</echo>
 		<echo>CLEANING SUB-PROJECT [bundle-config]...</echo>
 		<ant dir="${dir.bundle_config}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-hettymvc]...</echo>
+		<ant dir="${dir.bundle_hettymvc}" target="clean" />
+
+		<echo>
+		</echo>
+		<echo>CLEANING SUB-PROJECT [bundle-statushetty]...</echo>
+		<ant dir="${dir.bundle_statushetty}" target="clean" />
 	</target>
 
 	<target name="build-development">
@@ -150,6 +168,16 @@
 		</echo>
 		<echo>BUILDING SUB-PROJECT [bundle-config]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_config}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-hettymvc]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_hettymvc}" target="build-development" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-statushetty]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_statushetty}" target="build-development" />
 
 		<antcall target="post-build" />
 	</target>
@@ -208,6 +236,16 @@
 		<echo>BUILDING SUB-PROJECT [bundle-config]...</echo>
 		<ant inheritall="false" dir="${dir.bundle_config}" target="build-production" />
 
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-hettymvc]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_hettymvc}" target="build-production" />
+
+		<echo>
+		</echo>
+		<echo>BUILDING SUB-PROJECT [bundle-statushetty]...</echo>
+		<ant inheritall="false" dir="${dir.bundle_statushetty}" target="build-production" />
+
 		<antcall target="post-build" />
 	</target>
 
@@ -239,6 +277,9 @@
 			<fileset dir="${dir.bundle_status.build}">
 				<include name="**/*.jar" />
 			</fileset>
+			<fileset dir="${dir.bundle_statushetty.build}">
+				<include name="**/*.jar" />
+			</fileset>
 			<fileset dir="${dir.bundle_springaop.build}">
 				<include name="**/*.jar" />
 			</fileset>
@@ -249,6 +290,9 @@
 				<include name="**/*.jar" />
 			</fileset>
 			<fileset dir="${dir.bundle_config.build}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${dir.bundle_hettymvc.build}">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
