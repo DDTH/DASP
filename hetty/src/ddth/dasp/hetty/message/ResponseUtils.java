@@ -8,14 +8,23 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 
 import com.google.protobuf.ByteString;
 
+/**
+ * Response generator utility class.
+ * 
+ * @author Thanh Ba Nguyen <btnguyen2k@gmail.com>
+ */
 public class ResponseUtils {
 
     public final static DateFormat DF_HEADER = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss z");
+    static {
+        DF_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
     public final static String SERVER = "Hetty Server v0.1.0";
     private final static ByteString EMPTY_CONTENT = ByteString.EMPTY;
 
@@ -96,6 +105,17 @@ public class ResponseUtils {
             String url) {
         HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(301);
         builder.addHeaders(newHeader("Location", url));
+        return builder;
+    }
+
+    /**
+     * Helper method to create a 304 response.
+     * 
+     * @param request
+     * @return
+     */
+    public static HettyProtoBuf.Response.Builder response304(HettyProtoBuf.Request request) {
+        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(304);
         return builder;
     }
 
