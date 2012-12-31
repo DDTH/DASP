@@ -1,6 +1,7 @@
 package ddth.dasp.hetty.mvc;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.framework.resource.IResourceLoader;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.RequestUtils;
 import ddth.dasp.hetty.message.ResponseUtils;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
@@ -125,15 +127,32 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         if (action != null && path.startsWith("/" + action)) {
             path = path.substring(action.length() + 1);
         }
+        HettyProtoBuf.Response.Builder response = null;
         if (resourceLoader.resourceExists(path)) {
             byte[] resourceContent = resourceLoader.loadResourceAsBinary(path);
-            String resourceMimeType = detectMimeType(path);
-            HettyProtoBuf.Response.Builder response = ResponseUtils.response200(request,
-                    resourceContent, resourceMimeType + "; charset=utf-8");
-            topicPublisher.publishToTopic(response.build());
+            String etag = DigestUtils.md5Hex(resourceContent);
+            String headerIfNoneMatch = RequestUtils.getHeader(request, "If-None-Match");
+            if (headerIfNoneMatch != null && headerIfNoneMatch.equals(etag)) {
+                response = ResponseUtils.response304(request);
+            } else {
+                String resourceMimeType = detectMimeType(path);
+                response = ResponseUtils.response200(request, resourceContent, resourceMimeType
+                        + "; charset=utf-8");
+            }
+            // cache headers
+            ResponseUtils.newHeader("ETag", etag, response);
+            ResponseUtils.newHeader("Cache-control", "private", response);
+            ResponseUtils.newHeader("Max-Age", 1 * 3600, response);
+            long resourceTimestamp = resourceLoader.getLastModified(path);
+            if (resourceTimestamp > 0) {
+                ResponseUtils.newHeader("Last-Modified", new Date(resourceTimestamp), response);
+                // 1 hour in millisecs
+                ResponseUtils.newHeader("Expires", new Date(
+                        System.currentTimeMillis() + 1 * 3600000L), response);
+            }
         } else {
-            HettyProtoBuf.Response response = ResponseUtils.response404(request).build();
-            topicPublisher.publishToTopic(response);
+            response = ResponseUtils.response404(request);
         }
+        topicPublisher.publishToTopic(response.build());
     }
 }
