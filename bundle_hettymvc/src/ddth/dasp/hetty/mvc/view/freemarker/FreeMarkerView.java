@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import ddth.dasp.hetty.message.HettyProtoBuf;
-import ddth.dasp.hetty.message.ResponseUtils;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 import freemarker.template.Template;

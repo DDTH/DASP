@@ -1,4 +1,4 @@
-package ddth.dasp.hetty.message;
+package ddth.dasp.hetty.message.protobuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -152,7 +152,7 @@ public class ResponseUtils {
     public static HettyProtoBuf.Response.Builder response404(HettyProtoBuf.Request request,
             String message) {
         if (content404 == null) {
-            content404 = loadContent("/ddth/dasp/hetty/message/404.tpl");
+            content404 = loadContent("/ddth/dasp/hetty/404.tpl");
         }
         String referer = HettyProtoBufUtils.getHeader(request, "Referer");
         String htmlContent = content404.replace("${referer}", referer != null ? referer : "")
@@ -201,7 +201,7 @@ public class ResponseUtils {
     public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request,
             String message, Throwable t) {
         if (content500 == null) {
-            content500 = loadContent("/ddth/dasp/hetty/message/500.tpl");
+            content500 = loadContent("/ddth/dasp/hetty/500.tpl");
         }
         String referer = HettyProtoBufUtils.getHeader(request, "Referer");
         if (message == null && t != null) {

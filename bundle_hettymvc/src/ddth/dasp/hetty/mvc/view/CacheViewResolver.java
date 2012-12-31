@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import ddth.dasp.hetty.message.HettyProtoBuf.Request;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
 public abstract class CacheViewResolver implements IViewResolver {

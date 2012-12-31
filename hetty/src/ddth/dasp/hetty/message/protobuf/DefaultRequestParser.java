@@ -1,4 +1,4 @@
-package ddth.dasp.hetty.message;
+package ddth.dasp.hetty.message.protobuf;
 
 import org.apache.commons.lang3.StringUtils;
 

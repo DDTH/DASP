@@ -29,7 +29,8 @@
 		</property>
 	</bean>
 
-	<bean id="rahServer" class="ddth.dasp.statushetty.actionhandler.ServerStatusActionHandler"
+	<bean id="rahServer"
+		class="ddth.dasp.statushetty.actionhandler.ServerStatusActionHandler"
 		scope="singleton">
 		<property name="viewName" value="server" />
 		<property name="properties">
@@ -38,18 +39,19 @@
 			</props>
 		</property>
 	</bean>
-	
-	<bean id="rahOsgi" class="ddth.dasp.statushetty.actionhandler.OsgiStatusActionHandler"
-        scope="singleton">
-        <property name="viewName" value="osgi" />
-        <property name="properties">
-            <props>
-                <prop key="Action"><![CDATA[osgi]]></prop>
-            </props>
-        </property>
-    </bean>
 
-	<bean id="_requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+	<bean id="rahOsgi"
+		class="ddth.dasp.statushetty.actionhandler.OsgiStatusActionHandler"
+		scope="singleton">
+		<property name="viewName" value="osgi" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[osgi]]></prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="_requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
 	</bean>

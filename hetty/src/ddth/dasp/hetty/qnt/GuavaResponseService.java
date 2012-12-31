@@ -4,7 +4,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import ddth.dasp.hetty.front.AbstractHettyResponseService;
-import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
 import ddth.dasp.hetty.utils.GuavaUtils;
 
 public class GuavaResponseService extends AbstractHettyResponseService {

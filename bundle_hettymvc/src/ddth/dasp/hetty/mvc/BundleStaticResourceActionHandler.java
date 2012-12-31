@@ -12,9 +12,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.framework.resource.IResourceLoader;
 import ddth.dasp.hetty.IRequestActionHandler;
-import ddth.dasp.hetty.message.HettyProtoBuf;
-import ddth.dasp.hetty.message.RequestUtils;
-import ddth.dasp.hetty.message.ResponseUtils;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.RequestUtils;
+import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
 /**

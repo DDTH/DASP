@@ -1,4 +1,4 @@
-package ddth.dasp.hetty.message;
+package ddth.dasp.hetty.message.protobuf;
 
 import java.util.List;
 

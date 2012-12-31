@@ -3,7 +3,7 @@ package ddth.dasp.statushetty.actionhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
 import ddth.dasp.hetty.mvc.SimpleActionHandler;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.mvc.view.IViewResolver;

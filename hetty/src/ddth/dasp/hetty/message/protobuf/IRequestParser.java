@@ -1,4 +1,4 @@
-package ddth.dasp.hetty.message;
+package ddth.dasp.hetty.message.protobuf;
 
 public interface IRequestParser {
     public String getAction(HettyProtoBuf.Request requestProtobuf);

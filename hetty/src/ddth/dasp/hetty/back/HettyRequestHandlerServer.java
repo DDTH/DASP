@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.hetty.IRequestActionHandler;
-import ddth.dasp.hetty.message.HettyProtoBuf;
-import ddth.dasp.hetty.message.IRequestParser;
-import ddth.dasp.hetty.message.ResponseUtils;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.IRequestParser;
+import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.qnt.IQueueReader;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 

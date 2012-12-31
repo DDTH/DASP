@@ -1,5 +1,5 @@
 option optimize_for = SPEED;
-option java_package = "ddth.dasp.hetty.message";
+option java_package = "ddth.dasp.hetty.message.protobuf";
 option java_outer_classname = "HettyProtoBuf";
 
 message Cookie {

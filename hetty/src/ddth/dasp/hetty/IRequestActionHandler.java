@@ -1,6 +1,6 @@
 package ddth.dasp.hetty;
 
-import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
 public interface IRequestActionHandler {

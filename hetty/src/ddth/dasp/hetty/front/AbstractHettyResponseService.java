@@ -16,7 +16,7 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
 
 public abstract class AbstractHettyResponseService implements IHettyResponseService {
 

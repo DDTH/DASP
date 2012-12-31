@@ -14,8 +14,8 @@ import org.springframework.osgi.context.BundleContextAware;
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.IUrlCreator;
-import ddth.dasp.hetty.message.HettyProtoBuf;
-import ddth.dasp.hetty.message.IRequestParser;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.IRequestParser;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.mvc.view.IViewResolver;
 import ddth.dasp.hetty.mvc.view.RedirectView;
@@ -163,7 +163,7 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
 
     /**
      * Sub-class to implement this method. It will be called by
-     * {@link #handleRequest(ddth.dasp.hetty.message.HettyProtoBuf.Request, ITopicPublisher)}
+     * {@link #handleRequest(ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request, ITopicPublisher)}
      * .
      * 
      * @param request

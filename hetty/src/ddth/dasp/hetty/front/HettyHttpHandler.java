@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.google.protobuf.ByteString;
 
 import ddth.dasp.common.id.IdGenerator;
-import ddth.dasp.hetty.message.HettyProtoBuf;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
 import ddth.dasp.hetty.qnt.IQueueWriter;
 
 public class HettyHttpHandler extends IdleStateAwareChannelHandler {

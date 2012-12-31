@@ -1,7 +1,7 @@
 package ddth.dasp.statushetty.actionhandler;
 
 import ddth.dasp.hetty.IUrlCreator;
-import ddth.dasp.hetty.message.HettyProtoBuf.Request;
+import ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request;
 import ddth.dasp.hetty.mvc.view.IViewResolver;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 import ddth.dasp.statushetty.DaspBundleConstants;
