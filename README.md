@@ -12,8 +12,10 @@ A Java platform for applications & services. See sub-folders' readme files for m
 * **bundle_log4j**: Log4j configurations
 * **bundle_springaop**: Spring AOP utils
 * **bundle_springmvc**: utils to develop Sprind MVC applications on DASP
-* **bundle_status**: embedded simple status page for DASP
-* **hetty**: an async, distributed http server and web application framework based on [Netty](https://netty.io/).
+* **bundle_status**: embedded simple status page for DASP (to demonstrate DASP's web application capability).
+* **hetty**: an async, distributed http server based on [Netty](https://netty.io/).
+* **bundle_hettymvc**: a MVC web application framework for Hetty, packaged as an OSGi bundle.
+* **bundle\_status\_hetty**: embedded simple status page for DASP (to demonstrate HettyMVC).
 
 Disclaimer
 ----------
