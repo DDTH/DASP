@@ -24,7 +24,8 @@ import ddth.dasp.framework.resource.AbstractResourceLoader;
  */
 public class BundleResourceLoader extends AbstractResourceLoader implements
 		BundleContextAware, ApplicationContextAware {
-	private Bundle bundle;
+
+    private Bundle bundle;
 
 	protected Bundle getBundle() {
 		return bundle;

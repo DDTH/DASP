@@ -127,7 +127,8 @@ public abstract class BaseSpringBundleActivator extends BaseBundleActivator {
         if (springConfigFiles != null && springConfigFiles.length > 0) {
             ac.setConfigLocations(springConfigFiles);
         }
-        ac.refresh();
+        // ac.refresh();
+        ac.normalRefresh();
         ac.start();
         this.applicationContext = ac;
     }
