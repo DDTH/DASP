@@ -25,5 +25,13 @@
 /bundle_status/classes
 /bundle_status/build
 /bundle_status/META-INF
+/bundle_status_hetty/classes
+/bundle_status_hetty/build
+/bundle_status_hetty/META-INF
+/bundle_hettymvc/classes
+/bundle_hettymvc/build
+/bundle_hettymvc/META-INF
+/hetty/classes
+/hetty/build
 /servlet/classes
 /servlet/build
