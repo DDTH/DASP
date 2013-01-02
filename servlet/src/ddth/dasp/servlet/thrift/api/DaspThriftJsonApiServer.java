@@ -19,7 +19,7 @@ public class DaspThriftJsonApiServer {
     private boolean nonBlockingServer = true;
     private int clientTimeoutMillisecs = 1000; // 1 second
     private int maxFrameSize = 1 * 1024 * 1024; // 1 Mb
-    private long maxReadBufferSize = 16 * 1024 * 1024; // 15 Mb
+    private long maxReadBufferSize = 16 * 1024 * 1024; // 16 Mb
 
     public String getPort() {
         return portStr;
