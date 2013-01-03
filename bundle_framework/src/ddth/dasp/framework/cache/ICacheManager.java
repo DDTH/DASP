@@ -8,6 +8,8 @@ package ddth.dasp.framework.cache;
  */
 public interface ICacheManager {
 
+    public final static String GLOBAL_KEY = "ALL_CACHE_MANAGERS";
+
     public final static long DEFAULT_CACHE_CAPACITY = 1000;
     public final static long DEFAULT_EXPIRE_AFTER_WRITE = 1800;
     public final static long DEFAULT_EXPIRE_AFTER_ACCESS = 1800;
@@ -30,6 +32,13 @@ public interface ICacheManager {
      *         been created
      */
     public ICache getCache(String name);
+
+    /**
+     * Gets all current caches of this cache manager.
+     * 
+     * @return
+     */
+    public ICache[] getCaches();
 
     /**
      * Removes an existing cache by name.

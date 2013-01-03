@@ -1,12 +1,18 @@
 package ddth.dasp.framework.cache;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.MapMaker;
+
+import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.id.IdGenerator;
 
 public abstract class AbstractCacheManager implements ICacheManager {
 
@@ -20,23 +26,45 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private ConcurrentMap<String, ICache> caches;
     private Map<String, Properties> cacheProperties;
     private String cacheNamePrefix;
+    private String ID = IdGenerator.getInstance(IdGenerator.getMacAddr()).generateId64Hex();
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void init() {
         int numProcessores = Runtime.getRuntime().availableProcessors();
         MapMaker mm = new MapMaker();
         mm.concurrencyLevel(numProcessores);
         caches = mm.makeMap();
+        synchronized (ICacheManager.class) {
+            Object temp = DaspGlobal.getGlobalVar(ICacheManager.GLOBAL_KEY);
+            if (!(temp instanceof Map)) {
+                temp = new HashMap<String, ICacheManager>();
+                DaspGlobal.setGlobalVar(ICacheManager.GLOBAL_KEY, temp);
+            }
+            Map<String, ICacheManager> allCacheManagers = (Map<String, ICacheManager>) temp;
+            allCacheManagers.put(ID, this);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void destroy() {
+        synchronized (ICacheManager.class) {
+            Object temp = DaspGlobal.getGlobalVar(ICacheManager.GLOBAL_KEY);
+            if (!(temp instanceof Map)) {
+                temp = new HashMap<String, ICacheManager>();
+                DaspGlobal.setGlobalVar(ICacheManager.GLOBAL_KEY, temp);
+            }
+            Map<String, ICacheManager> allCacheManagers = (Map<String, ICacheManager>) temp;
+            allCacheManagers.remove(ID);
+        }
+
         if (caches != null) {
             try {
                 Iterator<Entry<String, ICache>> it = caches.entrySet().iterator();
@@ -107,6 +135,18 @@ public abstract class AbstractCacheManager implements ICacheManager {
     @Override
     public ICache getCache(String name) {
         return caches.get(buildCacheName(name));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    synchronized public ICache[] getCaches() {
+        List<ICache> result = new ArrayList<ICache>();
+        for (Entry<String, ICache> entry : caches.entrySet()) {
+            result.add(entry.getValue());
+        }
+        return result.toArray(new ICache[0]);
     }
 
     /**

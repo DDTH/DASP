@@ -1,11 +1,14 @@
 package ddth.dasp.framework.cache;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public abstract class AbstractCache implements ICache {
 
     private String name;
     private long capacity;
     private long expireAfterWrite;
     private long expireAfterAccess;
+    private AtomicLong hits = new AtomicLong(), misses = new AtomicLong();
 
     public AbstractCache() {
     }
@@ -70,6 +73,30 @@ public abstract class AbstractCache implements ICache {
      * {@inheritDoc}
      */
     @Override
+    public long getHits() {
+        return hits.get();
+    }
+
+    protected long incHits() {
+        return hits.incrementAndGet();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getMisses() {
+        return misses.get();
+    }
+
+    protected long incMisses() {
+        return misses.incrementAndGet();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public long getExpireAfterWrite() {
         return expireAfterWrite;
     }
@@ -97,7 +124,13 @@ public abstract class AbstractCache implements ICache {
     public Object get(String key) {
         Object value = internalGet(key);
         if (value instanceof CacheEntry && ((CacheEntry) value).isExpired()) {
+            incMisses();
             return null;
+        }
+        if (value == null) {
+            incMisses();
+        } else {
+            incHits();
         }
         return value;
     }

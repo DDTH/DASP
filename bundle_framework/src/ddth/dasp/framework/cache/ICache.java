@@ -40,6 +40,20 @@ public interface ICache {
     public long getCapacity();
 
     /**
+     * Gets cache's number of hits.
+     * 
+     * @return
+     */
+    public long getHits();
+
+    /**
+     * Gets cache's number of misses.
+     * 
+     * @return
+     */
+    public long getMisses();
+
+    /**
      * Gets number of seconds before entries to be expired since the last read
      * or write.
      * 
