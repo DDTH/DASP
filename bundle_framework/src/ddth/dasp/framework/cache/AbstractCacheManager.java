@@ -1,6 +1,8 @@
 package ddth.dasp.framework.cache;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -146,6 +148,12 @@ public abstract class AbstractCacheManager implements ICacheManager {
         for (Entry<String, ICache> entry : caches.entrySet()) {
             result.add(entry.getValue());
         }
+        Collections.sort(result, new Comparator<ICache>() {
+            @Override
+            public int compare(ICache o1, ICache o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return result.toArray(new ICache[0]);
     }
 
