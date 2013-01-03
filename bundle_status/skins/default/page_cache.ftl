@@ -25,7 +25,10 @@
 	                            </tr>
 	                            <#list cm.cacheManager.caches as cache>
 	                               <tr>
-	                                   <td>&nbsp;&nbsp;&nbsp;&nbsp;+ ${cache.name?html}</td>
+	                                   <td>
+                                           &nbsp;&nbsp;&nbsp;&nbsp;+ ${cache.name?html}
+                                           (Access: ${cache.expireAfterAccess} / Write: ${cache.expireAfterWrite})
+                                       </td>
 	                                   <td style="text-align: right">${cache.size}</td>
 	                                   <td style="text-align: right">${cache.capacity}</td>
 	                                   <td style="text-align: right">${cache.hits}<#if cache.hits+cache.misses gt 0> (${100*cache.hits/(cache.hits+cache.misses)}%)</#if></td>

@@ -26,6 +26,8 @@ public class BaseActionHandler extends SimpleActionHandler {
     private final static String URL_SERVER_STATUS = "/" + DaspBundleConstants.MODULE_NAME
             + "/server";
     private final static String URL_OSGI_STATUS = "/" + DaspBundleConstants.MODULE_NAME + "/osgi";
+    private final static String URL_CACHE_STATUS = "/" + DaspBundleConstants.MODULE_NAME + "/cache";
+    private final static String URL_JDBC_STATUS = "/" + DaspBundleConstants.MODULE_NAME + "/jdbc";
 
     /**
      * {@inheritDoc}
@@ -36,6 +38,8 @@ public class BaseActionHandler extends SimpleActionHandler {
         model.put("SKIN_ROOT", SKIN_ROOT);
         model.put("urlServerStatus", URL_SERVER_STATUS);
         model.put("urlOsgiStatus", URL_OSGI_STATUS);
+        model.put("urlCacheStatus", URL_CACHE_STATUS);
+        model.put("urlJdbcStatus", URL_JDBC_STATUS);
         return model;
     }
 }

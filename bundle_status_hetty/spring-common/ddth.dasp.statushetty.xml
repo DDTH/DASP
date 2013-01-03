@@ -51,6 +51,17 @@
 		</property>
 	</bean>
 
+	<bean id="rahCache"
+		class="ddth.dasp.statushetty.actionhandler.CacheStatusActionHandler"
+		scope="singleton">
+		<property name="viewName" value="cache" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[cache]]></prop>
+			</props>
+		</property>
+	</bean>
+
 	<bean id="_requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
