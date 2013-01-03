@@ -14,6 +14,7 @@
 				<entry key="*" value-ref="controllerHome" />
 				<entry key="server" value-ref="controllerServerStatus" />
 				<entry key="osgi" value-ref="controllerOsgiStatus" />
+				<entry key="cache" value-ref="controllerCacheStatus" />
 			</map>
 		</property>
 	</bean>
@@ -47,5 +48,7 @@
 	<bean id="controllerServerStatus" class="ddth.dasp.status.controller.ServerStatusController"
 		scope="singleton" lazy-init="true"></bean>
 	<bean id="controllerOsgiStatus" class="ddth.dasp.status.controller.OsgiStatusController"
+		scope="singleton" lazy-init="true"></bean>
+	<bean id="controllerCacheStatus" class="ddth.dasp.status.controller.CacheStatusController"
 		scope="singleton" lazy-init="true"></bean>
 </beans>

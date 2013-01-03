@@ -14,5 +14,6 @@ Import-Package: ddth.dasp.common,
  ddth.dasp.common.utils,
  freemarker.cache,
  freemarker.template,
+ javax.servlet,
  javax.servlet.http,
  org.osgi.framework
