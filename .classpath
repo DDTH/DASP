@@ -63,13 +63,12 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpclient-4.2.1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/httpcore-4.2.1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/libthrift-0.8.0.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/hazelcast-client-2.2.jar"/>
-	<classpathentry kind="lib" path="bundle_framework/lib/hazelcast-2.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.runtime-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/com.springsource.org.aspectj.weaver-1.6.12.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/05.google/guava-13.0.jar"/>
 	<classpathentry kind="lib" path="bundle_framework/lib/activemq-all-5.6.0.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/com.google.protobuf-2.4.1.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/netty-3.6.0.Final.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/hazelcast-all-2.4.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

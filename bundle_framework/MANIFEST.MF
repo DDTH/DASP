@@ -41,8 +41,7 @@ Bundle-ClassPath: .,
  activemq-all-5.6.0.jar,
  jackson-core-lgpl-1.8.2.jar,
  jackson-mapper-lgpl-1.8.2.jar,
- hazelcast-client-2.2.jar,
- hazelcast-2.2.jar
+ hazelcast-all-2.4.1.jar
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.api,
  ddth.dasp.common.id,
