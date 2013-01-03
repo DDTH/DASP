@@ -19,6 +19,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
 
     private HazelcastClient hazelcastClient;
     private IMap<String, Object> hazelcastMap;
+    private long timeToLiveSeconds = -1;
 
     public HazelcastCache(HazelcastClient hazelcastClient) {
         this.hazelcastClient = hazelcastClient;
@@ -47,6 +48,13 @@ public class HazelcastCache extends AbstractCache implements ICache {
     public void init() {
         super.init();
         hazelcastMap = hazelcastClient.getMap(getName());
+        long expireAfterWrite = getExpireAfterWrite();
+        long expireAfterAccess = getExpireAfterAccess();
+        if (expireAfterAccess > 0 || expireAfterWrite > 0) {
+            timeToLiveSeconds = expireAfterAccess > 0 ? expireAfterAccess : expireAfterWrite;
+        } else {
+            timeToLiveSeconds = -1;
+        }
     }
 
     /**
@@ -70,11 +78,8 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void set(String key, Object entry) {
-        long expireAfterWrite = getExpireAfterWrite();
-        long expireAfterAccess = getExpireAfterAccess();
-        if (expireAfterWrite >= 0 && expireAfterAccess >= 0) {
-            hazelcastMap.put(key, entry, expireAfterWrite >= 0 ? expireAfterWrite
-                    : expireAfterAccess, TimeUnit.SECONDS);
+        if (timeToLiveSeconds > 0) {
+            hazelcastMap.put(key, entry, timeToLiveSeconds, TimeUnit.SECONDS);
         } else {
             hazelcastMap.putAsync(key, entry);
         }

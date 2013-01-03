@@ -45,9 +45,11 @@ public class GuavaCache extends AbstractCache implements ICache {
         CacheBuilder<Object, Object> cacheBuider = CacheBuilder.newBuilder();
         cacheBuider.concurrencyLevel(numProcessores);
         long capacity = getCapacity();
+        capacity = capacity > 0 ? capacity : ICacheManager.DEFAULT_CACHE_CAPACITY;
+        setCapacity(capacity);
         long expireAfterAccess = getExpireAfterAccess();
         long expireAfterWrite = getExpireAfterWrite();
-        cacheBuider.maximumSize(capacity > 0 ? capacity : ICacheManager.DEFAULT_CACHE_CAPACITY);
+        cacheBuider.maximumSize(capacity);
         if (expireAfterAccess > 0) {
             cacheBuider.expireAfterAccess(expireAfterAccess, TimeUnit.SECONDS);
         } else if (expireAfterWrite > 0) {
@@ -55,6 +57,7 @@ public class GuavaCache extends AbstractCache implements ICache {
         } else {
             cacheBuider.expireAfterAccess(ICacheManager.DEFAULT_EXPIRE_AFTER_ACCESS,
                     TimeUnit.SECONDS);
+            setExpireAfterAccess(ICacheManager.DEFAULT_EXPIRE_AFTER_ACCESS);
         }
         cache = cacheBuider.build();
     }
