@@ -2,6 +2,7 @@ package ddth.dasp.framework.dbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -12,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.logging.JdbcConnLogger;
 import ddth.dasp.common.osgi.IRequireCleanupService;
 import ddth.dasp.framework.utils.TimerUtils;
@@ -47,6 +50,8 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
      * <code>null</code>, falls back to factory's methods.
      */
     private IJdbcFactory parentFactory;
+
+    private String ID = IdGenerator.getInstance(IdGenerator.getMacAddr()).generateId64Hex();
 
     /**
      * Gets the parent {@link IJdbcFactory}.
@@ -90,15 +95,64 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void init() {
+        synchronized (IJdbcFactory.class) {
+            Object temp = DaspGlobal.getGlobalVar(IJdbcFactory.GLOBAL_KEY);
+            if (!(temp instanceof Map)) {
+                temp = new HashMap<String, IJdbcFactory>();
+                DaspGlobal.setGlobalVar(IJdbcFactory.GLOBAL_KEY, temp);
+            }
+            Map<String, IJdbcFactory> allJdbcFactories = (Map<String, IJdbcFactory>) temp;
+            allJdbcFactories.put(ID, this);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void destroy() {
+        synchronized (IJdbcFactory.class) {
+            Object temp = DaspGlobal.getGlobalVar(IJdbcFactory.GLOBAL_KEY);
+            if (!(temp instanceof Map)) {
+                temp = new HashMap<String, IJdbcFactory>();
+                DaspGlobal.setGlobalVar(IJdbcFactory.GLOBAL_KEY, temp);
+            }
+            Map<String, IJdbcFactory> allJdbcFactories = (Map<String, IJdbcFactory>) temp;
+            allJdbcFactories.remove(ID);
+        }
+
+        Connection[] openConnections = openedConnections.keySet().toArray(new Connection[0]);
+        for (Connection conn : openConnections) {
+            try {
+                releaseConnection(conn);
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            }
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void destroy() {
+    public int countOpenConnections() {
+        synchronized (openedConnections) {
+            return openedConnections.size();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int countDataSources() {
+        synchronized (dataSources) {
+            return dataSources.size();
+        }
     }
 
     /**
@@ -243,14 +297,30 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
         return getConnectionFromDataSource(dataSourceName, dataSource, getMaxConnectionLifetime());
     }
 
+    protected abstract DataSourceInfo internalGetDataSourceInfo(String name, DataSource ds);
+
+    protected abstract DataSourceInfo internalGetDataSourceInfo(String name);
+
     /**
-     * Gets a datasource's information.
-     * 
-     * @param dataSource
-     *            DataSource
-     * @return int[] [numActiveConns, numIdleConns, maxConns]
+     * {@inheritDoc}
      */
-    protected abstract int[] getDataSourceInfo(DataSource dataSource);
+    @Override
+    public DataSourceInfo getDataSourceInfo(String name) {
+        DataSource ds = getDataSource(name);
+        if (ds == null) {
+            return null;
+        }
+        return internalGetDataSourceInfo(name, ds);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DataSourceInfo getDataSourceInfo(String driver, String connUrl, String username,
+            String password) {
+        String dsName = calcHash(driver, connUrl, username, password);
+        return getDataSourceInfo(dsName);
+    }
 
     /**
      * Gets a connection from a specified datasource.
@@ -277,6 +347,10 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
                             + "]...");
                 }
                 JdbcConnLogger.add(conn);
+                DataSourceInfo dsInfo = internalGetDataSourceInfo(dataSourceName, dataSource);
+                if (dsInfo != null) {
+                    dsInfo.incNumOpens();
+                }
 
                 OpenConnectionInfo connInfo = new OpenConnectionInfo(dataSourceName);
                 synchronized (openedConnections) {
@@ -319,6 +393,10 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
                     LOGGER.debug("Releasing a connection from datasource ["
                             + info.getDatasourceKey() + "]..., it has lived [" + info.getLifetime()
                             + "] ms");
+                }
+                DataSourceInfo dsInfo = internalGetDataSourceInfo(info.getDatasourceKey());
+                if (dsInfo != null) {
+                    dsInfo.incNumCloses();
                 }
                 openedConnections.remove(conn);
                 try {
@@ -402,19 +480,14 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     public DataSource getDataSource(String driver, String connUrl, String username, String password) {
         String dsName = calcHash(driver, connUrl, username, password);
         return getDataSource(dsName);
-        // synchronized (dataSources) {
-        // DataSource ds = getDataSource(dsName);
-        // if (ds == null) {
-        // try {
-        // ds = buildDataSource(driver, connUrl, username, password);
-        // } catch (Exception e) {
-        // LOGGER.error(e.getMessage(), e);
-        // return null;
-        // }
-        // dataSources.put(dsName, ds);
-        // }
-        // return ds;
-        // }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, DataSource> getDataSources() {
+        return Collections.unmodifiableMap(dataSources);
     }
 
     /**
@@ -439,6 +512,11 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
             if (currentConnInfo != null) {
                 // found the opened connection
                 if (currentConnInfo.getId() == openConnInfo.getId()) {
+                    DataSourceInfo dsInfo = internalGetDataSourceInfo(openConnInfo
+                            .getDatasourceKey());
+                    if (dsInfo != null) {
+                        dsInfo.incNumLeakCloses();
+                    }
                     // the connection instance we are holding has been occupied
                     // until now!
                     releaseConnection(conn);

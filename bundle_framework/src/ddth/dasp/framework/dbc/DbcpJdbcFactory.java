@@ -1,5 +1,8 @@
 package ddth.dasp.framework.dbc;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -16,19 +19,34 @@ import org.slf4j.LoggerFactory;
 public class DbcpJdbcFactory extends AbstractJdbcFactory {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DbcpJdbcFactory.class);
+    private ConcurrentMap<String, DataSourceInfo> cacheDsInfo = new ConcurrentHashMap<String, DataSourceInfo>();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int[] getDataSourceInfo(DataSource dataSource) {
-        int[] info = new int[] { -1, -1, -1 };
-        if (dataSource instanceof BasicDataSource) {
-            info[0] = ((BasicDataSource) dataSource).getNumActive();
-            info[1] = ((BasicDataSource) dataSource).getNumIdle();
-            info[2] = ((BasicDataSource) dataSource).getMaxActive();
+    protected DataSourceInfo internalGetDataSourceInfo(String name) {
+        DataSourceInfo dsInfo = cacheDsInfo.get(name);
+        if (dsInfo == null) {
+            dsInfo = new DataSourceInfo(name);
+            cacheDsInfo.put(name, dsInfo);
         }
-        return info;
+        return dsInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DataSourceInfo internalGetDataSourceInfo(String name, DataSource ds) {
+        DataSourceInfo dsInfo = internalGetDataSourceInfo(name);
+        if (ds instanceof BasicDataSource) {
+            BasicDataSource basicDs = (BasicDataSource) ds;
+            dsInfo.setMaxActives(basicDs.getMaxActive()).setMaxIdles(basicDs.getMaxIdle())
+                    .setMaxWait(basicDs.getMaxWait()).setMinIdles(basicDs.getMinIdle())
+                    .setNumActives(basicDs.getNumActive()).setNumIdles(basicDs.getNumIdle());
+        }
+        return dsInfo;
     }
 
     /**
