@@ -62,6 +62,17 @@
 		</property>
 	</bean>
 
+	<bean id="rahJdbc"
+		class="ddth.dasp.statushetty.actionhandler.JdbcStatusActionHandler"
+		scope="singleton">
+		<property name="viewName" value="jdbc" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[jdbc]]></prop>
+			</props>
+		</property>
+	</bean>
+
 	<bean id="_requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
