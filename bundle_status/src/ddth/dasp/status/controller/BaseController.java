@@ -24,4 +24,10 @@ public class BaseController extends BaseAnnotationController {
         return DaspGlobal.getServletContext().getContextPath() + "/"
                 + DaspBundleConstants.MODULE_NAME + "/cache";
     }
+
+    @ModelAttribute(value = "urlJdbcStatus")
+    public String modelUrlJdbcStatus() {
+        return DaspGlobal.getServletContext().getContextPath() + "/"
+                + DaspBundleConstants.MODULE_NAME + "/jdbc";
+    }
 }
