@@ -2,6 +2,7 @@ package ddth.dasp.framework.bo.jdbc;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -525,6 +526,38 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
             }
         }
         return result.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    /**
+     * Executes a stored procedure call.
+     * 
+     * @param sqlKey
+     * @param params
+     * @throws SQLException
+     */
+    protected void executeStoredProcedure(final Object sqlKey, Map<String, Object> params)
+            throws SQLException {
+        SqlProps sqlProps = buildSqlProps(sqlKey);
+        if (sqlProps == null) {
+            throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
+        }
+        Connection conn = getConnection();
+        CallableStatement stm = null;
+        if (conn == null) {
+            throwDbConnException(conn, null);
+        }
+        try {
+            long startTimestamp = System.currentTimeMillis();
+            String sql = sqlProps.getSql();
+            stm = (CallableStatement) JdbcUtils.prepareStatement(conn, sql, params, true);
+            stm.execute();
+            long endTimestamp = System.currentTimeMillis();
+            JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql, params);
+            JdbcLogger.log(jdbcLogEntry);
+        } finally {
+            JdbcUtils.closeResources(null, stm, null);
+            releaseConnection(conn);
+        }
     }
 
     /**
