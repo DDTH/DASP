@@ -95,7 +95,7 @@ public class HettyRequestHandlerServer {
                 filter);
         if (handler == null) {
             // fallback 1: lookup for wildcard handler
-            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "*");
+            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
         if (handler == null) {
