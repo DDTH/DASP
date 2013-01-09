@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.framework.resource.IResourceLoader;
@@ -105,6 +106,10 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         this.prefix = prefix;
     }
 
+    protected String buildPath(String path) {
+        return !StringUtils.isBlank(prefix) ? prefix + path : path;
+    }
+
     protected String detectMimeType(String path) {
         for (Entry<String, String> mimeType : mimeTypes.entrySet()) {
             if (path.endsWith(mimeType.getKey())) {
@@ -127,6 +132,8 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         if (action != null && path.startsWith("/" + action)) {
             path = path.substring(action.length() + 1);
         }
+        path = path.replaceAll("^\\/+", "");
+        path = buildPath(path);
         HettyProtoBuf.Response.Builder response = null;
         if (resourceLoader.resourceExists(path)) {
             byte[] resourceContent = resourceLoader.loadResourceAsBinary(path);

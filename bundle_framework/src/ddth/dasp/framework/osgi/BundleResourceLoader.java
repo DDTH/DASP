@@ -22,74 +22,73 @@ import ddth.dasp.framework.resource.AbstractResourceLoader;
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
-public class BundleResourceLoader extends AbstractResourceLoader implements
-		BundleContextAware, ApplicationContextAware {
+public class BundleResourceLoader extends AbstractResourceLoader implements BundleContextAware,
+        ApplicationContextAware {
 
     private Bundle bundle;
 
-	protected Bundle getBundle() {
-		return bundle;
-	}
+    protected Bundle getBundle() {
+        return bundle;
+    }
 
-	public void setBundle(Bundle bundle) {
-		this.bundle = bundle;
-	}
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getLastModified(String path) {
-		return bundle.getLastModified();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getLastModified(String path) {
+        return bundle.getLastModified();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean resourceExists(String path) {
-		return bundle.getEntry(path) != null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean resourceExists(String path) {
+        return bundle.getEntry(path) != null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public InputStream loadResource(String path) throws IOException {
-		URL url = bundle.getEntry(path);
-		return url.openStream();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream loadResource(String path) throws IOException {
+        URL url = bundle.getEntry(path);
+        return url.openStream();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String[] getEntryPaths(String rootPath) {
-		List<String> result = new ArrayList<String>();
-		Enumeration<String> paths = bundle.getEntryPaths(rootPath);
-		if (paths == null) {
-			return null;
-		}
-		while (paths.hasMoreElements()) {
-			String path = paths.nextElement();
-			result.add(path);
-		}
-		return result.toArray(new String[0]);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getEntryPaths(String rootPath) {
+        List<String> result = new ArrayList<String>();
+        Enumeration<String> paths = bundle.getEntryPaths(rootPath);
+        if (paths == null) {
+            return null;
+        }
+        while (paths.hasMoreElements()) {
+            String path = paths.nextElement();
+            result.add(path);
+        }
+        return result.toArray(new String[0]);
+    }
 
-	@Override
-	public void setBundleContext(BundleContext bundleContext) {
-		if (bundle == null) {
-			setBundle(bundleContext.getBundle());
-		}
-	}
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        if (bundle == null) {
+            setBundle(bundleContext.getBundle());
+        }
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext ac)
-			throws BeansException {
-		if (bundle == null) {
-			OsgiBundleXmlApplicationContext osgiAc = (OsgiBundleXmlApplicationContext) ac;
-			setBundle(osgiAc.getBundle());
-		}
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        if (bundle == null) {
+            OsgiBundleXmlApplicationContext osgiAc = (OsgiBundleXmlApplicationContext) ac;
+            setBundle(osgiAc.getBundle());
+        }
+    }
 }

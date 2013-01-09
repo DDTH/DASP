@@ -108,16 +108,17 @@
 		</bean>
 		<bean id="_skinLocation" class="java.lang.String">
 			<constructor-arg
-				value="D:\Workspace\Eclipse-4.2\DASP\bundle_status_hetty\skins" />
+				value="D:\Workspace\Eclipse-4.2\DASP\bundle_status_hetty\skins\" />
 		</bean>
 		<bean id="_freemarkerTemplateLoader"
 			class="ddth.dasp.framework.osgi.freemarker.BundleTemplateLoader"
 			scope="singleton">
 			<property name="resourceLoader" ref="skinResourceLoader" />
+			<property name="prefix" ref="_skinLocation" />
 		</bean>
 		<bean id="skinResourceLoader" class="ddth.dasp.framework.resource.FsResourceLoader"
 			scope="singleton">
-			<property name="rootDir" ref="_skinLocation" />
+			<!-- <property name="rootDir" ref="_skinLocation" /> -->
 		</bean>
 	</beans>
 
@@ -139,6 +140,7 @@
 			<property name="prefix" ref="_skinLocation" />
 		</bean>
 		<bean id="skinResourceLoader" class="ddth.dasp.framework.osgi.BundleResourceLoader"
-			scope="singleton"></bean>
+			scope="singleton">
+		</bean>
 	</beans>
 </beans>
