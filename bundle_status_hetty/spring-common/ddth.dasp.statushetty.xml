@@ -24,7 +24,7 @@
 		<property name="viewName" value="redirect:/statushetty/server/" />
 		<property name="properties">
 			<props>
-				<prop key="Action"><![CDATA[*]]></prop>
+				<prop key="Action"><![CDATA[_]]></prop>
 			</props>
 		</property>
 	</bean>
@@ -129,7 +129,7 @@
 			<constructor-arg value="true" />
 		</bean>
 		<bean id="_skinLocation" class="java.lang.String">
-			<constructor-arg value="/META-INF/skins" />
+			<constructor-arg value="/META-INF/skins/" />
 		</bean>
 
 		<bean id="_freemarkerTemplateLoader"
