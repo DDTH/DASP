@@ -1,12 +1,17 @@
 package ddth.dasp.framework.osgi;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -46,251 +51,297 @@ import ddth.dasp.common.osgi.IRequireCleanupService;
  */
 public abstract class BaseBundleActivator implements BundleActivator {
 
-	private final Logger LOGGER = LoggerFactory
-			.getLogger(BaseBundleActivator.class);
-	private BundleContext bundleContext;
-	private Bundle bundle;
-	private Properties properties;
-	private List<ServiceRegistration<?>> registeredServices = new LinkedList<ServiceRegistration<?>>();
+    private final Logger LOGGER = LoggerFactory.getLogger(BaseBundleActivator.class);
+    private BundleContext bundleContext;
+    private Bundle bundle;
+    private Properties properties;
+    private List<ServiceRegistration<?>> registeredServices = new LinkedList<ServiceRegistration<?>>();
+    private File bundleExtractDir;
 
-	/**
-	 * Gets name of the associated bundle.
-	 * 
-	 * This method returns the bundle's symbolic name.
-	 * 
-	 * @return
-	 */
-	public String getBundleName() {
-		return bundle.getSymbolicName();
-	}
+    /**
+     * Gets name of the associated bundle.
+     * 
+     * This method returns the bundle's symbolic name.
+     * 
+     * @return
+     */
+    public String getBundleName() {
+        return bundle.getSymbolicName();
+    }
 
-	protected BundleContext getBundleContext() {
-		return bundleContext;
-	}
+    protected BundleContext getBundleContext() {
+        return bundleContext;
+    }
 
-	protected void setBundleContext(BundleContext bundeContext) {
-		this.bundleContext = bundeContext;
-	}
+    protected void setBundleContext(BundleContext bundeContext) {
+        this.bundleContext = bundeContext;
+    }
 
-	protected Bundle getBundle() {
-		return bundle;
-	}
+    protected Bundle getBundle() {
+        return bundle;
+    }
 
-	protected void setBundle(Bundle bundle) {
-		this.bundle = bundle;
-	}
+    protected void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
 
-	protected Properties getProperties() {
-		return properties;
-	}
+    protected Properties getProperties() {
+        return properties;
+    }
 
-	protected void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    protected void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(BundleContext bundleContext) throws Exception {
-		setBundleContext(bundleContext);
-		setBundle(bundleContext.getBundle());
+    /**
+     * Extracts content from the bundle to a directory.
+     * 
+     * @param bundleRootPath
+     * @param toDirRoot
+     * @throws IOException
+     */
+    protected void extractBundleContent(String bundleRootPath, String toDirRoot) throws IOException {
+        File toDir = new File(toDirRoot);
+        if (!toDir.isDirectory()) {
+            throw new RuntimeException("[" + toDir.getAbsolutePath()
+                    + "] is not a valid directory or does not exist!");
+        }
+        toDir = new File(toDir, String.valueOf(bundle.getBundleId()));
+        toDir = new File(toDir, bundle.getVersion().toString());
+        FileUtils.forceMkdir(toDir);
+        bundleExtractDir = toDir;
 
-		long myId = this.bundle.getBundleId();
-		String myName = this.bundle.getSymbolicName();
-		Bundle[] currentBundles = bundleContext.getBundles();
-		for (Bundle bundle : currentBundles) {
-			if (myId != bundle.getBundleId()
-					&& myName.equals(bundle.getSymbolicName())) {
-				// found another version of me
-				handlerAnotherVersionAtStartup(bundle);
-			}
-		}
+        Enumeration<String> entryPaths = bundle.getEntryPaths(bundleRootPath);
+        while (entryPaths.hasMoreElements()) {
+            extractContent(entryPaths.nextElement(), bundleExtractDir);
+        }
+    }
 
-		Properties props = new Properties();
-		// String version = (String) bundle.getHeaders().get(
-		// Constants.BUNDLE_VERSION);
-		props.put("Version", bundle.getVersion().toString());
-		String moduleName = getModuleName();
-		if (!StringUtils.isEmpty(moduleName)) {
-			props.put("Module", moduleName);
-		}
-		setProperties(props);
+    private void extractContentDir(String path, File rootDir) throws IOException {
+        File dir = new File(rootDir, path);
+        FileUtils.forceMkdir(dir);
+        Enumeration<String> entryPaths = bundle.getEntryPaths(path);
+        while (entryPaths.hasMoreElements()) {
+            extractContent(entryPaths.nextElement(), bundleExtractDir);
+        }
+    }
 
-		registerSpringMvcHandlerMapping();
-		registerSpringMvcViewResolver();
+    private void extractContentFile(String path, File rootDir) throws IOException {
+        URL source = bundle.getResource(path);
+        File destination = new File(rootDir, path);
+        FileUtils.copyURLToFile(source, destination);
+    }
 
-		registerServices();
-	}
+    private void extractContent(String path, File rootDir) throws IOException {
+        if (path.endsWith("/")) {
+            extractContentDir(path, rootDir);
+        } else {
+            extractContentFile(path, rootDir);
+        }
+    }
 
-	/**
-	 * Called when another version of this bundle is found in the bundle
-	 * context.
-	 * 
-	 * This method stops the other bundle if it's an old version of the current
-	 * bundle. Sub-class may override this method to implement its own business
-	 * logic.
-	 * 
-	 * @param bundle
-	 * @throws BundleException
-	 */
-	protected void handlerAnotherVersionAtStartup(Bundle bundle)
-			throws BundleException {
-		Version myVersion = this.bundle.getVersion();
-		Version otherVersion = bundle.getVersion();
-		if (myVersion.compareTo(otherVersion) > 0) {
-			String msg = "Found an older version of me [" + bundle
-					+ "], stopping it!";
-			LOGGER.info(msg);
-			bundle.stop();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void start(BundleContext bundleContext) throws Exception {
+        setBundleContext(bundleContext);
+        setBundle(bundleContext.getBundle());
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stop(BundleContext bundleContext) throws Exception {
-		unregisterServices();
-	}
+        long myId = this.bundle.getBundleId();
+        String myName = this.bundle.getSymbolicName();
+        Bundle[] currentBundles = bundleContext.getBundles();
+        for (Bundle bundle : currentBundles) {
+            if (myId != bundle.getBundleId() && myName.equals(bundle.getSymbolicName())) {
+                // found another version of me
+                handlerAnotherVersionAtStartup(bundle);
+            }
+        }
 
-	/**
-	 * Registers module's Spring's {@link HandlerMapping}.
-	 */
-	protected void registerSpringMvcHandlerMapping() {
-		String moduleName = getModuleName();
-		HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
-		if (StringUtils.isEmpty(moduleName) || handlerMapping == null) {
-			return;
-		}
-		registerService(HandlerMapping.class.getName(), handlerMapping,
-				getProperties());
-	}
+        Properties props = new Properties();
+        // String version = (String) bundle.getHeaders().get(
+        // Constants.BUNDLE_VERSION);
+        props.put("Version", bundle.getVersion().toString());
+        String moduleName = getModuleName();
+        if (!StringUtils.isEmpty(moduleName)) {
+            props.put("Module", moduleName);
+        }
+        setProperties(props);
 
-	/**
-	 * Registers module's Spring's {@link ViewResolver}.
-	 */
-	protected void registerSpringMvcViewResolver() {
-		String moduleName = getModuleName();
-		ViewResolver viewResolver = getSpringMvcViewResolver();
-		if (StringUtils.isEmpty(moduleName) || viewResolver == null) {
-			return;
-		}
-		registerService(ViewResolver.class.getName(), viewResolver,
-				getProperties());
-	}
+        registerSpringMvcHandlerMapping();
+        registerSpringMvcViewResolver();
 
-	/**
-	 * Gets the module's name.
-	 * 
-	 * This method simply returns <code>null</code>.
-	 * 
-	 * @return
-	 */
-	protected String getModuleName() {
-		return null;
-	}
+        registerServices();
+    }
 
-	/**
-	 * Gets the module's SpringMVC's {@link HandlerMapping}.
-	 * 
-	 * This method simply returns <code>null</code>.
-	 * 
-	 * @return
-	 */
-	protected HandlerMapping getSpringMvcHandlerMapping() {
-		return null;
-	}
+    /**
+     * Called when another version of this bundle is found in the bundle
+     * context.
+     * 
+     * This method stops the other bundle if it's an old version of the current
+     * bundle. Sub-class may override this method to implement its own business
+     * logic.
+     * 
+     * @param bundle
+     * @throws BundleException
+     */
+    protected void handlerAnotherVersionAtStartup(Bundle bundle) throws BundleException {
+        Version myVersion = this.bundle.getVersion();
+        Version otherVersion = bundle.getVersion();
+        if (myVersion.compareTo(otherVersion) > 0) {
+            String msg = "Found an older version of me [" + bundle + "], stopping it!";
+            LOGGER.info(msg);
+            bundle.stop();
+        }
+    }
 
-	/**
-	 * Gets the module's SpringMVC's {@link ViewResolver}.
-	 * 
-	 * This method simply returns <code>null</code>.
-	 * 
-	 * @return
-	 */
-	protected ViewResolver getSpringMvcViewResolver() {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception {
+        if (bundleExtractDir != null) {
+            try {
+                FileUtils.deleteQuietly(bundleExtractDir);
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            }
+        }
+        unregisterServices();
+    }
 
-	protected List<ServiceInfo> getServiceInfoList() {
-		return null;
-	}
+    /**
+     * Registers module's Spring's {@link HandlerMapping}.
+     */
+    protected void registerSpringMvcHandlerMapping() {
+        String moduleName = getModuleName();
+        HandlerMapping handlerMapping = getSpringMvcHandlerMapping();
+        if (StringUtils.isEmpty(moduleName) || handlerMapping == null) {
+            return;
+        }
+        registerService(HandlerMapping.class.getName(), handlerMapping, getProperties());
+    }
 
-	/**
-	 * Registers OSGi services provided by this module.
-	 */
-	protected void registerServices() {
-		List<ServiceInfo> serviceInfoList = getServiceInfoList();
-		if (serviceInfoList == null || serviceInfoList.size() == 0) {
-			return;
-		}
-		for (ServiceInfo serviceInfo : serviceInfoList) {
-			Properties props = new Properties();
-			props.putAll(getProperties());
-			props.putAll(serviceInfo.getProperties());
-			registerService(serviceInfo.getClassName(),
-					serviceInfo.getService(), props);
-		}
-	}
+    /**
+     * Registers module's Spring's {@link ViewResolver}.
+     */
+    protected void registerSpringMvcViewResolver() {
+        String moduleName = getModuleName();
+        ViewResolver viewResolver = getSpringMvcViewResolver();
+        if (StringUtils.isEmpty(moduleName) || viewResolver == null) {
+            return;
+        }
+        registerService(ViewResolver.class.getName(), viewResolver, getProperties());
+    }
 
-	/**
-	 * Unregisters registered services. Services registered via
-	 * {@link #registerService(String, Object, Properties)} will be
-	 * unregistered.
-	 * 
-	 * This method is automatically called by {@link #stop(BundleContext)}.
-	 * 
-	 */
-	protected void unregisterServices() {
-		for (ServiceRegistration<?> sr : registeredServices) {
-			try {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Unregistering service [" + sr + "]...");
-				}
-				Object service = bundleContext.getService(sr.getReference());
-				if (service instanceof IRequireCleanupService) {
-					((IRequireCleanupService) service).destroy();
-				}
-			} catch (Exception e) {
-				LOGGER.warn(e.getMessage(), e);
-			} finally {
-				sr.unregister();
-			}
-		}
-	}
+    /**
+     * Gets the module's name.
+     * 
+     * This method simply returns <code>null</code>.
+     * 
+     * @return
+     */
+    protected String getModuleName() {
+        return null;
+    }
 
-	/**
-	 * Convenient method for sub-class to register one service.
-	 * 
-	 * @param className
-	 *            String
-	 * @param service
-	 *            Object
-	 * @param props
-	 *            properties
-	 * @return ServiceRegistration
-	 */
-	protected ServiceRegistration<?> registerService(String className,
-			Object service, Properties props) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Registering service [" + className
-					+ "] with properties " + props);
-		}
-		if (service instanceof IBundleAwareService) {
-			((IBundleAwareService) service).setBundle(bundle);
-		}
-		// ServiceRegistration sr = bundleContext.registerService(name, service,
-		// props);
-		Dictionary<String, Object> dProps = new Hashtable<String, Object>();
-		for (Entry<Object, Object> entry : props.entrySet()) {
-			dProps.put(entry.getKey().toString(), entry.getValue());
-		}
-		ServiceRegistration<?> sr = bundleContext.registerService(className,
-				service, dProps);
-		if (sr != null) {
-			registeredServices.add(sr);
-		}
-		return sr;
-	}
+    /**
+     * Gets the module's SpringMVC's {@link HandlerMapping}.
+     * 
+     * This method simply returns <code>null</code>.
+     * 
+     * @return
+     */
+    protected HandlerMapping getSpringMvcHandlerMapping() {
+        return null;
+    }
+
+    /**
+     * Gets the module's SpringMVC's {@link ViewResolver}.
+     * 
+     * This method simply returns <code>null</code>.
+     * 
+     * @return
+     */
+    protected ViewResolver getSpringMvcViewResolver() {
+        return null;
+    }
+
+    protected List<ServiceInfo> getServiceInfoList() {
+        return null;
+    }
+
+    /**
+     * Registers OSGi services provided by this module.
+     */
+    protected void registerServices() {
+        List<ServiceInfo> serviceInfoList = getServiceInfoList();
+        if (serviceInfoList == null || serviceInfoList.size() == 0) {
+            return;
+        }
+        for (ServiceInfo serviceInfo : serviceInfoList) {
+            Properties props = new Properties();
+            props.putAll(getProperties());
+            props.putAll(serviceInfo.getProperties());
+            registerService(serviceInfo.getClassName(), serviceInfo.getService(), props);
+        }
+    }
+
+    /**
+     * Unregisters registered services. Services registered via
+     * {@link #registerService(String, Object, Properties)} will be
+     * unregistered.
+     * 
+     * This method is automatically called by {@link #stop(BundleContext)}.
+     * 
+     */
+    protected void unregisterServices() {
+        for (ServiceRegistration<?> sr : registeredServices) {
+            try {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Unregistering service [" + sr + "]...");
+                }
+                Object service = bundleContext.getService(sr.getReference());
+                if (service instanceof IRequireCleanupService) {
+                    ((IRequireCleanupService) service).destroy();
+                }
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            } finally {
+                sr.unregister();
+            }
+        }
+    }
+
+    /**
+     * Convenient method for sub-class to register one service.
+     * 
+     * @param className
+     *            String
+     * @param service
+     *            Object
+     * @param props
+     *            properties
+     * @return ServiceRegistration
+     */
+    protected ServiceRegistration<?> registerService(String className, Object service,
+            Properties props) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Registering service [" + className + "] with properties " + props);
+        }
+        if (service instanceof IBundleAwareService) {
+            ((IBundleAwareService) service).setBundle(bundle);
+        }
+        // ServiceRegistration sr = bundleContext.registerService(name, service,
+        // props);
+        Dictionary<String, Object> dProps = new Hashtable<String, Object>();
+        for (Entry<Object, Object> entry : props.entrySet()) {
+            dProps.put(entry.getKey().toString(), entry.getValue());
+        }
+        ServiceRegistration<?> sr = bundleContext.registerService(className, service, dProps);
+        if (sr != null) {
+            registeredServices.add(sr);
+        }
+        return sr;
+    }
 }
