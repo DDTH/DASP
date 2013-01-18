@@ -59,8 +59,8 @@ public class DPathUtils {
             } else {
                 throw new IllegalArgumentException("Target object is not a list or readonly!");
             }
-        } else if (target instanceof Map<?, ?>) {
-            ((Map<Object, Object>) target).put(index, value);
+        } else if (cursor instanceof Map<?, ?>) {
+            ((Map<Object, Object>) cursor).put(index, value);
         } else {
             throw new IllegalArgumentException("Target object is not writable!");
         }
@@ -88,12 +88,12 @@ public class DPathUtils {
     }
 
     public static void main(String[] args) {
-        String jsonString = "{\"DB\":{\"TYPE\":\"MYSQL\", \"HOST\":\"127.0.0.1\", \"USER\":\"vcatalog_local\", \"PASSWORD\":\"vcatalog_local\", \"DATABASE\":\"vcatalog_local\", \"SETUP_SQLS\":[\"SET NAMES 'utf8'\", \"HEHE\"]}}";
+        String jsonString = "{\"columns\":{},\"sqls\":{}}";
         Map<?, ?> data = JsonUtils.fromJson(jsonString, Map.class);
 
-        String path = "DB.SETUP_SQLS.[0]";
+        String path = "sqls.insert";
         System.out.println(getValue(data, path));
-        setSetValue(data, path, "EMPTY");
+        setSetValue(data, path, "INSERT INTO table_name (col1) VALUES (value1)");
         System.out.println(getValue(data, path));
 
         System.out.println(data);
