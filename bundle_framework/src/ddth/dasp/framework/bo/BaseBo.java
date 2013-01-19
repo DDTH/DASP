@@ -1,6 +1,10 @@
 package ddth.dasp.framework.bo;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -71,6 +75,52 @@ public abstract class BaseBo implements IBo {
     @Override
     public void populate(Map<String, ?> data) {
         Map<String, Object[]> dataMappings = getDataMappings();
+        if (dataMappings == null) {
+            populateWithAnnotations(data);
+        } else {
+            populateWithDataMappings(data, dataMappings);
+        }
+    }
+
+    protected void populateWithAnnotations(Map<String, ?> data) {
+        Class<?> clazz = this.getClass();
+        Class<? extends Annotation> annoClazz = FieldMapping.class;
+        while (clazz != Object.class) {
+            final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(clazz
+                    .getDeclaredMethods()));
+            for (final Method method : allMethods) {
+                if (method.isAnnotationPresent(annoClazz)) {
+                    FieldMapping annotation = (FieldMapping) method.getAnnotation(annoClazz);
+                    String field = annotation.field();
+                    Object value = data.get(field);
+                    if (value == null) {
+                        String msg = "Found setter method [" + method.getName() + "] for field ["
+                                + field + "], but no value fould!";
+                        LOGGER.warn(msg);
+                    } else {
+                        if (!annotation.type().isAssignableFrom(value.getClass())) {
+                            String msg = "Value of type [" + value.getClass() + "] mismatches ["
+                                    + annotation.type() + "]!";
+                            throw new RuntimeException(msg);
+                        } else {
+                            try {
+                                method.invoke(this, value);
+                            } catch (Exception e) {
+                                if (e instanceof RuntimeException) {
+                                    throw (RuntimeException) e;
+                                } else {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
+
+    protected void populateWithDataMappings(Map<String, ?> data, Map<String, Object[]> dataMappings) {
         Class<?> myClass = getClass();
         for (Entry<String, Object[]> entry : dataMappings.entrySet()) {
             String externalField = entry.getKey();
