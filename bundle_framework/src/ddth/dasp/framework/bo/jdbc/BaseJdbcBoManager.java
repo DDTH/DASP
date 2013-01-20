@@ -370,7 +370,10 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
      */
     @Override
     public void releaseConnection(Connection conn) throws SQLException {
-        _releaseConnection(conn);
+        Connection localConn = localConnection.get();
+        if (conn != localConn) {
+            _releaseConnection(conn);
+        }
     }
 
     /**
