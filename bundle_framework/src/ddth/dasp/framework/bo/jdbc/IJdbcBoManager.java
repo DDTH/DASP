@@ -10,6 +10,46 @@ import java.sql.SQLException;
  * @version 0.1.0
  */
 public interface IJdbcBoManager {
+
+    /**
+     * Checks if we are currently in middle of a transaction
+     * 
+     * @return
+     */
+    public boolean inTransaction();
+
+    /**
+     * Starts a database transaction with default transaction level.
+     * 
+     * @return
+     * @throws SQLException
+     */
+    public Connection startTransaction() throws SQLException;
+
+    /**
+     * Starts a database transaction.
+     * 
+     * @param transactionIsolationLevel
+     * @return
+     * @throws SQLException
+     */
+    public Connection startTransaction(int transactionIsolationLevel) throws SQLException;
+
+    /**
+     * Cancels/Rolls back a database transaction.
+     * 
+     * @return
+     */
+    public void cancelTransaction() throws SQLException;
+
+    /**
+     * Finishes/Commits a database transaction.
+     * 
+     * @return
+     * @throws SQLException
+     */
+    public void finishTransaction() throws SQLException;
+
     /**
      * Gets a database connection.
      * 

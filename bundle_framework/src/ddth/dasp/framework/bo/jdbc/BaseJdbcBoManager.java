@@ -44,6 +44,7 @@ import ddth.dasp.framework.utils.EhProperties;
 public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcBoManager {
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
+    private ThreadLocal<Connection> localConnection = new ThreadLocal<Connection>();
 
     private Logger LOGGER = LoggerFactory.getLogger(BaseJdbcBoManager.class);
     private IJdbcFactory jdbcFactory;
@@ -55,6 +56,15 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     private ConcurrentMap<String, SqlProps> cacheSqlProps = new MapMaker().concurrencyLevel(
             NUM_PROCESSORS).makeMap();
     private Object sqlPropsLocation;
+    private int transactionIsolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+
+    protected int getTransactionIsolationLevel() {
+        return transactionIsolationLevel;
+    }
+
+    public void setTransactionIsolationLevel(int transactionIsolationLevel) {
+        this.transactionIsolationLevel = transactionIsolationLevel;
+    }
 
     protected IJdbcFactory getJdbcFactory() {
         if (jdbcFactory != null) {
@@ -232,10 +242,12 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     }
 
     /**
-     * {@inheritDoc}
+     * Real method to obtain a database connection from the JDBC factory.
+     * 
+     * @return
+     * @throws SQLException
      */
-    @Override
-    public Connection getConnection() throws SQLException {
+    protected Connection _getConnection() throws SQLException {
         IJdbcFactory jdbcFactory = getJdbcFactory();
         Connection conn = jdbcFactory.getConnection(dbDriver, dbConnUrl, dbUsername, dbPassword,
                 maxConnectionLifetime, dbcpInfo);
@@ -244,9 +256,96 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
             LOGGER.debug(msg);
         }
         if (conn != null) {
+            conn.setAutoCommit(true);
             runSetupSqls(conn);
         }
         return conn;
+    }
+
+    /**
+     * Real method to release an open database connection.
+     * 
+     * @param conn
+     * @throws SQLException
+     */
+    protected void _releaseConnection(Connection conn) throws SQLException {
+        IJdbcFactory jdbcFactory = getJdbcFactory();
+        jdbcFactory.releaseConnection(conn);
+        if (LOGGER.isDebugEnabled()) {
+            String msg = "Closed JDBC connection [" + conn + "].";
+            LOGGER.debug(msg);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean inTransaction() {
+        return localConnection.get() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Connection startTransaction() throws SQLException {
+        return startTransaction(transactionIsolationLevel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Connection startTransaction(int transactionIsolationLevel) throws SQLException {
+        if (inTransaction()) {
+            throw new SQLException("Transaction already started!");
+        }
+        Connection conn = _getConnection();
+        conn.setAutoCommit(false);
+        conn.setTransactionIsolation(transactionIsolationLevel);
+        localConnection.set(conn);
+        return conn;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cancelTransaction() throws SQLException {
+        Connection conn = localConnection.get();
+        if (conn == null) {
+            throw new SQLException("Transaction has not started!");
+        }
+        try {
+            try {
+                conn.rollback();
+                conn.setAutoCommit(true);
+            } finally {
+                _releaseConnection(conn);
+            }
+        } finally {
+            localConnection.remove();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishTransaction() throws SQLException {
+        Connection conn = localConnection.get();
+        if (conn == null) {
+            throw new SQLException("Transaction has not started!");
+        }
+        try {
+            try {
+                conn.commit();
+                conn.setAutoCommit(true);
+            } finally {
+                _releaseConnection(conn);
+            }
+        } finally {
+            localConnection.remove();
+        }
     }
 
     private void throwDbConnException(Connection conn, SQLException e) {
@@ -261,13 +360,17 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
      * {@inheritDoc}
      */
     @Override
+    public Connection getConnection() throws SQLException {
+        Connection conn = localConnection.get();
+        return conn != null ? conn : _getConnection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void releaseConnection(Connection conn) throws SQLException {
-        IJdbcFactory jdbcFactory = getJdbcFactory();
-        jdbcFactory.releaseConnection(conn);
-        if (LOGGER.isDebugEnabled()) {
-            String msg = "Closed JDBC connection [" + conn + "].";
-            LOGGER.debug(msg);
-        }
+        _releaseConnection(conn);
     }
 
     /**
