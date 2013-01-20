@@ -1,5 +1,6 @@
 package ddth.dasp.framework.dbc;
 
+import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,6 +21,16 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DbcpJdbcFactory.class);
     private ConcurrentMap<String, DataSourceInfo> cacheDsInfo = new ConcurrentHashMap<String, DataSourceInfo>();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void closeDataSource(DataSource ds) throws SQLException {
+        if (ds instanceof BasicDataSource) {
+            ((BasicDataSource) ds).close();
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -79,7 +90,7 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
         int maxConnLifetime = (int) (getMaxConnectionLifetime() / 1000);
         if (maxConnLifetime > 0) {
             ds.setRemoveAbandoned(true);
-            ds.setRemoveAbandonedTimeout(maxConnLifetime);
+            ds.setRemoveAbandonedTimeout(maxConnLifetime + 100);
         }
         // CombinedClassLoader cl = new CombinedClassLoader();
         // cl.addLoader(DbcpJdbcFactory.class);

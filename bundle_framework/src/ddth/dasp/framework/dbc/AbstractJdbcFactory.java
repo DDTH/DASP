@@ -116,6 +116,7 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     @Override
     public void destroy() {
         synchronized (IJdbcFactory.class) {
+            // remove myself from DaspGlobal variable
             Object temp = DaspGlobal.getGlobalVar(IJdbcFactory.GLOBAL_KEY);
             if (!(temp instanceof Map)) {
                 temp = new HashMap<String, IJdbcFactory>();
@@ -127,13 +128,32 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
 
         Connection[] openConnections = openedConnections.keySet().toArray(new Connection[0]);
         for (Connection conn : openConnections) {
+            // close opened connections
             try {
                 releaseConnection(conn);
             } catch (Exception e) {
                 LOGGER.warn(e.getMessage(), e);
             }
         }
+
+        for (DataSource ds : dataSources.values()) {
+            // clean up datasources
+            try {
+                closeDataSource(ds);
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            }
+        }
+        dataSources.clear();
     }
+
+    /**
+     * Clean-up and closes the data source.
+     * 
+     * @param ds
+     * @throws SQLException
+     */
+    protected abstract void closeDataSource(DataSource ds) throws SQLException;
 
     /**
      * {@inheritDoc}
