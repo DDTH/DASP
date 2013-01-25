@@ -2,6 +2,7 @@ package ddth.dasp.framework.bo.jdbc;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
@@ -42,6 +44,10 @@ import ddth.dasp.framework.utils.EhProperties;
  * @version 0.1.0
  */
 public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcBoManager {
+
+    @SuppressWarnings("unchecked")
+    private final static Map<String, Object>[] EMPTY_MAP_ARR = (Map<String, Object>[]) Array
+            .newInstance(Map.class, 0);
 
     private final static int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private ThreadLocal<Connection> localConnection = new ThreadLocal<Connection>();
@@ -404,6 +410,34 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     /**
      * Executes a COUNT query and returns the result.
      * 
+     * Note: {@link JdbcUtils#closeResources(Connection, Statement, ResultSet)}
+     * and {@link #releaseConnection(Connection)} are automatically called by
+     * this method to release resources.
+     * 
+     * @param conn
+     * @param stm
+     * @return
+     * @throws SQLException
+     */
+    protected Long executeCount(final Connection conn, final PreparedStatement stm)
+            throws SQLException {
+        Long result = null;
+        ResultSet rs = null;
+        try {
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                result = rs.getLong(1);
+            }
+        } finally {
+            JdbcUtils.closeResources(null, stm, rs);
+            releaseConnection(conn);
+        }
+        return result;
+    }
+
+    /**
+     * Executes a COUNT query and returns the result.
+     * 
      * @param sqlKey
      * @param params
      * @return
@@ -442,26 +476,19 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
             Connection conn = getConnection();
-            PreparedStatement stm = null;
-            ResultSet rs = null;
             if (conn == null) {
                 throwDbConnException(conn, null);
             }
+            String sql = sqlProps.getSql();
+            long startTimestamp = System.currentTimeMillis();
             try {
-                long startTimestamp = System.currentTimeMillis();
-                String sql = sqlProps.getSql();
-                stm = JdbcUtils.prepareStatement(conn, sql, params);
-                rs = stm.executeQuery();
-                if (rs.next()) {
-                    result = rs.getLong(1);
-                }
+                PreparedStatement stm = JdbcUtils.prepareStatement(conn, sql, params);
+                result = executeCount(conn, stm);
+            } finally {
                 long endTimestamp = System.currentTimeMillis();
                 JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql,
                         params);
                 JdbcLogger.log(jdbcLogEntry);
-            } finally {
-                JdbcUtils.closeResources(null, stm, rs);
-                releaseConnection(conn);
             }
         }
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
@@ -474,33 +501,149 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     /**
      * Executes a non-SELECT query and returns the number of affected rows.
      * 
+     * Note: {@link JdbcUtils#closeResources(Connection, Statement, ResultSet)}
+     * and {@link #releaseConnection(Connection)} are automatically called by
+     * this method to release resources.
+     * 
+     * @param conn
+     * @param stm
+     * @return
+     * @throws SQLException
+     */
+    protected long executeNonSelect(final Connection conn, final PreparedStatement stm)
+            throws SQLException {
+        try {
+            return stm.executeUpdate();
+        } finally {
+            JdbcUtils.closeResources(null, stm, null);
+            releaseConnection(conn);
+        }
+    }
+
+    /**
+     * Executes a non-SELECT query and returns the number of affected rows.
+     * 
      * @param sqlKey
      * @param params
      * @return
      * @throws SQLException
      */
-    protected long executeNonSelect(final Object sqlKey, Map<String, Object> params)
+    protected long executeNonSelect(final Object sqlKey, final Map<String, Object> params)
             throws SQLException {
         SqlProps sqlProps = buildSqlProps(sqlKey);
         if (sqlProps == null) {
             throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
         }
         Connection conn = getConnection();
-        PreparedStatement stm = null;
         if (conn == null) {
             throwDbConnException(conn, null);
         }
+        String sql = sqlProps.getSql();
+        long startTimestamp = System.currentTimeMillis();
         try {
-            long startTimestamp = System.currentTimeMillis();
-            String sql = sqlProps.getSql();
-            stm = JdbcUtils.prepareStatement(conn, sql, params);
-            long result = stm.executeUpdate();
+            PreparedStatement stm = JdbcUtils.prepareStatement(conn, sql, params);
+            long result = executeNonSelect(conn, stm);
+            return result;
+        } finally {
             long endTimestamp = System.currentTimeMillis();
             JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql, params);
             JdbcLogger.log(jdbcLogEntry);
+        }
+    }
+
+    /**
+     * Executes a SELECT query and returns the result as a list of records, each
+     * record is a Map<String, Object>.
+     * 
+     * Note: {@link JdbcUtils#closeResources(Connection, Statement, ResultSet)}
+     * and {@link #releaseConnection(Connection)} are automatically called by
+     * this method to release resources.
+     * 
+     * @param conn
+     * @param stm
+     * @param columnMappings
+     * @return
+     * @throws SQLException
+     */
+    protected List<Map<String, Object>> executeSelect(final Connection conn,
+            final PreparedStatement stm, Map<String, Class<?>> columnMappings) throws SQLException {
+        ResultSet rs = null;
+        try {
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> obj = new HashMap<String, Object>();
+                for (Entry<String, Class<?>> entry : columnMappings.entrySet()) {
+                    String colName = entry.getKey();
+                    Class<?> colType = entry.getClass();
+                    Object colValue = null;
+                    if (colType == Byte.class || colType == byte.class) {
+                        colValue = rs.getByte(colName);
+                    } else if (colType == Short.class || colType == short.class) {
+                        colValue = rs.getShort(colName);
+                    } else if (colType == Integer.class || colType == int.class) {
+                        colValue = rs.getInt(colName);
+                    } else if (colType == Long.class || colType == long.class) {
+                        colValue = rs.getLong(colName);
+                    } else if (colType == BigDecimal.class) {
+                        colValue = rs.getBigDecimal(colName);
+                    } else if (colType == Float.class || colType == float.class) {
+                        colValue = rs.getFloat(colName);
+                    } else if (colType == Double.class || colType == double.class) {
+                        colValue = rs.getDouble(colName);
+                    } else if (colType == String.class) {
+                        colValue = rs.getString(colName);
+                    } else if (colType == byte[].class) {
+                        colValue = rs.getString(colName);
+                    } else {
+                        colValue = rs.getObject(colName);
+                    }
+                    obj.put(colName, colValue);
+                }
+                result.add(obj);
+            }
             return result;
         } finally {
-            JdbcUtils.closeResources(null, stm, null);
+            JdbcUtils.closeResources(null, stm, rs);
+            releaseConnection(conn);
+        }
+    }
+
+    /**
+     * Executes a SELECT query and returns the result as a list of records, each
+     * record is a Map<String, Object>.
+     * 
+     * Note: {@link JdbcUtils#closeResources(Connection, Statement, ResultSet)}
+     * and {@link #releaseConnection(Connection)} are automatically called by
+     * this method to release resources.
+     * 
+     * @param conn
+     * @param stm
+     * @return
+     * @throws SQLException
+     */
+    protected List<Map<String, Object>> executeSelect(final Connection conn,
+            final PreparedStatement stm) throws SQLException {
+        ResultSet rs = null;
+        try {
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+            rs = stm.executeQuery();
+            ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
+            while (rs.next()) {
+                Map<String, Object> obj = new HashMap<String, Object>();
+                for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
+                    String colLabel = rsMetaData.getColumnLabel(i);
+                    if (StringUtils.isEmpty(colLabel)) {
+                        colLabel = rsMetaData.getColumnName(i);
+                    }
+                    Object value = rs.getObject(colLabel);
+                    obj.put(colLabel, value);
+                }
+                result.add(obj);
+            }
+            return result;
+        } finally {
+            JdbcUtils.closeResources(null, stm, rs);
             releaseConnection(conn);
         }
     }
@@ -549,44 +692,26 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
             }
             Connection conn = getConnection();
-            PreparedStatement stm = null;
-            ResultSet rs = null;
             if (conn == null) {
                 throwDbConnException(conn, null);
             }
+            String sql = sqlProps.getSql();
+            long startTimestamp = System.currentTimeMillis();
             try {
-                long startTimestamp = System.currentTimeMillis();
-                String sql = sqlProps.getSql();
-                result = new ArrayList<Map<String, Object>>();
-                stm = JdbcUtils.prepareStatement(conn, sql, params);
-                rs = stm.executeQuery();
-                ResultSetMetaData rsMetaData = rs != null ? rs.getMetaData() : null;
-                while (rs.next()) {
-                    Map<String, Object> obj = new HashMap<String, Object>();
-                    for (int i = 1, n = rsMetaData.getColumnCount(); i <= n; i++) {
-                        String colLabel = rsMetaData.getColumnLabel(i);
-                        if (StringUtils.isEmpty(colLabel)) {
-                            colLabel = rsMetaData.getColumnName(i);
-                        }
-                        Object value = rs.getObject(colLabel);
-                        obj.put(colLabel, value);
-                    }
-                    result.add(obj);
-                }
+                PreparedStatement stm = JdbcUtils.prepareStatement(conn, sql, params);
+                result = executeSelect(conn, stm);
+            } finally {
                 long endTimestamp = System.currentTimeMillis();
                 JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql,
                         params);
                 JdbcLogger.log(jdbcLogEntry);
-            } finally {
-                JdbcUtils.closeResources(null, stm, rs);
-                releaseConnection(conn);
             }
         }
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // put to cache
             putToCache(cacheKey, result);
         }
-        return result.toArray((Map<String, Object>[]) Array.newInstance(Map.class, 0));
+        return result.toArray(EMPTY_MAP_ARR);
     }
 
     /**
@@ -637,6 +762,27 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     /**
      * Executes a stored procedure call.
      * 
+     * Note: {@link JdbcUtils#closeResources(Connection, Statement, ResultSet)}
+     * and {@link #releaseConnection(Connection)} are automatically called by
+     * this method to release resources.
+     * 
+     * @param conn
+     * @param stm
+     * @throws SQLException
+     */
+    protected void executeStoredProcedure(final Connection conn, final CallableStatement stm)
+            throws SQLException {
+        try {
+            stm.execute();
+        } finally {
+            JdbcUtils.closeResources(null, stm, null);
+            releaseConnection(conn);
+        }
+    }
+
+    /**
+     * Executes a stored procedure call.
+     * 
      * @param sqlKey
      * @param params
      * @throws SQLException
@@ -648,21 +794,19 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
             throw new SQLException("Can not retrieve SQL [" + sqlKey + "]!");
         }
         Connection conn = getConnection();
-        CallableStatement stm = null;
         if (conn == null) {
             throwDbConnException(conn, null);
         }
+        String sql = sqlProps.getSql();
+        long startTimestamp = System.currentTimeMillis();
         try {
-            long startTimestamp = System.currentTimeMillis();
-            String sql = sqlProps.getSql();
-            stm = (CallableStatement) JdbcUtils.prepareStatement(conn, sql, params, true);
-            stm.execute();
+            CallableStatement stm = (CallableStatement) JdbcUtils.prepareStatement(conn, sql,
+                    params, true);
+            executeStoredProcedure(conn, stm);
+        } finally {
             long endTimestamp = System.currentTimeMillis();
             JdbcLogEntry jdbcLogEntry = new JdbcLogEntry(startTimestamp, endTimestamp, sql, params);
             JdbcLogger.log(jdbcLogEntry);
-        } finally {
-            JdbcUtils.closeResources(null, stm, null);
-            releaseConnection(conn);
         }
     }
 
