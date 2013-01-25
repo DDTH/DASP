@@ -82,23 +82,34 @@ public class JdbcUtils {
             LOGGER.debug("Preparing statement [" + sql + "] with arguments: " + params);
         }
         PreparedStatement stmt = isCallable ? conn.prepareCall(sql) : conn.prepareStatement(sql);
-        if (params != null && params.length > 0) {
-            int index = 1;
-            for (Object param : params) {
-                if (param instanceof String || param instanceof Character) {
-                    stmt.setString(index, param.toString());
-                } else if (param instanceof Integer) {
-                    stmt.setInt(index, (Integer) param);
-                } else if (param instanceof Long) {
-                    stmt.setLong(index, (Long) param);
-                } else if (param instanceof Float) {
-                    stmt.setFloat(index, (Float) param);
-                } else if (param instanceof Double) {
-                    stmt.setDouble(index, (Double) param);
-                } else {
-                    stmt.setObject(index, param);
+        try {
+            if (params != null && params.length > 0) {
+                int index = 1;
+                for (Object param : params) {
+                    if (param instanceof String || param instanceof Character) {
+                        stmt.setString(index, param.toString());
+                    } else if (param instanceof Integer) {
+                        stmt.setInt(index, (Integer) param);
+                    } else if (param instanceof Long) {
+                        stmt.setLong(index, (Long) param);
+                    } else if (param instanceof Float) {
+                        stmt.setFloat(index, (Float) param);
+                    } else if (param instanceof Double) {
+                        stmt.setDouble(index, (Double) param);
+                    } else {
+                        stmt.setObject(index, param);
+                    }
+                    index++;
                 }
-                index++;
+            }
+        } catch (Exception e) {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (e instanceof SQLException) {
+                throw (SQLException) e;
+            } else {
+                throw new SQLException(e);
             }
         }
         return stmt;
