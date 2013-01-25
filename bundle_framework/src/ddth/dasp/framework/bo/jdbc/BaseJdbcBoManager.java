@@ -354,7 +354,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
         }
     }
 
-    private void throwDbConnException(Connection conn, SQLException e) {
+    protected void throwDbConnException(Connection conn, SQLException e) {
         if (conn == null) {
             String msg = "Can not create db connection [" + dbDriver + "/" + dbConnUrl + "]!";
             throw new RuntimeException(msg);
