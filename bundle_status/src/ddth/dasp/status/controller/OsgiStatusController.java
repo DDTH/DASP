@@ -25,7 +25,7 @@ public class OsgiStatusController extends BaseController {
     }
 
     @ModelAttribute("OSGI")
-    private Object buildModelOsgi() {
+    public Object buildModelOsgi() {
         List<Object> model = new ArrayList<Object>();
 
         IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();

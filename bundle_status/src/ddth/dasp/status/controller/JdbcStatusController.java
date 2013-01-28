@@ -24,7 +24,7 @@ public class JdbcStatusController extends BaseController {
 
     @SuppressWarnings("unchecked")
     @ModelAttribute("JDBC")
-    private Object buildModelJdbc() {
+    public Object buildModelJdbc() {
         List<Object> model = new ArrayList<Object>();
         Object temp = DaspGlobal.getGlobalVar(IJdbcFactory.GLOBAL_KEY);
         if (!(temp instanceof Map)) {

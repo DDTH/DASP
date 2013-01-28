@@ -18,7 +18,7 @@ public class ServerStatusController extends BaseController {
     }
 
     @ModelAttribute("SERVER")
-    private Object buildModelServer() {
+    public Object buildModelServer() {
         Map<String, Object> model = new HashMap<String, Object>();
         Runtime rt = Runtime.getRuntime();
         model.put("cpu_processors", rt.availableProcessors());

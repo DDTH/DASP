@@ -24,7 +24,7 @@ public class CacheStatusController extends BaseController {
 
     @SuppressWarnings("unchecked")
     @ModelAttribute("CACHE")
-    private Object buildModelCache() {
+    public Object buildModelCache() {
         List<Object> model = new ArrayList<Object>();
         Object temp = DaspGlobal.getGlobalVar(ICacheManager.GLOBAL_KEY);
         if (!(temp instanceof Map)) {
