@@ -69,6 +69,8 @@
 		<description>DASP Dispatcher Servlet</description>
 		<servlet-name>daspDispatcherServlet</servlet-name>
 		<servlet-class>ddth.dasp.servlet.DaspDispatcherServlet</servlet-class>
+		<!-- Use DaspDispatcherServletTomcatCommet if run on Tomcat -->
+		<!-- <servlet-class>ddth.dasp.servlet.DaspDispatcherServletTomcatCommet</servlet-class> -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

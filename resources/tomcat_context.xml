@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Context
-		displayName="WFP"
-		docBase="/path/to/WFP/web"
-		path="/wfp"
-		workDir="work/Catalina/localhost/wfp"
+		displayName="DASP"
+		docBase="/path/to/dasp/web"
+		path="/dasp"
+		workDir="work/Catalina/localhost/dasp"
 		reloadable="false"
 		override="true">
 </Context>
