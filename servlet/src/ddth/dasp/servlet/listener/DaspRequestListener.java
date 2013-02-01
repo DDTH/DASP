@@ -1,5 +1,6 @@
 package ddth.dasp.servlet.listener;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
@@ -25,133 +26,160 @@ import ddth.dasp.servlet.rp.HttpRequestParser;
 
 public class DaspRequestListener implements ServletRequestListener {
 
-	private Logger LOGGER = LoggerFactory.getLogger(DaspRequestListener.class);
+    private Logger LOGGER = LoggerFactory.getLogger(DaspRequestListener.class);
+    private long maxUploadSize = -1, maxPostSize = -1;
+    private int requestParserTimeout = -1, requestParserUploadTimeout = -1;
 
-	// private static final IdGenerator idGen = IdGenerator
-	// .getInstance(IdGenerator.getMacAddr());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void requestDestroyed(ServletRequestEvent event) {
+        HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
+        destroyTempDir(request);
 
-	// protected static String generateId() {
-	// long id = idGen.generateId64();
-	// StringBuffer hex = new StringBuffer(Long.toHexString(id));
-	// while (hex.length() < 16) {
-	// hex.insert(0, '0');
-	// }
-	// return hex.toString();
-	// }
+        logProfiling();
+        logJdbc();
+        cleanUpJdbcConnections();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void requestDestroyed(ServletRequestEvent event) {
-		HttpServletRequest request = (HttpServletRequest) event
-				.getServletRequest();
-		destroyTempDir(request);
+        RequestLocal.remove();
+    }
 
-		logProfiling();
-		logJdbc();
-		cleanUpJdbcConnections();
+    private void cleanUpJdbcConnections() {
+        try {
+            JdbcConnLogger.cleanUp();
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
 
-		RequestLocal.remove();
-	}
+    private void logProfiling() {
+        try {
+            ProfileLogger.pop();
+            if (LOGGER.isDebugEnabled()) {
+                ProfileLogEntry profileLog = ProfileLogger.get();
+                Object[] profileData = profileLog.getProfiling();
+                String json = JsonUtils.toJson(profileData);
+                LOGGER.debug(json);
+            }
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
 
-	private void cleanUpJdbcConnections() {
-		try {
-			JdbcConnLogger.cleanUp();
-		} catch (Exception e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-	}
+    private void logJdbc() {
+        if (LOGGER.isDebugEnabled()) {
+            try {
+                JdbcLogEntry[] entries = JdbcLogger.get();
+                for (JdbcLogEntry entry : entries) {
+                    long duration = entry.getDuration();
+                    String sql = entry.getSql();
+                    LOGGER.debug("\t[" + duration + "] " + sql);
+                }
 
-	private void logProfiling() {
-		try {
-			ProfileLogger.pop();
-			if (LOGGER.isDebugEnabled()) {
-				ProfileLogEntry profileLog = ProfileLogger.get();
-				Object[] profileData = profileLog.getProfiling();
-				String json = JsonUtils.toJson(profileData);
-				LOGGER.debug(json);
-			}
-		} catch (Exception e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-	}
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage(), e);
+            }
+        }
+    }
 
-	private void logJdbc() {
-		if (LOGGER.isDebugEnabled()) {
-			try {
-				JdbcLogEntry[] entries = JdbcLogger.get();
-				for (JdbcLogEntry entry : entries) {
-					long duration = entry.getDuration();
-					String sql = entry.getSql();
-					LOGGER.debug("\t[" + duration + "] " + sql);
-				}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void requestInitialized(ServletRequestEvent event) {
+        ServletContext servletContext = event.getServletContext();
+        HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
 
-			} catch (Exception e) {
-				LOGGER.warn(e.getMessage(), e);
-			}
-		}
-	}
+        // init the request local
+        RequestLocal requestLocal = RequestLocal.get();
+        if (requestLocal == null) {
+            requestLocal = new RequestLocal();
+            RequestLocal.set(requestLocal);
+        }
+        request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_LOCAL, requestLocal);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void requestInitialized(ServletRequestEvent event) {
-		HttpServletRequest request = (HttpServletRequest) event
-				.getServletRequest();
+        String reqId = requestLocal.getId();
+        ProfileLogEntry logEntry = ProfileLogger.push(reqId);
+        logEntry.setRequestId(reqId);
+        logEntry.setClientId(request.getRemoteAddr());
 
-		// init the request local
-		RequestLocal requestLocal = RequestLocal.get();
-		if (requestLocal == null) {
-			requestLocal = new RequestLocal();
-			RequestLocal.set(requestLocal);
-		}
-		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_LOCAL, requestLocal);
+        request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_ID, reqId);
+        initTempDir(request);
+        initRequestParser(servletContext, request);
+    }
 
-		String reqId = requestLocal.getId();
-		ProfileLogEntry logEntry = ProfileLogger.push(reqId);
-		logEntry.setRequestId(reqId);
-		logEntry.setClientId(request.getRemoteAddr());
+    private void initRequestParser(ServletContext servletContext, HttpServletRequest request) {
+        if (requestParserTimeout <= 0) {
+            String temp = servletContext.getInitParameter("requestParserTimeout");
+            try {
+                requestParserTimeout = Integer.parseInt(temp);
+            } catch (NumberFormatException e) {
+                requestParserTimeout = IRequestParser.DEFAULT_TIMEOUT;
+            }
+        }
+        if (requestParserUploadTimeout <= 0) {
+            String temp = servletContext.getInitParameter("requestParserUploadTimeout");
+            try {
+                requestParserUploadTimeout = Integer.parseInt(temp);
+            } catch (NumberFormatException e) {
+                requestParserUploadTimeout = IRequestParser.DEFAULT_UPLOAD_TIMEOUT;
+            }
+        }
+        if (maxPostSize <= 0) {
+            String temp = servletContext.getInitParameter("maxPostSize");
+            try {
+                maxPostSize = Long.parseLong(temp);
+            } catch (NumberFormatException e) {
+                maxPostSize = IRequestParser.DEFAULT_MAX_POST_SIZE;
+            }
+        }
+        if (maxUploadSize <= 0) {
+            String temp = servletContext.getInitParameter("maxUploadSize");
+            try {
+                maxUploadSize = Long.parseLong(temp);
+            } catch (NumberFormatException e) {
+                maxUploadSize = IRequestParser.DEFAULT_MAX_UPLOAD_SIZE;
+            }
+        }
 
-		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_ID, reqId);
-		initTempDir(request);
-		initRequestParser(request);
-	}
+        // IRequestParser rp = new HttpRequestParser();
+        HttpRequestParser rp = new HttpRequestParser();
+        rp.setHttpRequest(request);
+        if (rp.isMultipart()) {
+            rp.setTimeout(requestParserUploadTimeout);
+            rp.setMaxContentLength(maxUploadSize);
+        } else {
+            rp.setTimeout(requestParserTimeout);
+            rp.setMaxContentLength(maxPostSize);
+        }
+        try {
+            rp.parseRequest();
+        } catch (RequestParsingInteruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (MalformedRequestException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_PARSER, rp);
+    }
 
-	private void initRequestParser(HttpServletRequest request) {
-		IRequestParser rp = new HttpRequestParser();
-		((HttpRequestParser) rp).setHttpRequest(request);
-		rp.reset();
-		try {
-			rp.parseRequest();
-		} catch (RequestParsingInteruptedException e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new RuntimeException(e);
-		} catch (MalformedRequestException e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new RuntimeException(e);
-		}
-		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_PARSER, rp);
-	}
+    private void destroyTempDir(HttpServletRequest request) {
+        Object tmp = request.getAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR);
+        if (tmp instanceof TempDir) {
+            try {
+                ((TempDir) tmp).delete();
+            } catch (Throwable t) {
+                LOGGER.warn(t.getMessage(), t);
+            }
+        }
+    }
 
-	private void destroyTempDir(HttpServletRequest request) {
-		Object tmp = request
-				.getAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR);
-		if (tmp instanceof TempDir) {
-			try {
-				((TempDir) tmp).delete();
-			} catch (Throwable t) {
-				LOGGER.warn(t.getMessage(), t);
-			}
-		}
-	}
-
-	private void initTempDir(HttpServletRequest request) {
-		String randomStr = "REQ_" + RandomStringUtils.randomAlphanumeric(16);
-		TempDir contextTempDir = DaspGlobal.getContextTempDir();
-		TempDir requestTempDir = new TempDir(contextTempDir, randomStr);
-		request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR,
-				requestTempDir);
-	}
+    private void initTempDir(HttpServletRequest request) {
+        String randomStr = "REQ_" + RandomStringUtils.randomAlphanumeric(16);
+        TempDir contextTempDir = DaspGlobal.getContextTempDir();
+        TempDir requestTempDir = new TempDir(contextTempDir, randomStr);
+        request.setAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR, requestTempDir);
+    }
 }

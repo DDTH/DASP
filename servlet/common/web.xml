@@ -15,6 +15,27 @@
 	</listener>
 
 	<context-param>
+		<description>Request parser timeout in milliseconds</description>
+		<param-name>requestParserTimeout</param-name>
+		<param-value>10000</param-value>
+	</context-param>
+	<context-param>
+        <description>Request parser upload timeout in milliseconds</description>
+        <param-name>requestParserUploadTimeout</param-name>
+        <param-value>3600000</param-value>
+    </context-param>
+    <context-param>
+        <description>Max post size in bytes</description>
+        <param-name>maxPostSize</param-name>
+        <param-value>16000</param-value>
+    </context-param>
+	<context-param>
+		<description>Max upload size</description>
+		<param-name>maxUploadSize</param-name>
+		<param-value>10000000</param-value>
+	</context-param>
+
+	<context-param>
 		<description>IP address to bind, used by OSGI remote shell</description>
 		<param-name>osgiRemoteShellListenIp</param-name>
 		<param-value>127.0.0.1</param-value>

@@ -69,6 +69,7 @@ public class HttpRequestParser extends AbstractRequestParser {
      */
     public void setHttpRequest(HttpServletRequest httpRequest) {
         this.httpRequest = httpRequest;
+        this.isMultipart = ServletFileUpload.isMultipartContent(httpRequest);
     }
 
     /**
@@ -333,7 +334,6 @@ public class HttpRequestParser extends AbstractRequestParser {
      */
     protected void parseRequestContent() throws MalformedRequestException {
         this.formFields.clear();
-        this.isMultipart = ServletFileUpload.isMultipartContent(httpRequest);
         if (this.isMultipart) {
             parseRequestContentMultipart();
         } else {
@@ -383,6 +383,9 @@ public class HttpRequestParser extends AbstractRequestParser {
 
     protected void parseRequestContentMultipart() throws MalformedRequestException {
         String encoding = httpRequest.getCharacterEncoding();
+        if (StringUtils.isBlank(encoding)) {
+            encoding = DaspConstants.DEFAULT_CHARSET;
+        }
 
         TempDir tempDir = (TempDir) httpRequest
                 .getAttribute(DaspConstants.REQ_ATTR_REQUEST_TEMP_DIR);
