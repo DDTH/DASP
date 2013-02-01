@@ -1,9 +1,13 @@
 package ddth.dasp.common.rp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface IUploadedFile {
+
+    public File getTempFile();
+
     public String getFileName();
 
     public String getFileContentType();

@@ -1,9 +1,11 @@
 package ddth.dasp.common.rp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 
 public class AcfuUploadedFile implements IUploadedFile {
 
@@ -11,6 +13,11 @@ public class AcfuUploadedFile implements IUploadedFile {
 
     public AcfuUploadedFile(FileItem fileItem) {
         this.fileItem = fileItem;
+    }
+
+    public File getTempFile() {
+        return (fileItem instanceof DiskFileItem) ? ((DiskFileItem) fileItem).getStoreLocation()
+                : null;
     }
 
     /**
