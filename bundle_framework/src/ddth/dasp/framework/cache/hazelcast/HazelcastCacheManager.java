@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hazelcast.client.ClientConfig;
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.security.Credentials;
 
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
@@ -17,8 +18,13 @@ import ddth.dasp.framework.cache.ICacheManager;
  */
 public class HazelcastCacheManager extends AbstractCacheManager {
 
+    private Credentials credentials;
     private List<String> hazelcastServers;
     private HazelcastClient hazelcastClient;
+
+    public void setHazelcastCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
 
     public void setHazelcastServers(List<String> hazelcastServers) {
         this.hazelcastServers = hazelcastServers;
@@ -35,6 +41,9 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     public void init() {
         super.init();
         ClientConfig clientConfig = new ClientConfig();
+        if (credentials != null) {
+            clientConfig.setCredentials(credentials);
+        }
         for (String hazelcastServer : hazelcastServers) {
             clientConfig.addAddress(hazelcastServer);
         }
