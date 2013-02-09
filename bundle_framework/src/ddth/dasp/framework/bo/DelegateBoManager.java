@@ -9,28 +9,39 @@ import java.lang.reflect.Method;
  * @author NBThanh <btnguyen2k@gmail.com>
  * @version 0.1.0
  */
-public abstract class DelegateBoManager extends CacheBoManager {
+public abstract class DelegateBoManager<T extends BaseBoManager> extends CacheBoManager {
 
-	private BaseBoManager delegatedBoManager;
+    private T delegatedBoManager;
 
-	protected BaseBoManager getDelegatedBoManager() {
-		return delegatedBoManager;
-	}
+    protected T getDelegatedBoManager() {
+        return delegatedBoManager;
+    }
 
-	public void setDelegatedBoManager(BaseBoManager delegatedBoManager) {
-		this.delegatedBoManager = delegatedBoManager;
-	}
+    public void setDelegatedBoManager(T delegatedBoManager) {
+        this.delegatedBoManager = delegatedBoManager;
+    }
 
-	protected Object delegate(String methodName, Object[] params,
-			Class<?>[] paramTypes) throws SecurityException,
-			NoSuchMethodException, IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException {
-		if (delegatedBoManager == null) {
-			return null;
-		}
-		Method m = delegatedBoManager.getClass().getMethod(methodName,
-				paramTypes);
-		Object result = m.invoke(delegatedBoManager, params);
-		return result;
-	}
+    /**
+     * Delegates a call to the delegated object.
+     * 
+     * @param methodName
+     * @param params
+     * @param paramTypes
+     * @return
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    protected Object delegate(String methodName, Object[] params, Class<?>[] paramTypes)
+            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException {
+        if (delegatedBoManager == null) {
+            return null;
+        }
+        Method m = delegatedBoManager.getClass().getMethod(methodName, paramTypes);
+        Object result = m.invoke(delegatedBoManager, params);
+        return result;
+    }
 }
