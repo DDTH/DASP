@@ -2,6 +2,7 @@ package ddth.dasp.framework.cache.hazelcast;
 
 import java.util.concurrent.TimeUnit;
 
+import com.hazelcast.client.ClientConfig;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.IMap;
 
@@ -17,28 +18,35 @@ import ddth.dasp.framework.cache.ICache;
  */
 public class HazelcastCache extends AbstractCache implements ICache {
 
-    private HazelcastClient hazelcastClient;
-    private IMap<String, Object> hazelcastMap;
+    private ClientConfig clientConfig;
+    private HazelcastClient _hazelcastClient;
     private long timeToLiveSeconds = -1;
 
-    public HazelcastCache(HazelcastClient hazelcastClient) {
-        this.hazelcastClient = hazelcastClient;
+    public HazelcastCache() {
     }
 
-    public HazelcastCache(HazelcastClient hazelcastClient, String name) {
+    public HazelcastCache(ClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
+    }
+
+    public HazelcastCache(ClientConfig clientConfig, String name) {
         super(name);
-        this.hazelcastClient = hazelcastClient;
+        this.clientConfig = clientConfig;
     }
 
-    public HazelcastCache(HazelcastClient hazelcastClient, String name, long capacity) {
+    public HazelcastCache(ClientConfig clientConfig, String name, long capacity) {
         super(name, capacity);
-        this.hazelcastClient = hazelcastClient;
+        this.clientConfig = clientConfig;
     }
 
-    public HazelcastCache(HazelcastClient hazelcastClient, String name, long capacity,
+    public HazelcastCache(ClientConfig clientConfig, String name, long capacity,
             long expireAfterWrite, long expireAfterAccess) {
         super(name, capacity, expireAfterWrite, expireAfterAccess);
-        this.hazelcastClient = hazelcastClient;
+        this.clientConfig = clientConfig;
+    }
+
+    public void setClientConfig(ClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
     }
 
     /**
@@ -47,7 +55,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
     @Override
     public void init() {
         super.init();
-        hazelcastMap = hazelcastClient.getMap(getName());
+        // hazelcastMap = hazelcastClient.getMap(getName());
         long expireAfterWrite = getExpireAfterWrite();
         long expireAfterAccess = getExpireAfterAccess();
         if (expireAfterAccess > 0 || expireAfterWrite > 0) {
@@ -65,12 +73,30 @@ public class HazelcastCache extends AbstractCache implements ICache {
         // EMPTY
     }
 
+    synchronized protected IMap<String, Object> getHazelcastMap() {
+        if (_hazelcastClient == null) {
+            _hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
+        }
+        return _hazelcastClient.getMap(getName());
+    }
+
+    synchronized protected void dispostHazelcastMap() {
+        if (_hazelcastClient != null) {
+            _hazelcastClient.shutdown();
+            _hazelcastClient = null;
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public long getSize() {
-        return hazelcastMap.size();
+        try {
+            return getHazelcastMap().size();
+        } finally {
+            dispostHazelcastMap();
+        }
     }
 
     /**
@@ -78,10 +104,14 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void set(String key, Object entry) {
-        if (timeToLiveSeconds > 0) {
-            hazelcastMap.put(key, entry, timeToLiveSeconds, TimeUnit.SECONDS);
-        } else {
-            hazelcastMap.putAsync(key, entry);
+        try {
+            if (timeToLiveSeconds > 0) {
+                getHazelcastMap().put(key, entry, timeToLiveSeconds, TimeUnit.SECONDS);
+            } else {
+                getHazelcastMap().putAsync(key, entry);
+            }
+        } finally {
+            dispostHazelcastMap();
         }
     }
 
@@ -90,7 +120,11 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     protected Object internalGet(String key) {
-        return hazelcastMap.get(key);
+        try {
+            return getHazelcastMap().get(key);
+        } finally {
+            dispostHazelcastMap();
+        }
     }
 
     /**
@@ -98,7 +132,11 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void delete(String key) {
-        hazelcastMap.removeAsync(key);
+        try {
+            getHazelcastMap().removeAsync(key);
+        } finally {
+            dispostHazelcastMap();
+        }
     }
 
     /**
@@ -106,7 +144,11 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void deleteAll() {
-        hazelcastMap.clear();
+        try {
+            getHazelcastMap().clear();
+        } finally {
+            dispostHazelcastMap();
+        }
     }
 
     /**
@@ -114,6 +156,10 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public boolean exists(String key) {
-        return hazelcastMap.get(key) != null;
+        try {
+            return getHazelcastMap().get(key) != null;
+        } finally {
+            dispostHazelcastMap();
+        }
     }
 }

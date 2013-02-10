@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.hazelcast.client.ClientConfig;
-import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.security.UsernamePasswordCredentials;
 
 import ddth.dasp.framework.cache.AbstractCacheManager;
@@ -22,7 +21,9 @@ public class HazelcastCacheManager extends AbstractCacheManager {
 
     private String hazelcastUsername, hazelcastPassword;
     private List<String> hazelcastServers;
-    private HazelcastClient hazelcastClient;
+    private ClientConfig clientConfig;
+
+    // private HazelcastClient hazelcastClient;
 
     public void setHazelcastUsername(String hazelcastUsername) {
         this.hazelcastUsername = hazelcastUsername;
@@ -46,7 +47,12 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     @Override
     public void init() {
         super.init();
-        ClientConfig clientConfig = new ClientConfig();
+        clientConfig = new ClientConfig();
+        // ClientConfig clientConfig = new ClientConfig();
+        // clientConfig.setConnectionTimeout(10000);
+        // clientConfig.setReconnectionAttemptLimit(10);
+        // clientConfig.setInitialConnectionAttemptLimit(10);
+        // clientConfig.setReConnectionTimeOut(10000);
         if (!StringUtils.isBlank(hazelcastUsername)) {
             clientConfig.setCredentials(new UsernamePasswordCredentials(hazelcastUsername,
                     hazelcastPassword));
@@ -54,20 +60,20 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         for (String hazelcastServer : hazelcastServers) {
             clientConfig.addAddress(hazelcastServer);
         }
-        hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
+        // hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void destroy() {
-        try {
-            hazelcastClient.shutdown();
-        } finally {
-            super.destroy();
-        }
-    }
+    // /**
+    // * {@inheritDoc}
+    // */
+    // @Override
+    // public void destroy() {
+    // try {
+    // hazelcastClient.shutdown();
+    // } finally {
+    // super.destroy();
+    // }
+    // }
 
     /**
      * {@inheritDoc}
@@ -75,7 +81,8 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     @Override
     protected HazelcastCache createCacheInternal(String name, long capacity, long expireAfterWrite,
             long expireAfterAccess) {
-        HazelcastCache cache = new HazelcastCache(hazelcastClient, name);
+        // HazelcastCache cache = new HazelcastCache(hazelcastClient, name);
+        HazelcastCache cache = new HazelcastCache(clientConfig, name);
         cache.setCapacity(capacity > 0 ? capacity : getDefaultCacheCapacity());
         cache.setExpireAfterAccess(expireAfterAccess);
         cache.setExpireAfterWrite(expireAfterWrite);
