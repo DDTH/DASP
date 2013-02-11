@@ -63,17 +63,13 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         // hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
     }
 
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public void destroy() {
-    // try {
-    // hazelcastClient.shutdown();
-    // } finally {
-    // super.destroy();
-    // }
-    // }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void destroy() {
+        // EMPTY
+    }
 
     /**
      * {@inheritDoc}

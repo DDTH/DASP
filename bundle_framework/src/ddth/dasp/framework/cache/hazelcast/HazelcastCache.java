@@ -82,8 +82,11 @@ public class HazelcastCache extends AbstractCache implements ICache {
 
     synchronized protected void dispostHazelcastMap() {
         if (_hazelcastClient != null) {
-            _hazelcastClient.shutdown();
-            _hazelcastClient = null;
+            try {
+                _hazelcastClient.shutdown();
+            } finally {
+                _hazelcastClient = null;
+            }
         }
     }
 
