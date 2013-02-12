@@ -1,7 +1,8 @@
-package ddth.dasp.hetty.qnt;
+package ddth.dasp.hetty.qnt.inmem;
 
 import java.util.concurrent.TimeUnit;
 
+import ddth.dasp.hetty.qnt.ITopicPublisher;
 import ddth.dasp.hetty.utils.GuavaUtils;
 
 public class GuavaTopicPublisher implements ITopicPublisher {

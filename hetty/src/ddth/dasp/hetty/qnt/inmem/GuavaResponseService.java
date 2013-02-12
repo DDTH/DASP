@@ -1,4 +1,4 @@
-package ddth.dasp.hetty.qnt;
+package ddth.dasp.hetty.qnt.inmem;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;

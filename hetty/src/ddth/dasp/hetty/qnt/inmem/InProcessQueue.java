@@ -1,8 +1,11 @@
-package ddth.dasp.hetty.qnt;
+package ddth.dasp.hetty.qnt.inmem;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import ddth.dasp.hetty.qnt.IQueueReader;
+import ddth.dasp.hetty.qnt.IQueueWriter;
 
 public class InProcessQueue implements IQueueReader, IQueueWriter {
 
