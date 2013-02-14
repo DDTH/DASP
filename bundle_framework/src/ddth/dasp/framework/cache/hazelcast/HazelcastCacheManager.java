@@ -2,11 +2,8 @@ package ddth.dasp.framework.cache.hazelcast;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.hazelcast.client.ClientConfig;
-import com.hazelcast.security.UsernamePasswordCredentials;
-
+import ddth.dasp.common.hazelcast.HazelcastClientFactory;
+import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -19,11 +16,18 @@ import ddth.dasp.framework.cache.ICacheManager;
  */
 public class HazelcastCacheManager extends AbstractCacheManager {
 
+    private IHazelcastClientFactory hazelcastClientFactory;
+    private boolean myOwnHazelcastClientFactory = false;
     private String hazelcastUsername, hazelcastPassword;
     private List<String> hazelcastServers;
-    private ClientConfig clientConfig;
 
-    // private HazelcastClient hazelcastClient;
+    protected IHazelcastClientFactory getHazelcastClientFactory() {
+        return hazelcastClientFactory;
+    }
+
+    public void setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
+        this.hazelcastClientFactory = hazelcastClientFactory;
+    }
 
     public void setHazelcastUsername(String hazelcastUsername) {
         this.hazelcastUsername = hazelcastUsername;
@@ -47,20 +51,15 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     @Override
     public void init() {
         super.init();
-        clientConfig = new ClientConfig();
-        // ClientConfig clientConfig = new ClientConfig();
-        // clientConfig.setConnectionTimeout(10000);
-        // clientConfig.setReconnectionAttemptLimit(10);
-        // clientConfig.setInitialConnectionAttemptLimit(10);
-        // clientConfig.setReConnectionTimeOut(10000);
-        if (!StringUtils.isBlank(hazelcastUsername)) {
-            clientConfig.setCredentials(new UsernamePasswordCredentials(hazelcastUsername,
-                    hazelcastPassword));
+        if (hazelcastClientFactory == null) {
+            HazelcastClientFactory hzcf = new HazelcastClientFactory();
+            hzcf.setHazelcastUsername(hazelcastUsername);
+            hzcf.setHazelcastPassword(hazelcastPassword);
+            hzcf.setHazelcastServers(hazelcastServers);
+            hzcf.init();
+            hazelcastClientFactory = hzcf;
+            myOwnHazelcastClientFactory = true;
         }
-        for (String hazelcastServer : hazelcastServers) {
-            clientConfig.addAddress(hazelcastServer);
-        }
-        // hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
     }
 
     /**
@@ -68,7 +67,9 @@ public class HazelcastCacheManager extends AbstractCacheManager {
      */
     @Override
     public void destroy() {
-        // EMPTY
+        if (myOwnHazelcastClientFactory) {
+            ((HazelcastClientFactory) hazelcastClientFactory).destroy();
+        }
     }
 
     /**
@@ -77,8 +78,7 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     @Override
     protected HazelcastCache createCacheInternal(String name, long capacity, long expireAfterWrite,
             long expireAfterAccess) {
-        // HazelcastCache cache = new HazelcastCache(hazelcastClient, name);
-        HazelcastCache cache = new HazelcastCache(clientConfig, name);
+        HazelcastCache cache = new HazelcastCache(hazelcastClientFactory, name);
         cache.setCapacity(capacity > 0 ? capacity : getDefaultCacheCapacity());
         cache.setExpireAfterAccess(expireAfterAccess);
         cache.setExpireAfterWrite(expireAfterWrite);
