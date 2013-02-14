@@ -145,6 +145,22 @@ public abstract class BaseBundleActivator implements BundleActivator {
      */
     @Override
     public void start(BundleContext bundleContext) throws Exception {
+        try {
+            internalBundleStart(bundleContext);
+        } catch (Exception e) {
+            stop(bundleContext);
+            throw e;
+        }
+    }
+
+    /**
+     * Called by {@link #start(BundleContext)}. Sub-classes should only override
+     * this method instead of {@link #start(BundleContext)}.
+     * 
+     * @param bundleContext
+     * @throws Exception
+     */
+    protected void internalBundleStart(BundleContext bundleContext) throws Exception {
         setBundleContext(bundleContext);
         setBundle(bundleContext.getBundle());
 
@@ -159,8 +175,6 @@ public abstract class BaseBundleActivator implements BundleActivator {
         }
 
         Properties props = new Properties();
-        // String version = (String) bundle.getHeaders().get(
-        // Constants.BUNDLE_VERSION);
         props.put("Version", bundle.getVersion().toString());
         String moduleName = getModuleName();
         if (!StringUtils.isEmpty(moduleName)) {
@@ -207,7 +221,28 @@ public abstract class BaseBundleActivator implements BundleActivator {
                 LOGGER.warn(e.getMessage(), e);
             }
         }
-        unregisterServices();
+
+        try {
+            unregisterServices();
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+
+        try {
+            internalBundleStop(bundleContext);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Called by {@link #stop(BundleContext)}. Sub-classes should only override
+     * this method instead of {@link #stop(BundleContext)}.
+     * 
+     * @param bundleContext
+     * @throws Exception
+     */
+    protected void internalBundleStop(BundleContext bundleContext) throws Exception {
     }
 
     /**

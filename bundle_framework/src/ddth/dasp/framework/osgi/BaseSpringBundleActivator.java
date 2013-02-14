@@ -163,25 +163,30 @@ public abstract class BaseSpringBundleActivator extends BaseBundleActivator {
      * {@inheritDoc}
      */
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    protected void internalBundleStart(BundleContext bundleContext) throws Exception {
         setBundleContext(bundleContext);
         setBundle(bundleContext.getBundle());
 
         initApplicationContext();
 
-        super.start(bundleContext);
+        super.internalBundleStart(bundleContext);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    protected void internalBundleStop(BundleContext bundleContext) throws Exception {
         try {
-            super.stop(bundleContext);
+            destroyApplicationContext();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        destroyApplicationContext();
+
+        try {
+            super.internalBundleStop(bundleContext);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }
