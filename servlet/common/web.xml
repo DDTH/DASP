@@ -79,7 +79,7 @@
 			<param-name>springConfigFile</param-name>
 			<param-value>/WEB-INF/hetty-spring.xml</param-value>
 		</init-param>
-		<load-on-startup>10</load-on-startup>
+		<load-on-startup>30</load-on-startup>
 	</servlet>
 
 	<!-- Uncomment the next section to enable the API Servlet -->

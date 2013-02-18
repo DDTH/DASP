@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ddth.dasp.common.logging.ILogWriter;
 import ddth.dasp.framework.dbc.IJdbcFactory;
-import ddth.dasp.framework.logging.ILogWriter;
 
 /**
  * This implementation of {@link ILogWriter} writes log to database table using

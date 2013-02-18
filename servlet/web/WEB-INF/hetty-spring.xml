@@ -26,25 +26,6 @@
 		<property name="requestParser" ref="requestParser" />
 	</bean>
 
-	<bean id="responseService" class="ddth.dasp.hetty.qnt.inmem.GuavaResponseService"
-		scope="singleton" init-method="init" destroy-method="destroy" />
-	<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.inmem.GuavaTopicPublisher"
-		scope="singleton" />
-	<bean id="queueReader" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
-		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="hazelcastUsername" ref="_hazelcastUsername" />
-		<property name="hazelcastPassword" ref="_hazelcastPassword" />
-		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
-		<property name="hazelcastServers" ref="_hazelcastServers" />
-	</bean>
-	<bean id="queueWriter" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
-		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="hazelcastUsername" ref="_hazelcastUsername" />
-		<property name="hazelcastPassword" ref="_hazelcastPassword" />
-		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
-		<property name="hazelcastServers" ref="_hazelcastServers" />
-	</bean>
-
 	<bean id="_hazelcastUsername" class="java.lang.String">
 		<constructor-arg value="DzitAppServer"></constructor-arg>
 	</bean>
@@ -52,7 +33,10 @@
 		<constructor-arg value="h2z3lc2st"></constructor-arg>
 	</bean>
 	<bean id="_hazelcastQueueName" class="java.lang.String">
-		<constructor-arg value="HettyRequestQueue"></constructor-arg>
+		<constructor-arg value="HETTY_REQUEST_QUEUE"></constructor-arg>
+	</bean>
+	<bean id="_hazelcastTopicName" class="java.lang.String">
+		<constructor-arg value="HETTY_RESPONSE_TOPIC"></constructor-arg>
 	</bean>
 	<bean id="_hazelcastServers" class="java.util.ArrayList">
 		<constructor-arg>
@@ -60,6 +44,37 @@
 				<value>127.0.0.1:8700</value>
 			</list>
 		</constructor-arg>
+	</bean>
+	<bean id="_hazelcastClientFactory" class="ddth.dasp.common.hazelcast.HazelcastClientFactory"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="hazelcastUsername" ref="_hazelcastUsername" />
+		<property name="hazelcastPassword" ref="_hazelcastPassword" />
+		<property name="hazelcastServers" ref="_hazelcastServers" />
+	</bean>
+
+	<!-- <bean id="responseService" class="ddth.dasp.hetty.qnt.inmem.GuavaResponseService" 
+		scope="singleton" init-method="init" destroy-method="destroy" /> <bean id="topicPublisher" 
+		class="ddth.dasp.hetty.qnt.inmem.GuavaTopicPublisher" scope="singleton" /> -->
+
+	<bean id="responseService" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastResponseService"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastTopicName" ref="_hazelcastTopicName" />
+	</bean>
+	<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastTopicPublisher"
+		scope="singleton">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastTopicName" ref="_hazelcastTopicName" />
+	</bean>
+	<bean id="queueReader" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
+	</bean>
+	<bean id="queueWriter" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
 	</bean>
 
 	<beans default-lazy-init="false" profile="dev">

@@ -107,8 +107,8 @@ public class DaspBundleActivator extends BaseSpringBundleActivator {
      * {@inheritDoc}
      */
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        super.start(bundleContext);
+    protected void internalBundleStart(BundleContext bundleContext) throws Exception {
+        super.internalBundleStart(bundleContext);
         initDispatcherServlet();
     }
 
@@ -116,9 +116,12 @@ public class DaspBundleActivator extends BaseSpringBundleActivator {
      * {@inheritDoc}
      */
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        destroyDispatcherServlet();
-        super.stop(bundleContext);
+    protected void internalBundleStop(BundleContext bundleContext) throws Exception {
+        try {
+            destroyDispatcherServlet();
+        } finally {
+            super.internalBundleStop(bundleContext);
+        }
     }
 
     /**
