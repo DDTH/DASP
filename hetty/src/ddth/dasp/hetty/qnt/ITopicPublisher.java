@@ -5,5 +5,5 @@ import java.util.concurrent.TimeUnit;
 public interface ITopicPublisher {
     public boolean publishToTopic(Object obj);
 
-    public boolean publishToTopic(Object obj, long timeout, TimeUnit timeunit);
+    public boolean publishToTopic(Object obj, long timeout, TimeUnit timeUnit);
 }
