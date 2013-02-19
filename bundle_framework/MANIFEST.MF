@@ -45,6 +45,7 @@ Bundle-ClassPath: .,
  hazelcast-all-2.4.1.jar
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.api,
+ ddth.dasp.common.hazelcast,
  ddth.dasp.common.id,
  ddth.dasp.common.logging,
  ddth.dasp.common.osgi,
