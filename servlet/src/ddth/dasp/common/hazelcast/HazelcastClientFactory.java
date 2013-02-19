@@ -17,12 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import com.hazelcast.client.ClientConfig;
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.core.IMap;
 import com.hazelcast.core.IQueue;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MessageListener;
 import com.hazelcast.security.UsernamePasswordCredentials;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.id.IdGenerator;
 
 /**
  * Hazelcast client factory and utilities.
@@ -80,13 +82,16 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
                 HazelcastClient client = getHazelcastClient();
                 if (client != null) {
                     try {
-                        client.getMap("");
+                        IMap<Object, Object> map = client.getMap("_PING_");
+                        map.put(IdGenerator.getMacAddr(), System.currentTimeMillis());
                     } finally {
                         returnHazelcastClient();
                     }
                 }
             } catch (Exception e) {
                 LOGGER.warn(e.getMessage(), e);
+            } finally {
+                DaspGlobal.getScheduler().schedule(this, 10, TimeUnit.SECONDS);
             }
         }
     }
@@ -106,7 +111,7 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
             clientConfig.addAddress(hazelcastServer);
         }
         ScheduledExecutorService ses = DaspGlobal.getScheduler();
-        ses.scheduleWithFixedDelay(new HazelcastClientPing(), 10, 10, TimeUnit.SECONDS);
+        ses.schedule(new HazelcastClientPing(), 10, TimeUnit.SECONDS);
     }
 
     public void destroy() {
