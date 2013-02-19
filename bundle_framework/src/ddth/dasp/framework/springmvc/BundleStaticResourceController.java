@@ -93,6 +93,7 @@ public class BundleStaticResourceController extends BaseAnnotationController {
         if (!StringUtils.isBlank(requestAction)) {
             if (requestAction.length() + 1 < requestUri.length()) {
                 requestUri = requestUri.substring(requestAction.length() + 1);
+                resourceUri = resourcePrefix != null ? resourcePrefix + requestUri : requestUri;
                 if (serveStaticResource(resourceUri, request, response)) {
                     return;
                 }
