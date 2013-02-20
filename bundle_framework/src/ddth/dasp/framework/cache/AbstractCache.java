@@ -123,9 +123,15 @@ public abstract class AbstractCache implements ICache {
     @Override
     public Object get(String key) {
         Object value = internalGet(key);
-        if (value instanceof CacheEntry && ((CacheEntry) value).isExpired()) {
-            incMisses();
-            return null;
+        if (value instanceof CacheEntry) {
+            if (((CacheEntry) value).isExpired()) {
+                incMisses();
+                return null;
+            } else {
+                // update entry's access timestamp
+                ((CacheEntry) value).touch();
+                set(key, value);
+            }
         }
         if (value == null) {
             incMisses();

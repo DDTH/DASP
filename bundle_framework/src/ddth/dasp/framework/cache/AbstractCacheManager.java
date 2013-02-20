@@ -72,12 +72,16 @@ public abstract class AbstractCacheManager implements ICacheManager {
                 Iterator<Entry<String, ICache>> it = caches.entrySet().iterator();
                 while (it.hasNext()) {
                     Entry<String, ICache> entry = it.next();
-                    entry.getValue().destroy();
+                    try {
+                        entry.getValue().destroy();
+                    } catch (Exception e) {
+                        // EMPTY
+                    }
                 }
             } finally {
                 caches.clear();
+                caches = null;
             }
-            caches = null;
         }
     }
 
@@ -200,21 +204,23 @@ public abstract class AbstractCacheManager implements ICacheManager {
             long cacheCapacity = capacity;
             long cacheExpireAfterWrite = expireAfterWrite;
             long cacheExpireAfterAccess = expireAfterAccess;
-            // yup, use "name" here (not "cacheName) is correct and intended
+            // yup, use "name" here (not "cacheName) is correct and intended!
             Properties cacheProps = getCacheProperties(name);
             if (cacheProps != null) {
                 try {
-                    cacheCapacity = Long.parseLong(CACHE_PROP_CAPACITY);
+                    cacheCapacity = Long.parseLong(cacheProps.getProperty(CACHE_PROP_CAPACITY));
                 } catch (Exception e) {
                     cacheCapacity = capacity;
                 }
                 try {
-                    cacheExpireAfterWrite = Long.parseLong(CACHE_PROP_EXPIRE_AFTER_WRITE);
+                    cacheExpireAfterWrite = Long.parseLong(cacheProps
+                            .getProperty(CACHE_PROP_EXPIRE_AFTER_WRITE));
                 } catch (Exception e) {
                     cacheExpireAfterWrite = expireAfterWrite;
                 }
                 try {
-                    cacheExpireAfterAccess = Long.parseLong(CACHE_PROP_EXPIRE_AFTER_ACCESS);
+                    cacheExpireAfterAccess = Long.parseLong(cacheProps
+                            .getProperty(CACHE_PROP_EXPIRE_AFTER_ACCESS));
                 } catch (Exception e) {
                     cacheExpireAfterAccess = expireAfterAccess;
                 }

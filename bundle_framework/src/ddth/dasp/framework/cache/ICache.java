@@ -69,14 +69,22 @@ public interface ICache {
     public long getExpireAfterWrite();
 
     /**
-     * Puts an entry to cache.
+     * Puts an entry to cache, with default expiry.
      * 
      * @param key
-     *            String
      * @param entry
-     *            Object
      */
     public void set(String key, Object entry);
+
+    /**
+     * Puts an entry to cache, with specified expiries.
+     * 
+     * @param key
+     * @param entry
+     * @param expireAfterWrite
+     * @param expireAfterAccess
+     */
+    public void set(String key, Object entry, long expireAfterWrite, long expireAfterAccess);
 
     /**
      * Gets an entry from cache.

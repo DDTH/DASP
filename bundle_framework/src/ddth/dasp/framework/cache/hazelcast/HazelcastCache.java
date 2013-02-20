@@ -2,10 +2,12 @@ package ddth.dasp.framework.cache.hazelcast;
 
 import java.util.concurrent.TimeUnit;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.IMap;
 
 import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.framework.cache.AbstractCache;
+import ddth.dasp.framework.cache.CacheEntry;
 import ddth.dasp.framework.cache.ICache;
 
 /**
@@ -75,7 +77,11 @@ public class HazelcastCache extends AbstractCache implements ICache {
     }
 
     protected IMap<String, Object> getHazelcastMap() {
-        return getHazelcastClientFactory().getHazelcastClient().getMap(getName());
+        HazelcastClient client = getHazelcastClientFactory().getHazelcastClient();
+        if (client != null) {
+            return client.getMap(getName());
+        }
+        return null;
     }
 
     protected void dispostHazelcastMap() {
@@ -87,10 +93,15 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public long getSize() {
-        try {
-            return getHazelcastMap().size();
-        } finally {
-            dispostHazelcastMap();
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            try {
+                return map.size();
+            } finally {
+                dispostHazelcastMap();
+            }
+        } else {
+            return -1;
         }
     }
 
@@ -99,14 +110,32 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void set(String key, Object entry) {
-        try {
-            if (timeToLiveSeconds > 0) {
-                getHazelcastMap().put(key, entry, timeToLiveSeconds, TimeUnit.SECONDS);
-            } else {
-                getHazelcastMap().putAsync(key, entry);
+        if (entry instanceof CacheEntry) {
+            CacheEntry ce = (CacheEntry) entry;
+            set(key, ce, ce.getExpireAfterWrite(), ce.getExpireAfterAccess());
+        } else {
+            set(key, entry, timeToLiveSeconds, timeToLiveSeconds);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void set(String key, Object entry, long expireAfterWrite, long expireAfterAccess) {
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            long ttl = expireAfterAccess > 0 ? expireAfterAccess
+                    : (expireAfterWrite > 0 ? expireAfterWrite : timeToLiveSeconds);
+            try {
+                if (ttl > 0) {
+                    map.set(key, entry, ttl, TimeUnit.SECONDS);
+                } else {
+                    // map.putAsync(key, entry);
+                    map.tryPut(key, entry, 5000, TimeUnit.MILLISECONDS);
+                }
+            } finally {
+                dispostHazelcastMap();
             }
-        } finally {
-            dispostHazelcastMap();
         }
     }
 
@@ -115,10 +144,15 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     protected Object internalGet(String key) {
-        try {
-            return getHazelcastMap().get(key);
-        } finally {
-            dispostHazelcastMap();
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            try {
+                return map.get(key);
+            } finally {
+                dispostHazelcastMap();
+            }
+        } else {
+            return null;
         }
     }
 
@@ -127,10 +161,14 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void delete(String key) {
-        try {
-            getHazelcastMap().removeAsync(key);
-        } finally {
-            dispostHazelcastMap();
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            try {
+                // map.removeAsync(key);
+                map.remove(key);
+            } finally {
+                dispostHazelcastMap();
+            }
         }
     }
 
@@ -139,10 +177,13 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public void deleteAll() {
-        try {
-            getHazelcastMap().clear();
-        } finally {
-            dispostHazelcastMap();
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            try {
+                map.clear();
+            } finally {
+                dispostHazelcastMap();
+            }
         }
     }
 
@@ -151,10 +192,15 @@ public class HazelcastCache extends AbstractCache implements ICache {
      */
     @Override
     public boolean exists(String key) {
-        try {
-            return getHazelcastMap().get(key) != null;
-        } finally {
-            dispostHazelcastMap();
+        IMap<String, Object> map = getHazelcastMap();
+        if (map != null) {
+            try {
+                return map.get(key) != null;
+            } finally {
+                dispostHazelcastMap();
+            }
+        } else {
+            return false;
         }
     }
 }

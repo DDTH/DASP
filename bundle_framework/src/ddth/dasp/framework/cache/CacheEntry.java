@@ -46,7 +46,7 @@ public class CacheEntry implements Serializable {
 
     public Object getValue() {
         if (!isExpired()) {
-            lastAccessTimestamp = System.currentTimeMillis();
+            touch();
             return value;
         }
         return null;
@@ -78,5 +78,9 @@ public class CacheEntry implements Serializable {
 
     public long getLastAccessTimestamp() {
         return lastAccessTimestamp;
+    }
+
+    public void touch() {
+        lastAccessTimestamp = System.currentTimeMillis();
     }
 }

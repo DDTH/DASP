@@ -6,6 +6,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import ddth.dasp.framework.cache.AbstractCache;
+import ddth.dasp.framework.cache.CacheEntry;
 import ddth.dasp.framework.cache.ICache;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -88,6 +89,18 @@ public class GuavaCache extends AbstractCache implements ICache {
      */
     @Override
     public void set(String key, Object entry) {
+        cache.put(key, entry);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void set(String key, Object entry, long expireAfterWrite, long expireAfterAccess) {
+        if (!(entry instanceof CacheEntry)) {
+            CacheEntry ce = new CacheEntry(key, entry, expireAfterWrite, expireAfterAccess);
+            entry = ce;
+        }
         cache.put(key, entry);
     }
 
