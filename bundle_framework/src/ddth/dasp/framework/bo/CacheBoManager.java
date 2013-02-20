@@ -138,12 +138,48 @@ public abstract class CacheBoManager extends BaseBoManager {
     }
 
     /**
-     * Puts an entry to cache.
+     * Puts an entry to cache, with default expiries.
      * 
      * @param key
      * @param value
      */
     protected void putToCache(String key, Object value) {
+        // if (!cacheEnabled()) {
+        // return;
+        // }
+
+        if (value instanceof CacheEntry) {
+            CacheEntry ce = (CacheEntry) value;
+            putToCache(key, ce, ce.getExpireAfterWrite(), ce.getExpireAfterAccess());
+        } else {
+            putToCache(key, value, expireAfterWrite, expireAfterAccess);
+        }
+
+        // if (value != null) {
+        // ICache cache = getCache();
+        // if (cache != null) {
+        // cache.set(key, value);
+        // }
+        // } else if (cacheNull) {
+        // ICache cacheForNull = getCacheForNull();
+        // if (cacheForNull != null) {
+        // CacheEntry cacheEntry = new CacheEntry(key, new NullValue(),
+        // cacheNullExpiry, -1);
+        // cacheForNull.set(key, cacheEntry);
+        // }
+        // }
+    }
+
+    /**
+     * Puts an entry to cache, with specified expiries.
+     * 
+     * @param key
+     * @param value
+     * @param expireAfterWrite
+     * @param expireAfterAccess
+     */
+    protected void putToCache(String key, Object value, long expireAfterWrite,
+            long expireAfterAccess) {
         if (!cacheEnabled()) {
             return;
         }
@@ -151,13 +187,15 @@ public abstract class CacheBoManager extends BaseBoManager {
         if (value != null) {
             ICache cache = getCache();
             if (cache != null) {
-                cache.set(key, value);
+                cache.set(key, value, expireAfterWrite, expireAfterAccess);
             }
         } else if (cacheNull) {
             ICache cacheForNull = getCacheForNull();
             if (cacheForNull != null) {
-                CacheEntry cacheEntry = new CacheEntry(key, new NullValue(), cacheNullExpiry, -1);
-                cacheForNull.set(key, cacheEntry);
+                long ttl = cacheNullExpiry > 0 ? cacheNullExpiry
+                        : (expireAfterWrite > 0 ? expireAfterWrite : -1);
+                CacheEntry cacheEntry = new CacheEntry(key, new NullValue(), ttl, -1);
+                cacheForNull.set(key, cacheEntry, ttl, -1);
             }
         }
     }
