@@ -121,15 +121,20 @@ public abstract class BaseSpringBundleActivator extends BaseBundleActivator {
 
     protected void initApplicationContext() throws Exception {
         OsgiBundleXmlApplicationContext ac = new OsgiBundleXmlApplicationContext();
-        ac.setBundleContext(getBundleContext());
-        ac.setPublishContextAsService(false);
-        String[] springConfigFiles = getSpringConfigFiles();
-        if (springConfigFiles != null && springConfigFiles.length > 0) {
-            ac.setConfigLocations(springConfigFiles);
+        try {
+            ac.setBundleContext(getBundleContext());
+            ac.setPublishContextAsService(false);
+            String[] springConfigFiles = getSpringConfigFiles();
+            if (springConfigFiles != null && springConfigFiles.length > 0) {
+                ac.setConfigLocations(springConfigFiles);
+            }
+            // ac.refresh();
+            ac.normalRefresh();
+            ac.start();
+        } catch (Exception e) {
+            ac.close();
+            throw e;
         }
-        // ac.refresh();
-        ac.normalRefresh();
-        ac.start();
         this.applicationContext = ac;
     }
 
