@@ -13,7 +13,6 @@ Require-Bundle: ddth.dasp.framework,
  org.springframework.web,
  org.springframework.osgi.core
 Export-Package: ddth.dasp.hetty.mvc,
- ddth.dasp.hetty.mvc.resource,
  ddth.dasp.hetty.mvc.view,
  ddth.dasp.hetty.mvc.view.freemarker
 Bundle-ClassPath: .
