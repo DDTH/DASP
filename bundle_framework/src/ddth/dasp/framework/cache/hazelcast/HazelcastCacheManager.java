@@ -67,8 +67,12 @@ public class HazelcastCacheManager extends AbstractCacheManager {
      */
     @Override
     public void destroy() {
-        if (myOwnHazelcastClientFactory) {
-            ((HazelcastClientFactory) hazelcastClientFactory).destroy();
+        try {
+            if (myOwnHazelcastClientFactory) {
+                ((HazelcastClientFactory) hazelcastClientFactory).destroy();
+            }
+        } finally {
+            super.destroy();
         }
     }
 
