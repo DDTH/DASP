@@ -135,6 +135,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
      * Initializing method.
      */
     public void init() {
+        super.init();
         loadSqlProps();
     }
 
@@ -142,13 +143,16 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
      * Destruction method.
      */
     public void destroy() {
-        // EMPTY
+        super.destroy();
     }
 
     /**
      * Loads SQL properties. It's in {@link Properties} format.
      */
     protected void loadSqlProps() {
+        this.sqlProps.clear();
+        this.cacheSqlProps.clear();
+
         Object sqlProps = getSqlPropsLocation();
         if (sqlProps instanceof Properties) {
             this.sqlProps.putAll((Properties) sqlProps);
