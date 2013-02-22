@@ -605,7 +605,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 }
                 result.add(obj);
             }
-            return result;
+            return result.size() > 0 ? result : null;
         } finally {
             JdbcUtils.closeResources(null, stm, rs);
         }
@@ -641,7 +641,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 }
                 result.add(obj);
             }
-            return result;
+            return result.size() > 0 ? result : null;
         } finally {
             JdbcUtils.closeResources(null, stm, rs);
         }
