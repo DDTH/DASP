@@ -62,6 +62,7 @@
 		scope="singleton" init-method="init" destroy-method="destroy">
 		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
 		<property name="hazelcastTopicName" ref="_hazelcastTopicName" />
+		<property name="messageFactory" ref="messageFactory" />
 	</bean>
 	<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastTopicPublisher"
 		scope="singleton">

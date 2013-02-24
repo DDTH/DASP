@@ -11,14 +11,16 @@ import com.hazelcast.core.MessageListener;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.hetty.front.AbstractHettyResponseService;
+import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IResponse;
 
 public class HazelcastResponseService extends AbstractHettyResponseService implements
-        MessageListener<IResponse> {
+        MessageListener<Object> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(HazelcastResponseService.class);
 
     private IHazelcastClientFactory hazelcastClientFactory;
+    private IMessageFactory messageFactory;
     private String hazelcastTopicName;
     private boolean _listening = false;
 
@@ -38,6 +40,14 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
         this.hazelcastClientFactory = hazelcastClientFactory;
     }
 
+    protected IMessageFactory getMessageFactory() {
+        return messageFactory;
+    }
+
+    public void setMessageFactory(IMessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
+    }
+
     public void init() {
         Runnable command = new MessageListenerBootstrap(this);
         // DaspGlobal.getScheduler().scheduleAtFixedRate(command, 10000, 5000,
@@ -50,9 +60,9 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     }
 
     private class MessageListenerBootstrap implements Runnable {
-        private MessageListener<IResponse> messageListener;
+        private MessageListener<Object> messageListener;
 
-        public MessageListenerBootstrap(MessageListener<IResponse> messageListener) {
+        public MessageListenerBootstrap(MessageListener<Object> messageListener) {
             this.messageListener = messageListener;
         }
 
@@ -73,7 +83,14 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     }
 
     @Override
-    public void onMessage(Message<IResponse> message) {
-        writeResponse(message.getMessageObject());
+    public void onMessage(Message<Object> message) {
+        Object obj = message.getMessageObject();
+        IResponse response = null;
+        if (obj instanceof byte[]) {
+            response = messageFactory.deserializeResponse((byte[]) obj);
+        } else if (obj instanceof IResponse) {
+            response = (IResponse) obj;
+        }
+        writeResponse(response);
     }
 }
