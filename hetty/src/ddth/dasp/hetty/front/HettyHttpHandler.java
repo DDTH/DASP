@@ -38,8 +38,9 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
-    public HettyHttpHandler(IQueueWriter queeuWriter) {
+    public HettyHttpHandler(IQueueWriter queeuWriter, IMessageFactory messageFactory) {
         this.queueWriter = queeuWriter;
+        this.messageFactory = messageFactory;
     }
 
     /**

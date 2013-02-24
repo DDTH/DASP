@@ -18,6 +18,7 @@ import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.qnt.IQueueWriter;
 import ddth.dasp.servlet.utils.NetUtils;
 
@@ -27,6 +28,7 @@ public class HettyConnServer {
     private final Logger LOGGER = LoggerFactory.getLogger(HettyConnServer.class);
 
     private IQueueWriter queueWriter;
+    private IMessageFactory messageFactory;
     private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
     private int numWorkers = 32;
     private String portStr = "8083";
@@ -43,6 +45,15 @@ public class HettyConnServer {
 
     public HettyConnServer setQueueWriter(IQueueWriter queueWriter) {
         this.queueWriter = queueWriter;
+        return this;
+    }
+
+    public IMessageFactory getMessageFactory() {
+        return messageFactory;
+    }
+
+    public HettyConnServer setMessageFactory(IMessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
         return this;
     }
 
@@ -120,7 +131,7 @@ public class HettyConnServer {
                 });
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
-        nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter, timer,
+        nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter, messageFactory, timer,
                 readTimeoutMillisecs, writeTimeoutMillisecs));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);

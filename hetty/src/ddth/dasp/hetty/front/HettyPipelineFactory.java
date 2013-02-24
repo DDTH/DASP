@@ -12,6 +12,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.timeout.IdleStateHandler;
 import org.jboss.netty.util.Timer;
 
+import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.qnt.IQueueWriter;
 
 public class HettyPipelineFactory implements ChannelPipelineFactory {
@@ -19,10 +20,12 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
     private final ChannelHandler idleStateHandler;
 
     private IQueueWriter queueWriter;
+    private IMessageFactory messageFactory;
 
-    public HettyPipelineFactory(IQueueWriter queueWriter, Timer timer, long readTimeoutMillisecs,
-            long writeTimeoutMillisecs) {
+    public HettyPipelineFactory(IQueueWriter queueWriter, IMessageFactory messageFactory,
+            Timer timer, long readTimeoutMillisecs, long writeTimeoutMillisecs) {
         this.queueWriter = queueWriter;
+        this.messageFactory = messageFactory;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
                 writeTimeoutMillisecs, 0, TimeUnit.MILLISECONDS);
     }
@@ -36,7 +39,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("timeout", idleStateHandler);
         // compression with minimum memory usage
         pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
-        pipeline.addLast("handler", new HettyHttpHandler(this.queueWriter));
+        pipeline.addLast("handler", new HettyHttpHandler(queueWriter, messageFactory));
         return pipeline;
     }
 }

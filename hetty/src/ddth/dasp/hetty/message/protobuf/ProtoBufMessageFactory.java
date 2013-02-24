@@ -23,6 +23,12 @@ import ddth.dasp.hetty.message.IResponse;
 
 public class ProtoBufMessageFactory implements IMessageFactory {
 
+    public void init() {
+    }
+
+    public void destroy() {
+    }
+
     /**
      * {@inheritDoc}
      */

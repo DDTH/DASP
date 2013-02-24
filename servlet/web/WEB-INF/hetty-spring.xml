@@ -10,6 +10,7 @@
 	<bean id="hettyConnServer" class="ddth.dasp.hetty.front.HettyConnServer"
 		scope="singleton" init-method="start" destroy-method="destroy">
 		<property name="queueWriter" ref="queueWriter" />
+		<property name="messageFactory" ref="messageFactory" />
 		<property name="readTimeoutMillisecs" ref="_nettyReadTimeout" />
 		<property name="writeTimeoutMillisecs" ref="_nettyWriteTimeout" />
 		<property name="port" value="8083,8085,8087" /> <!-- server chooses first available port -->
@@ -75,6 +76,9 @@
 		scope="singleton" init-method="init" destroy-method="destroy">
 		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
 		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
+	</bean>
+	<bean id="messageFactory" class="ddth.dasp.hetty.message.protobuf.ProtoBufMessageFactory"
+		scope="singleton">
 	</bean>
 
 	<beans default-lazy-init="false" profile="dev">
