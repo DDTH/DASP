@@ -3,7 +3,7 @@ package ddth.dasp.statushetty.actionhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.mvc.SimpleActionHandler;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.mvc.view.IViewResolver;
@@ -14,7 +14,7 @@ public class BaseActionHandler extends SimpleActionHandler {
      * {@inheritDoc}
      */
     @Override
-    protected IView resolveVew(HettyProtoBuf.Request request, String viewName) {
+    protected IView resolveVew(IRequest request, String viewName) {
         Map<String, String> replacements = new HashMap<String, String>();
         replacements.put("skin", "default");
         IViewResolver viewResolver = getViewResolver();
