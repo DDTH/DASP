@@ -78,7 +78,7 @@
 	</bean>
 
 	<beans default-lazy-init="false" profile="dev">
-		<bean id="requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
+		<bean id="requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
 			scope="singleton"></bean>
 		<bean id="_nettyReadTimeout" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="60000" />
@@ -96,7 +96,7 @@
 	</beans>
 
 	<beans default-lazy-init="false" profile="prod,production">
-		<bean id="requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
+		<bean id="requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
 			scope="singleton"></bean>
 		<bean id="_nettyReadTimeout" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="10000" />
