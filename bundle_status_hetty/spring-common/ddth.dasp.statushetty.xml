@@ -73,7 +73,7 @@
 		</property>
 	</bean>
 
-	<bean id="_requestParser" class="ddth.dasp.hetty.message.protobuf.DefaultRequestParser"
+	<bean id="_requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
 	</bean>
