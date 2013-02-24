@@ -11,10 +11,10 @@ import com.hazelcast.core.MessageListener;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.hetty.front.AbstractHettyResponseService;
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IResponse;
 
 public class HazelcastResponseService extends AbstractHettyResponseService implements
-        MessageListener<HettyProtoBuf.Response> {
+        MessageListener<IResponse> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(HazelcastResponseService.class);
 
@@ -50,9 +50,9 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     }
 
     private class MessageListenerBootstrap implements Runnable {
-        private MessageListener<HettyProtoBuf.Response> messageListener;
+        private MessageListener<IResponse> messageListener;
 
-        public MessageListenerBootstrap(MessageListener<HettyProtoBuf.Response> messageListener) {
+        public MessageListenerBootstrap(MessageListener<IResponse> messageListener) {
             this.messageListener = messageListener;
         }
 
@@ -73,7 +73,7 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     }
 
     @Override
-    public void onMessage(Message<HettyProtoBuf.Response> message) {
+    public void onMessage(Message<IResponse> message) {
         writeResponse(message.getMessageObject());
     }
 }

@@ -1,7 +1,7 @@
 package ddth.dasp.hetty.front;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IResponse;
 
 public interface IHettyResponseService {
-    public void writeResponse(HettyProtoBuf.Response responseProtobuf);
+    public void writeResponse(IResponse response);
 }

@@ -1,6 +1,6 @@
 package ddth.dasp.hetty.front;
 
-import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -16,7 +16,8 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.ICookie;
+import ddth.dasp.hetty.message.IResponse;
 
 public abstract class AbstractHettyResponseService implements IHettyResponseService {
 
@@ -27,24 +28,24 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
      * {@inheritDoc}
      */
     @Override
-    public void writeResponse(HettyProtoBuf.Response responseProtobuf) {
-        Integer channelId = responseProtobuf.getChannelId();
+    public void writeResponse(IResponse response) {
+        Integer channelId = response.getChannelId();
         Channel channel = HettyConnServer.ALL_CHANNELS.find(channelId);
         if (channel != null) {
-            HttpResponseStatus status = HttpResponseStatus.valueOf(responseProtobuf.getStatus());
-            HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+            HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatus());
+            HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
                     status != null ? status : HttpResponseStatus.OK);
 
             // headers
-            for (HettyProtoBuf.NameValue header : responseProtobuf.getHeadersList()) {
-                response.addHeader(header.getName(), header.getValue());
+            for (Entry<String, String> header : response.getHeaders().entrySet()) {
+                httpResponse.addHeader(header.getKey(), header.getValue());
             }
 
             // cookies
-            List<HettyProtoBuf.Cookie> cookieList = responseProtobuf.getCookiesList();
-            if (cookieList.size() > 0) {
+            ICookie[] cookies = response.getCookies();
+            if (cookies.length > 0) {
                 CookieEncoder cookieEncoder = new CookieEncoder(false);
-                for (HettyProtoBuf.Cookie cookie : cookieList) {
+                for (ICookie cookie : cookies) {
                     DefaultCookie nettyCookie = new DefaultCookie(cookie.getName(),
                             cookie.getValue());
                     if (!StringUtils.isBlank(cookie.getDomain())) {
@@ -53,33 +54,31 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
                     if (!StringUtils.isBlank(cookie.getPath())) {
                         nettyCookie.setDomain(cookie.getPath());
                     }
-                    if (cookie.hasPort() && cookie.getPort() > 0) {
+                    if (cookie.getPort() > 0) {
                         nettyCookie.setPorts(cookie.getPort());
                     }
-                    if (cookie.hasMaxAge()) {
+                    if (cookie.getMaxAge() > 0) {
                         nettyCookie.setMaxAge(cookie.getMaxAge());
                     }
                     cookieEncoder.addCookie(nettyCookie);
                 }
-                response.setHeader("Cookie", cookieEncoder.encode());
+                httpResponse.setHeader("Cookie", cookieEncoder.encode());
             }
 
             // content
-            if (responseProtobuf.hasContent() && responseProtobuf.getContent() != null) {
-                response.setContent(ChannelBuffers.copiedBuffer(responseProtobuf.getContent()
-                        .toByteArray()));
+            if (response.getContent() != null) {
+                httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getContent()));
             } else {
-                response.setContent(ChannelBuffers.copiedBuffer("", CharsetUtil.UTF_8));
+                httpResponse.setContent(ChannelBuffers.copiedBuffer("", CharsetUtil.UTF_8));
             }
 
-            channel.write(response).addListener(ChannelFutureListener.CLOSE);
+            channel.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
 
-            long timestamp = System.nanoTime();
-            StringBuilder logMsg = new StringBuilder(responseProtobuf.getRequestId()).append("/")
-                    .append(responseProtobuf.getStatus()).append("/")
-                    .append((timestamp - responseProtobuf.getRequestTimestamp()) / 1E6)
-                    .append(" ms");
             if (LOGGER.isDebugEnabled()) {
+                long timestamp = System.nanoTime();
+                StringBuilder logMsg = new StringBuilder(response.getRequestId()).append("/")
+                        .append(response.getStatus()).append("/")
+                        .append((timestamp - response.getRequestTimestamp()) / 1E6).append(" ms");
                 LOGGER.debug(logMsg.toString());
             }
         }

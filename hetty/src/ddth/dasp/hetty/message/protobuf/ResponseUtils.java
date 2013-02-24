@@ -8,11 +8,16 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
-import com.google.protobuf.ByteString;
+import ddth.dasp.hetty.message.ICookie;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IResponse;
 
 /**
  * Response generator utility class.
@@ -26,72 +31,119 @@ public class ResponseUtils {
         DF_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
     public final static String SERVER = "Hetty Server v0.1.0";
-    private final static ByteString EMPTY_CONTENT = ByteString.EMPTY;
+    // private final static ByteString EMPTY_CONTENT = ByteString.EMPTY;
+    private final static byte[] EMPTY_CONTENT = ArrayUtils.EMPTY_BYTE_ARRAY;
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            String contentString) {
+    /**
+     * Helper method to create a "text/html; charset=utf-8"-200 response,
+     * without cookies or any specific headers.
+     * 
+     * @param request
+     * @param contentString
+     * @return
+     */
+    public static IResponse response200(IRequest request, String contentString) {
         return response200(request, contentString, "text/html; charset=utf-8");
     }
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            byte[] contentBin) {
+    /**
+     * Helper method to create a "text/html; charset=utf-8"-200 response,
+     * without cookies or any specific headers.
+     * 
+     * @param request
+     * @param contentBin
+     * @return
+     */
+    public static IResponse response200(IRequest request, byte[] contentBin) {
         return response200(request, contentBin, "text/html; charset=utf-8");
     }
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            String contentString, String contentType) {
+    /**
+     * Helper method to create a 200 response with specified content type,
+     * without cookies or any specific headers.
+     * 
+     * @param request
+     * @param contentString
+     * @param contentType
+     * @return
+     */
+    public static IResponse response200(IRequest request, String contentString, String contentType) {
         return response200(request, contentString, contentType, null, null);
     }
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            String contentString, String contentType, HettyProtoBuf.NameValue[] headers,
-            HettyProtoBuf.Cookie[] cookies) {
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(200);
-        builder.addHeaders(newHeader("Content-Type", contentType));
-        ByteString content = ByteString.copyFromUtf8(contentString);
-        builder.addHeaders(newHeader("Content-Length", content.size()));
-        builder.setContent(content);
+    /**
+     * Helper method to create a 200 response with specified content type,
+     * cookies and headers.
+     * 
+     * @param request
+     * @param contentString
+     * @param contentType
+     * @param headers
+     * @param cookies
+     * @return
+     */
+    public static IResponse response200(IRequest request, String contentString, String contentType,
+            Map<String, String> headers, ICookie[] cookies) {
+        IResponse response = newResponse(request).setStatus(200);
+        response.addHeader("Content-Type", contentType);
+        response.setContent(contentString);
         // headers
         if (headers != null) {
-            for (HettyProtoBuf.NameValue header : headers) {
-                builder.addHeaders(header);
+            for (Entry<String, String> header : headers.entrySet()) {
+                response.addHeader(header.getKey(), header.getValue());
             }
         }
         // cookies
         if (cookies != null) {
-            for (HettyProtoBuf.Cookie cookie : cookies) {
-                builder.addCookies(cookie);
+            for (ICookie cookie : cookies) {
+                response.addCookie(cookie);
             }
         }
-        return builder;
+        return response;
     }
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            byte[] contentBin, String contentType) {
+    /**
+     * Helper method to create a 200 response with specified content type,
+     * without cookies or any specific headers.
+     * 
+     * @param request
+     * @param contentBin
+     * @param contentType
+     * @return
+     */
+    public static IResponse response200(IRequest request, byte[] contentBin, String contentType) {
         return response200(request, contentBin, contentType, null, null);
     }
 
-    public static HettyProtoBuf.Response.Builder response200(HettyProtoBuf.Request request,
-            byte[] contentBin, String contentType, HettyProtoBuf.NameValue[] headers,
-            HettyProtoBuf.Cookie[] cookies) {
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(200);
-        builder.addHeaders(newHeader("Content-Type", contentType));
-        ByteString content = ByteString.copyFrom(contentBin);
-        builder.addHeaders(newHeader("Content-Length", content.size()));
-        builder.setContent(content);
+    /**
+     * Helper method to create a 200 response with specified content type,
+     * cookies and headers.
+     * 
+     * @param request
+     * @param contentBin
+     * @param contentType
+     * @param headers
+     * @param cookies
+     * @return
+     */
+    public static IResponse response200(IRequest request, byte[] contentBin, String contentType,
+            Map<String, String> headers, ICookie[] cookies) {
+        IResponse response = newResponse(request).setStatus(200);
+        response.addHeader("Content-Type", contentType);
+        response.setContent(contentBin);
         // headers
         if (headers != null) {
-            for (HettyProtoBuf.NameValue header : headers) {
-                builder.addHeaders(header);
+            for (Entry<String, String> header : headers.entrySet()) {
+                response.addHeader(header.getKey(), header.getValue());
             }
         }
         // cookies
         if (cookies != null) {
-            for (HettyProtoBuf.Cookie cookie : cookies) {
-                builder.addCookies(cookie);
+            for (ICookie cookie : cookies) {
+                response.addCookie(cookie);
             }
         }
-        return builder;
+        return response;
     }
 
     /**
@@ -101,11 +153,9 @@ public class ResponseUtils {
      * @param url
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response301(HettyProtoBuf.Request request,
-            String url) {
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(301);
-        builder.addHeaders(newHeader("Location", url));
-        return builder;
+    public static IResponse response301(IRequest request, String url) {
+        IResponse response = newResponse(request).setStatus(301).addHeader("Location", url);
+        return response;
     }
 
     /**
@@ -114,9 +164,9 @@ public class ResponseUtils {
      * @param request
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response304(HettyProtoBuf.Request request) {
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(304);
-        return builder;
+    public static IResponse response304(IRequest request) {
+        IResponse response = newResponse(request).setStatus(304);
+        return response;
     }
 
     private static String loadContent(String path) {
@@ -138,7 +188,7 @@ public class ResponseUtils {
      * @param request
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response404(HettyProtoBuf.Request request) {
+    public static IResponse response404(IRequest request) {
         return response404(request, "Not found");
     }
 
@@ -149,21 +199,16 @@ public class ResponseUtils {
      * @param message
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response404(HettyProtoBuf.Request request,
-            String message) {
+    public static IResponse response404(IRequest request, String message) {
         if (content404 == null) {
             content404 = loadContent("/ddth/dasp/hetty/404.tpl");
         }
-        String referer = HettyProtoBufUtils.getHeader(request, "Referer");
+        String referer = request.getHeader("Referer");
         String htmlContent = content404.replace("${referer}", referer != null ? referer : "")
                 .replace("${message}", message != null ? message : "");
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(404);
-        builder.addHeaders(newHeader("Content-Type", "text/html; charset=UTF-8"));
-        // ByteString content = ByteString.copyFromUtf8(message);
-        ByteString content = ByteString.copyFromUtf8(htmlContent);
-        builder.addHeaders(newHeader("Content-Length", content.size()));
-        builder.setContent(content);
-        return builder;
+        IResponse response = newResponse(request).setStatus(404)
+                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+        return response;
     }
 
     private static String content500 = null;
@@ -174,7 +219,7 @@ public class ResponseUtils {
      * @param request
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request) {
+    public static IResponse response500(IRequest request) {
         return response500(request, null, null);
     }
 
@@ -185,8 +230,7 @@ public class ResponseUtils {
      * @param message
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request,
-            String message) {
+    public static IResponse response500(IRequest request, String message) {
         return response500(request, message, null);
     }
 
@@ -198,12 +242,11 @@ public class ResponseUtils {
      * @param t
      * @return
      */
-    public static HettyProtoBuf.Response.Builder response500(HettyProtoBuf.Request request,
-            String message, Throwable t) {
+    public static IResponse response500(IRequest request, String message, Throwable t) {
         if (content500 == null) {
             content500 = loadContent("/ddth/dasp/hetty/500.tpl");
         }
-        String referer = HettyProtoBufUtils.getHeader(request, "Referer");
+        String referer = request.getHeader("Referer");
         if (message == null && t != null) {
             message = t.getMessage();
         }
@@ -235,74 +278,28 @@ public class ResponseUtils {
         String htmlContent = content500.replace("${referer}", referer != null ? referer : "")
                 .replace("${message}", message != null ? message : "")
                 .replace("${exception}", exception != null ? exception.toString() : "");
-        HettyProtoBuf.Response.Builder builder = newResponse(request).setStatus(500);
-        builder.addHeaders(newHeader("Content-Type", "text/html; charset=UTF-8"));
-        ByteString content = ByteString.copyFromUtf8(htmlContent);
-        builder.addHeaders(newHeader("Content-Length", content.size()));
-        builder.setContent(content);
-        return builder;
+        IResponse response = newResponse(request).setStatus(500)
+                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+        return response;
     }
 
-    public static HettyProtoBuf.NameValue newHeader(String name, String value) {
-        return newHeader(name, value, null);
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, String value,
-            HettyProtoBuf.Response.Builder responseBuilder) {
-        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
-                .setValue(value).build();
-        if (responseBuilder != null) {
-            responseBuilder.addHeaders(header);
-        }
-        return header;
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, Date value) {
-        return newHeader(name, value, null);
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, Date value,
-            HettyProtoBuf.Response.Builder responseBuilder) {
-        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
-                .setValue(DF_HEADER.format(value)).build();
-        if (responseBuilder != null) {
-            responseBuilder.addHeaders(header);
-        }
-        return header;
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, int value) {
-        return newHeader(name, value, null);
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, int value,
-            HettyProtoBuf.Response.Builder responseBuilder) {
-        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
-                .setValue(String.valueOf(value)).build();
-        if (responseBuilder != null) {
-            responseBuilder.addHeaders(header);
-        }
-        return header;
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, long value) {
-        return newHeader(name, value, null);
-    }
-
-    public static HettyProtoBuf.NameValue newHeader(String name, long value,
-            HettyProtoBuf.Response.Builder responseBuilder) {
-        HettyProtoBuf.NameValue header = HettyProtoBuf.NameValue.newBuilder().setName(name)
-                .setValue(String.valueOf(value)).build();
-        if (responseBuilder != null) {
-            responseBuilder.addHeaders(header);
-        }
-        return header;
-    }
-
-    public static HettyProtoBuf.Response.Builder newResponse(HettyProtoBuf.Request request) {
-        return HettyProtoBuf.Response.newBuilder().setRequestId(request.getId())
-                .setRequestTimestamp(request.getTimestamp()).setChannelId(request.getChannelId())
-                .setStatus(200).addHeaders(newHeader("Server", SERVER)).setContent(EMPTY_CONTENT)
-                .addHeaders(newHeader("Date", new Date()));
+    /**
+     * Helper method to create a new empty response.
+     * 
+     * The newly created response will have status of 200, and 2 headers
+     * "Server" and "Date" added.
+     * 
+     * @param request
+     * @return
+     */
+    public static IResponse newResponse(IRequest request) {
+        HettyProtoBuf.Response.Builder responseBuilder = HettyProtoBuf.Response.newBuilder()
+                .setRequestId(request.getId()).setRequestTimestamp(request.getTimestamp())
+                .setChannelId(request.getChannelId()).setStatus(200);
+        // .addHeaders(newHeader("Server", SERVER)).setContent(EMPTY_CONTENT)
+        // .addHeaders(newHeader("Date", new Date()));
+        IResponse response = new ProtoBufResponse(responseBuilder).addHeader("Server", SERVER)
+                .addHeader("Date", new Date()).setContent(EMPTY_CONTENT);
+        return response;
     }
 }

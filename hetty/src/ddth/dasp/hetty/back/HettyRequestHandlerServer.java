@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.hetty.IRequestActionHandler;
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
-import ddth.dasp.hetty.message.protobuf.IRequestParser;
+import ddth.dasp.hetty.message.IMessageFactory;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IRequestParser;
+import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.qnt.IQueueReader;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
@@ -26,8 +28,18 @@ public class HettyRequestHandlerServer {
     private IRequestParser requestParser;
     private int numWorkers = Runtime.getRuntime().availableProcessors();
     private Thread[] workerThreads;
+    private IMessageFactory messageFactory;
 
     public HettyRequestHandlerServer() {
+    }
+
+    public IMessageFactory getMessageFactory() {
+        return messageFactory;
+    }
+
+    public HettyRequestHandlerServer setMessageFactory(IMessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
+        return this;
     }
 
     public IQueueReader getQueueReader() {
@@ -84,9 +96,9 @@ public class HettyRequestHandlerServer {
         return this;
     }
 
-    protected void handleRequest(HettyProtoBuf.Request requestProtobuf) throws Exception {
-        String module = requestParser.getModule(requestProtobuf);
-        String action = requestParser.getAction(requestProtobuf);
+    protected void handleRequest(IRequest request) throws Exception {
+        String module = requestParser.getModule(request);
+        String action = requestParser.getAction(request);
         Map<String, String> filter = new HashMap<String, String>();
         filter.put(IRequestActionHandler.FILTER_KEY_MODULE, module != null ? module : "");
         filter.put(IRequestActionHandler.FILTER_KEY_ACTION, action != null ? action : "");
@@ -95,6 +107,8 @@ public class HettyRequestHandlerServer {
                 filter);
         if (handler == null) {
             // fallback 1: lookup for wildcard handler
+            // note: do not use "*" for filtering as OSGi will match "any"
+            // service, which is not what we want!
             filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
@@ -104,12 +118,10 @@ public class HettyRequestHandlerServer {
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
         if (handler != null) {
-            handler.handleRequest(requestProtobuf, topicPublisher);
+            handler.handleRequest(request, topicPublisher);
         } else {
-            HettyProtoBuf.Response responseProtobuf = ResponseUtils.response404(requestProtobuf)
-                    .build();
-            topicPublisher.publishToTopic(responseProtobuf, writeTimeoutMillisecs,
-                    TimeUnit.MILLISECONDS);
+            IResponse response = ResponseUtils.response404(request);
+            topicPublisher.publishToTopic(response, writeTimeoutMillisecs, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -130,15 +142,19 @@ public class HettyRequestHandlerServer {
                     while (!isInterrupted()) {
                         Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
-                        if (obj != null && obj instanceof byte[]) {
-                            HettyProtoBuf.Request requestProtobuf = null;
+                        if (obj != null) {
                             try {
-                                requestProtobuf = HettyProtoBuf.Request.parseFrom((byte[]) obj);
-                                handleRequest(requestProtobuf);
+                                if (obj instanceof byte[]) {
+                                    obj = messageFactory.deserializeRequest((byte[]) obj);
+                                }
+                                if (obj instanceof IRequest) {
+                                    handleRequest((IRequest) obj);
+                                    return;
+                                }
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
-                                HettyProtoBuf.Response response = ResponseUtils.response500(
-                                        requestProtobuf, e.getMessage(), e).build();
+                                IResponse response = ResponseUtils.response500((IRequest) obj,
+                                        e.getMessage(), e);
                                 topicPublisher.publishToTopic(response);
                             }
                         }

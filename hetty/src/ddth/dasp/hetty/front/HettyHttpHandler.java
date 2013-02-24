@@ -1,13 +1,7 @@
 package ddth.dasp.hetty.front;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -17,8 +11,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.http.Cookie;
-import org.jboss.netty.handler.codec.http.CookieDecoder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -26,17 +18,14 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.ByteString;
-
-import ddth.dasp.common.id.IdGenerator;
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IMessageFactory;
+import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.qnt.IQueueWriter;
 
 public class HettyHttpHandler extends IdleStateAwareChannelHandler {
@@ -47,6 +36,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
 
     // private long currentRequestContentLength = 0;
     private IQueueWriter queueWriter;
+    private IMessageFactory messageFactory;
 
     public HettyHttpHandler(IQueueWriter queeuWriter) {
         this.queueWriter = queeuWriter;
@@ -66,9 +56,9 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         }
     }
 
-    protected void handleRequest(HttpRequest request, byte[] requestContent, Channel userChannel)
+    protected void handleRequest(HttpRequest httpRequest, byte[] requestContent, Channel userChannel)
             throws Exception {
-        String uri = request.getUri();
+        String uri = httpRequest.getUri();
         if (uri.startsWith("/status/") || uri.startsWith("/status?") || uri.equals("/status")) {
             StringBuilder content = new StringBuilder();
             content.append("Connections: " + HettyConnServer.ALL_CHANNELS.size());
@@ -85,79 +75,9 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
             return;
         }
 
-        HettyProtoBuf.Request.Builder requestProtoBuf = HettyProtoBuf.Request.newBuilder();
-        String requestId = IdGenerator.getInstance(IdGenerator.getMacAddr()).generateId64Ascii();
-
-        // populate required fields
-        requestProtoBuf.setTimestamp(System.nanoTime());
-        requestProtoBuf.setId(requestId);
-        requestProtoBuf.setResponseTopic(requestId);
-        requestProtoBuf.setChannelId(userChannel.getId());
-        requestProtoBuf.setMethod(request.getMethod().toString());
-        requestProtoBuf.setUri(uri);
-        // parse path parameters
-        QueryStringDecoder qsd = new QueryStringDecoder(uri, CharsetUtil.UTF_8);
-        String path = qsd.getPath();
-        requestProtoBuf.setPath(path);
-        String[] pathTokens = path.replaceAll("^\\/+", "").replaceAll("\\/+$", "").split("\\/");
-        requestProtoBuf.addAllPathParams(Arrays.asList(pathTokens));
-        // parse url parameters
-        Map<String, List<String>> urlParams = qsd.getParameters();
-        for (Entry<String, List<String>> urlParam : urlParams.entrySet()) {
-            String name = urlParam.getKey();
-            String value = urlParam.getValue().size() > 0 ? urlParam.getValue().get(0) : "";
-            HettyProtoBuf.NameValue param = HettyProtoBuf.NameValue.newBuilder().setName(name)
-                    .setValue(value).build();
-            requestProtoBuf.addUrlParams(param);
-        }
-        // parse host & port
-        String hostAndPort = request.getHeader("Host");
-        String[] tokens = hostAndPort.split(":");
-        requestProtoBuf.setDomain(tokens[0]);
-        try {
-            requestProtoBuf.setPort(Integer.parseInt(tokens[1]));
-        } catch (Exception e) {
-            requestProtoBuf.setPort(80);
-        }
-
-        String strCookie = request.getHeader("Cookie");
-        if (!StringUtils.isBlank(strCookie)) {
-            Set<Cookie> cookies = new CookieDecoder().decode(strCookie);
-            for (Cookie cookie : cookies) {
-                HettyProtoBuf.Cookie.Builder cookieProtoBuf = HettyProtoBuf.Cookie.newBuilder();
-                cookieProtoBuf.setName(cookie.getName());
-                cookieProtoBuf.setValue(cookie.getValue());
-                cookieProtoBuf.setDomain(cookie.getDomain() != null ? cookie.getDomain() : "");
-                cookieProtoBuf.setPath(cookie.getPath() != null ? cookie.getPath() : "");
-                cookieProtoBuf.setMaxAge(cookie.getMaxAge());
-                requestProtoBuf.addCookies(cookieProtoBuf);
-            }
-        }
-
-        request.removeHeader("Host");
-        request.removeHeader("Cookie");
-        for (Entry<String, String> entry : request.getHeaders()) {
-            HettyProtoBuf.NameValue.Builder headerProtoBuf = HettyProtoBuf.NameValue.newBuilder();
-            headerProtoBuf.setName(entry.getKey());
-            headerProtoBuf.setValue(entry.getValue());
-            requestProtoBuf.addHeaders(headerProtoBuf);
-        }
-
-        requestProtoBuf.setContent(ByteString.copyFrom(requestContent));
-        queueWriter.writeToQueue(requestProtoBuf.build().toByteArray());
-
-        // HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-        // HttpResponseStatus.OK);
-        // response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-        // "text/plain; charset=UTF-8");
-        // response.setContent(ChannelBuffers.copiedBuffer(requestId,
-        // CharsetUtil.UTF_8));
-        // userChannel.write(response).addListener(new ChannelFutureListener() {
-        // public void operationComplete(ChannelFuture future) throws Exception
-        // {
-        // future.getChannel().close();
-        // }
-        // });
+        IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
+                requestContent);
+        queueWriter.writeToQueue(request.serialize());
     }
 
     /**
