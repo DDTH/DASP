@@ -20,6 +20,7 @@
 	<bean id="hettyRequestHandlerServer" class="ddth.dasp.hetty.back.HettyRequestHandlerServer"
 		scope="singleton" init-method="start" destroy-method="destroy">
 		<property name="queueReader" ref="queueReader" />
+		<property name="messageFactory" ref="messageFactory" />
 		<property name="readTimeoutMillisecs" value="5000" />
 		<property name="writeTimeoutMillisecs" value="5000" />
 		<property name="topicPublisher" ref="topicPublisher" />
