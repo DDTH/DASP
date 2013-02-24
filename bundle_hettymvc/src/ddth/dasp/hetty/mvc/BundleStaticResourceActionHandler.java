@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.framework.resource.IResourceLoader;
 import ddth.dasp.hetty.IRequestActionHandler;
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
-import ddth.dasp.hetty.message.protobuf.RequestUtils;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
@@ -123,8 +123,7 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
      * {@inheritDoc}
      */
     @Override
-    public void handleRequest(HettyProtoBuf.Request request, ITopicPublisher topicPublisher)
-            throws Exception {
+    public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception {
         String path = request.getPath();
         if (module != null && path.startsWith("/" + module)) {
             path = path.substring(module.length() + 1);
@@ -134,11 +133,11 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         }
         path = path.replaceAll("^\\/+", "");
         path = buildPath(path);
-        HettyProtoBuf.Response.Builder response = null;
+        IResponse response = null;
         if (resourceLoader.resourceExists(path)) {
             byte[] resourceContent = resourceLoader.loadResourceAsBinary(path);
             String etag = DigestUtils.md5Hex(resourceContent);
-            String headerIfNoneMatch = RequestUtils.getHeader(request, "If-None-Match");
+            String headerIfNoneMatch = request.getHeader("If-None-Match");
             if (headerIfNoneMatch != null && headerIfNoneMatch.equals(etag)) {
                 response = ResponseUtils.response304(request);
             } else {
@@ -147,19 +146,17 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
                         + "; charset=utf-8");
             }
             // cache headers
-            ResponseUtils.newHeader("ETag", etag, response);
-            ResponseUtils.newHeader("Cache-control", "private", response);
-            ResponseUtils.newHeader("Max-Age", 1 * 3600, response);
+            response.addHeader("ETag", etag).addHeader("Cache-control", "private")
+                    .addHeader("Max-Age", 1 * 3600);
             long resourceTimestamp = resourceLoader.getLastModified(path);
             if (resourceTimestamp > 0) {
-                ResponseUtils.newHeader("Last-Modified", new Date(resourceTimestamp), response);
+                response.addHeader("Last-Modified", new Date(resourceTimestamp));
                 // 1 hour in millisecs
-                ResponseUtils.newHeader("Expires", new Date(
-                        System.currentTimeMillis() + 1 * 3600000L), response);
+                response.addHeader("Expires", new Date(System.currentTimeMillis() + 1 * 3600000L));
             }
         } else {
             response = ResponseUtils.response404(request);
         }
-        topicPublisher.publishToTopic(response.build());
+        topicPublisher.publishToTopic(response);
     }
 }

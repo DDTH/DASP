@@ -1,6 +1,7 @@
 package ddth.dasp.hetty.mvc.view;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
@@ -19,8 +20,8 @@ public class RedirectView implements IView {
     /**
      * {@inheritDoc}
      */
-    public void render(HettyProtoBuf.Request request, Object model, ITopicPublisher topicPublisher) {
-        HettyProtoBuf.Response response = ResponseUtils.response301(request, getUrl()).build();
+    public void render(IRequest request, Object model, ITopicPublisher topicPublisher) {
+        IResponse response = ResponseUtils.response301(request, getUrl());
         topicPublisher.publishToTopic(response);
     }
 }

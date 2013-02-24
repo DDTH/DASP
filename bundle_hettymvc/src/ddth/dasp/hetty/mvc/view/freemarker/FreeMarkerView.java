@@ -4,7 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.message.protobuf.ResponseUtils;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
@@ -54,15 +55,14 @@ public class FreeMarkerView implements IView {
      * {@inheritDoc}
      */
     @Override
-    public void render(HettyProtoBuf.Request request, Object model, ITopicPublisher topicPublisher)
+    public void render(IRequest request, Object model, ITopicPublisher topicPublisher)
             throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Writer out = new OutputStreamWriter(baos, encoding);
         template.process(model, out);
         out.flush();
         byte[] content = baos.toByteArray();
-        HettyProtoBuf.Response response = ResponseUtils.response200(request, content,
-                getContentType()).build();
+        IResponse response = ResponseUtils.response200(request, content, getContentType());
         topicPublisher.publishToTopic(response);
     }
 }

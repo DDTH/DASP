@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request;
+import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
 public abstract class CacheViewResolver implements IViewResolver {
@@ -99,9 +99,9 @@ public abstract class CacheViewResolver implements IViewResolver {
 
     protected abstract IView createView(String name, Map<String, String> replacements);
 
-    protected class NullView implements IView {
+    protected static class NullView implements IView {
         @Override
-        public void render(Request request, Object model, ITopicPublisher topicPublisher)
+        public void render(IRequest request, Object model, ITopicPublisher topicPublisher)
                 throws Exception {
             // empty
         }

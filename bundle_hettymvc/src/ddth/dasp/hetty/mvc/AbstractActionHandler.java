@@ -14,8 +14,8 @@ import org.springframework.osgi.context.BundleContextAware;
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.IUrlCreator;
-import ddth.dasp.hetty.message.protobuf.HettyProtoBuf;
-import ddth.dasp.hetty.message.protobuf.IRequestParser;
+import ddth.dasp.hetty.message.IRequest;
+import ddth.dasp.hetty.message.IRequestParser;
 import ddth.dasp.hetty.mvc.view.IView;
 import ddth.dasp.hetty.mvc.view.IViewResolver;
 import ddth.dasp.hetty.mvc.view.RedirectView;
@@ -25,17 +25,16 @@ import ddth.dasp.hetty.qnt.ITopicPublisher;
  * This action handler implements the following workflow:
  * <ul>
  * <li>
- * {@link #internalHandleRequest(HettyProtoBuf.Request, ITopicPublisher)} is
- * called to handle the request. If a view object is returned:
+ * {@link #internalHandleRequest(IRequest, ITopicPublisher)} is called to handle
+ * the request. If a view object is returned:
  * <ul>
  * <li>
- * {@link #resolveVew(HettyProtoBuf.Request, String)} is called to resolve the
- * view.</li>
+ * {@link #resolveVew(IRequest, String)} is called to resolve the view.</li>
  * <li>If the view is resolved, {@link #buildViewModel()} is called to build the
  * view model</li>
  * <li>If the view is resolved, method
- * {@link IView#render(HettyProtoBuf.Request, Object, ITopicPublisher)} is call
- * to render view.</li></li>
+ * {@link IView#render(IRequest, Object, ITopicPublisher)} is call to render
+ * view.</li></li>
  * </ul>
  * 
  * @author Thanh Ba Nguyen <btnguyen2k@gmail.com>
@@ -131,8 +130,7 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * {@inheritDoc}
      */
     @Override
-    public void handleRequest(HettyProtoBuf.Request request, ITopicPublisher topicPublisher)
-            throws Exception {
+    public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception {
         Object view = internalHandleRequest(request, topicPublisher);
         if (view == null) {
             return;
@@ -163,15 +161,13 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
 
     /**
      * Sub-class to implement this method. It will be called by
-     * {@link #handleRequest(ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request, ITopicPublisher)}
-     * .
+     * {@link #handleRequest(IRequest, ITopicPublisher)} .
      * 
      * @param request
      * @param topicPublisher
      * @return
      */
-    protected abstract Object internalHandleRequest(HettyProtoBuf.Request request,
-            ITopicPublisher topicPublisher);
+    protected abstract Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher);
 
     /**
      * Resolves a view name to {@link IView} object.
@@ -180,7 +176,7 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * @param viewName
      * @return
      */
-    protected IView resolveVew(HettyProtoBuf.Request request, String viewName) {
+    protected IView resolveVew(IRequest request, String viewName) {
         Map<String, String> replacements = new HashMap<String, String>();
         IViewResolver viewResolver = getViewResolver();
         return viewResolver.resolveView(viewName, replacements);
