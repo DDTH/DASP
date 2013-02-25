@@ -28,6 +28,8 @@ public interface IRequest {
 
     public String[] getPathParams();
 
+    public ICookie getCookie(String name);
+
     public ICookie[] getCookies();
 
     public String getHeader(String name);

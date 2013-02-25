@@ -140,6 +140,20 @@ public class ProtoBufRequest implements IRequest {
      * {@inheritDoc}
      */
     @Override
+    public ICookie getCookie(String name) {
+        ICookie[] cookies = getCookies();
+        for (ICookie cookie : cookies) {
+            if (cookie.getName().equals(name)) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ICookie[] getCookies() {
         List<ICookie> cookies = new ArrayList<ICookie>();
         List<HettyProtoBuf.Cookie> cookieList = request.getCookiesList();
