@@ -139,7 +139,7 @@ public class HettyRequestHandlerServer {
         for (int i = 1; i <= numWorkers; i++) {
             Thread t = new Thread(HettyRequestHandlerServer.class.getName() + " - " + i) {
                 public void run() {
-                    while (!isInterrupted()) {
+                    while (!interrupted()) {
                         Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
                         if (obj != null) {
@@ -149,13 +149,16 @@ public class HettyRequestHandlerServer {
                                 }
                                 if (obj instanceof IRequest) {
                                     handleRequest((IRequest) obj);
-                                    return;
                                 }
                             } catch (Exception e) {
-                                LOGGER.error(e.getMessage(), e);
-                                IResponse response = ResponseUtils.response500((IRequest) obj,
-                                        e.getMessage(), e);
-                                topicPublisher.publishToTopic(response);
+                                try {
+                                    LOGGER.error(e.getMessage(), e);
+                                    IResponse response = ResponseUtils.response500((IRequest) obj,
+                                            e.getMessage(), e);
+                                    topicPublisher.publishToTopic(response);
+                                } catch (Exception ex) {
+                                    LOGGER.error(e.getMessage(), e);
+                                }
                             }
                         }
                     }

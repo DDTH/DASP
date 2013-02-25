@@ -2,12 +2,16 @@ package ddth.dasp.hetty.qnt.hazelcast;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.qnt.ITopicPublisher;
 
 public class HazelcastTopicPublisher implements ITopicPublisher {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(HazelcastTopicPublisher.class);
     private IHazelcastClientFactory hazelcastClientFactory;
     private String hazelcastTopicName;
 
@@ -46,12 +50,17 @@ public class HazelcastTopicPublisher implements ITopicPublisher {
      */
     @Override
     public boolean publishToTopic(Object obj, long timeout, TimeUnit timeUnit) {
-        if (obj instanceof IResponse) {
-            IResponse response = (IResponse) obj;
-            hazelcastClientFactory.publishToTopic(hazelcastTopicName, response.serialize());
-        } else {
-            hazelcastClientFactory.publishToTopic(hazelcastTopicName, obj);
+        try {
+            if (obj instanceof IResponse) {
+                IResponse response = (IResponse) obj;
+                hazelcastClientFactory.publishToTopic(hazelcastTopicName, response.serialize());
+            } else {
+                hazelcastClientFactory.publishToTopic(hazelcastTopicName, obj);
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
         }
-        return true;
     }
 }
