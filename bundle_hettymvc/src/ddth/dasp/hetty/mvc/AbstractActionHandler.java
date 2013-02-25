@@ -7,10 +7,12 @@ import java.util.Properties;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.osgi.context.BundleContextAware;
 
+import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.osgi.IServiceAutoRegister;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.IUrlCreator;
@@ -183,6 +185,49 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
     }
 
     /**
+     * Gets a Spring bean by class.
+     * 
+     * @param clazz
+     * @return
+     */
+    protected <T> T getSpringBean(Class<T> clazz) {
+        try {
+            return appContext.getBean(clazz);
+        } catch (NoSuchBeanDefinitionException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Gets a Spring bean by name.
+     * 
+     * @param name
+     * @return
+     */
+    protected Object getSpringBean(String name) {
+        try {
+            return appContext.getBean(name);
+        } catch (NoSuchBeanDefinitionException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Gets a Spring bean by name and class.
+     * 
+     * @param name
+     * @param clazz
+     * @return
+     */
+    protected <T> T getSpringBean(String name, Class<T> clazz) {
+        try {
+            return appContext.getBean(name, clazz);
+        } catch (NoSuchBeanDefinitionException e) {
+            return null;
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -192,6 +237,38 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
 
     protected ApplicationContext getApplicationContext() {
         return appContext;
+    }
+
+    /**
+     * Gets an OSGi service by class.
+     * 
+     * @param clazz
+     * @return
+     */
+    protected <T> T getService(Class<T> clazz) {
+        return OsgiUtils.getService(bundleContext, clazz);
+    }
+
+    /**
+     * Gets an OSGi service by class and filter.
+     * 
+     * @param clazz
+     * @param filter
+     * @return
+     */
+    protected <T> T getService(Class<T> clazz, Map<String, String> filter) {
+        return OsgiUtils.getService(bundleContext, clazz, filter);
+    }
+
+    /**
+     * Gets an OSGi service by class and filter.
+     * 
+     * @param clazz
+     * @param filterQuery
+     * @return
+     */
+    protected <T> T getService(Class<T> clazz, String filterQuery) {
+        return OsgiUtils.getService(bundleContext, clazz, filterQuery);
     }
 
     @Override
