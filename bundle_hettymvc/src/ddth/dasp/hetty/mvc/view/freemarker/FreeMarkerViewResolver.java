@@ -93,6 +93,12 @@ public class FreeMarkerViewResolver extends CacheViewResolver {
         cfg.setTemplateLoader(templateLoader);
         cfg.setDateFormat(dateFormat);
         cfg.setDateTimeFormat(dateTimeFormat);
+        if (!isEnableCache()) {
+            // check for a newer version of a template every time it's requested
+            cfg.setTemplateUpdateDelay(0);
+        } else {
+            cfg.setTemplateUpdateDelay(3600 * 24);
+        }
     }
 
     public void destroy() {
