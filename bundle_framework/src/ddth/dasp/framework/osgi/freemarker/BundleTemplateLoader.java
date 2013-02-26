@@ -91,7 +91,8 @@ public class BundleTemplateLoader implements TemplateLoader {
     @Override
     public long getLastModified(Object templateSource) {
         String realPath = buildPath(templateSource.toString());
-        return resourceLoader.getLastModified(buildPath(realPath));
+        // return resourceLoader.getLastModified(buildPath(realPath));
+        return resourceLoader.getLastModified(realPath);
     }
 
     /**
