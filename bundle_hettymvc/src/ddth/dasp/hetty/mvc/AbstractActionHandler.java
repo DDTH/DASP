@@ -133,8 +133,14 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      */
     @Override
     public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception {
+        if (!preHandleRequest(request, topicPublisher)) {
+            return;
+        }
+
         Object view = internalHandleRequest(request, topicPublisher);
+
         if (view == null) {
+            postHandleRequest(request, null, null);
             return;
         }
         Object oldView = view;
@@ -143,16 +149,19 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
             view = resolveVew(request, viewName);
         }
         if (view instanceof IView) {
-            Object model = view instanceof RedirectView ? null : buildViewModel();
+            Map<String, Object> model = view instanceof RedirectView ? null : buildViewModel();
+            postHandleRequest(request, model, (IView) view);
             ((IView) view).render(request, model, topicPublisher);
         } else {
+            postHandleRequest(request, null, null);
             String msg = "Can not resolve view for [" + oldView + "]!";
             throw new Exception(msg);
         }
     }
 
     /**
-     * This method simply returns an empty {@link Map}.
+     * This method simply returns an empty {@link Map}. Sub-class overrides this
+     * method to build its own model.
      * 
      * @return
      */
@@ -162,14 +171,41 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
     }
 
     /**
-     * Sub-class to implement this method. It will be called by
-     * {@link #handleRequest(IRequest, ITopicPublisher)} .
+     * {@link #handleRequest(IRequest, ITopicPublisher)} calls this method
+     * before handling the request.
+     * 
+     * @param request
+     * @param topicPublisher
+     * @return <code>true</code> to indicates that request should be handled
+     *         normally, <code>false</code> to indicate that request has already
+     *         been completely handled by this method and should not be handled
+     *         any further
+     */
+    protected boolean preHandleRequest(IRequest request, ITopicPublisher topicPublisher) {
+        return true;
+    }
+
+    /**
+     * Sub-class to implement this method to implement its own business. This
+     * method is called by {@link #handleRequest(IRequest, ITopicPublisher)}.
      * 
      * @param request
      * @param topicPublisher
      * @return
      */
     protected abstract Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher);
+
+    /**
+     * {@link #handleRequest(IRequest, ITopicPublisher)} calls this method after
+     * request has been handled, and before rendering view.
+     * 
+     * @param request
+     * @param model
+     * @param view
+     */
+    protected void postHandleRequest(IRequest request, Map<String, Object> model, IView view) {
+        // EMPTY
+    }
 
     /**
      * Resolves a view name to {@link IView} object.
