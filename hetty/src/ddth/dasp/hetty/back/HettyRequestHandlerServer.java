@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.RequestLocal;
+import ddth.dasp.common.logging.ProfileLogger;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.message.IMessageFactory;
@@ -97,25 +99,30 @@ public class HettyRequestHandlerServer {
     }
 
     protected void handleRequest(IRequest request) throws Exception {
-        String module = requestParser.getModule(request);
-        String action = requestParser.getAction(request);
-        Map<String, String> filter = new HashMap<String, String>();
-        filter.put(IRequestActionHandler.FILTER_KEY_MODULE, module != null ? module : "");
-        filter.put(IRequestActionHandler.FILTER_KEY_ACTION, action != null ? action : "");
-        IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
-        IRequestActionHandler handler = osgiBootstrap.getService(IRequestActionHandler.class,
-                filter);
-        if (handler == null) {
-            // fallback 1: lookup for wildcard handler
-            // note: do not use "*" for filtering as OSGi will match "any"
-            // service, which is not what we want!
-            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
+        ProfileLogger.push("lookup_handler");
+        IRequestActionHandler handler = null;
+        try {
+            String module = requestParser.getModule(request);
+            String action = requestParser.getAction(request);
+            Map<String, String> filter = new HashMap<String, String>();
+            filter.put(IRequestActionHandler.FILTER_KEY_MODULE, module != null ? module : "");
+            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, action != null ? action : "");
+            IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
-        }
-        if (handler == null) {
-            // fallback 2: lookup for non-action handler
-            filter.remove(IRequestActionHandler.FILTER_KEY_ACTION);
-            handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
+            if (handler == null) {
+                // fallback 1: lookup for wildcard handler
+                // note: do not use "*" for filtering as OSGi will match "any"
+                // service, which is not what we want!
+                filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
+                handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
+            }
+            if (handler == null) {
+                // fallback 2: lookup for non-action handler
+                filter.remove(IRequestActionHandler.FILTER_KEY_ACTION);
+                handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
+            }
+        } finally {
+            ProfileLogger.pop();
         }
         if (handler != null) {
             handler.handleRequest(request, topicPublisher);
@@ -143,9 +150,23 @@ public class HettyRequestHandlerServer {
                         Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
                         if (obj != null) {
+                            // init the request local
+                            RequestLocal requestLocal = RequestLocal.get();
+                            if (requestLocal == null) {
+                                requestLocal = new RequestLocal();
+                                RequestLocal.set(requestLocal);
+                            }
+
+                            RequestLocal.get();
+                            ProfileLogger.push("start_request_handler_worker");
                             try {
                                 if (obj instanceof byte[]) {
-                                    obj = messageFactory.deserializeRequest((byte[]) obj);
+                                    try {
+                                        ProfileLogger.push("deserialize_request");
+                                        obj = messageFactory.deserializeRequest((byte[]) obj);
+                                    } finally {
+                                        ProfileLogger.pop();
+                                    }
                                 }
                                 if (obj instanceof IRequest) {
                                     handleRequest((IRequest) obj);
@@ -158,6 +179,12 @@ public class HettyRequestHandlerServer {
                                     topicPublisher.publishToTopic(response);
                                 } catch (Exception ex) {
                                     LOGGER.error(e.getMessage(), e);
+                                }
+                            } finally {
+                                try {
+                                    ProfileLogger.pop();
+                                } finally {
+                                    RequestLocal.remove();
                                 }
                             }
                         }
