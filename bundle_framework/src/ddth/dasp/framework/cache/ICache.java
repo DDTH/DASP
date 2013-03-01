@@ -8,6 +8,8 @@ package ddth.dasp.framework.cache;
  */
 public interface ICache {
 
+    public final static short[] NULL_VALUE = new short[0];
+
     /**
      * Initializing method.
      */

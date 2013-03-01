@@ -3,7 +3,6 @@ package ddth.dasp.framework.bo;
 import ddth.dasp.framework.cache.CacheEntry;
 import ddth.dasp.framework.cache.ICache;
 import ddth.dasp.framework.cache.ICacheManager;
-import ddth.dasp.framework.cache.NullValue;
 
 /**
  * Cache-enabled Business Object manager.
@@ -194,8 +193,10 @@ public abstract class CacheBoManager extends BaseBoManager {
             if (cacheForNull != null) {
                 long ttl = cacheNullExpiry > 0 ? cacheNullExpiry
                         : (expireAfterWrite > 0 ? expireAfterWrite : -1);
-                CacheEntry cacheEntry = new CacheEntry(key, new NullValue(), ttl, -1);
-                cacheForNull.set(key, cacheEntry, ttl, -1);
+                // CacheEntry cacheEntry = new CacheEntry(key, new NullValue(),
+                // ttl, -1);
+                // cacheForNull.set(key, cacheEntry, ttl, -1);
+                cacheForNull.set(key, ICache.NULL_VALUE, ttl, -1);
             }
         }
     }

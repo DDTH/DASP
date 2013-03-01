@@ -31,7 +31,7 @@ import ddth.dasp.common.utils.JsonUtils;
 import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.common.utils.PropsUtils;
 import ddth.dasp.framework.bo.CacheBoManager;
-import ddth.dasp.framework.cache.NullValue;
+import ddth.dasp.framework.cache.CacheUtils;
 import ddth.dasp.framework.dbc.DbcpInfo;
 import ddth.dasp.framework.dbc.IJdbcFactory;
 import ddth.dasp.framework.dbc.JdbcUtils;
@@ -466,8 +466,9 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 result = (Long) temp;
             } else if (temp instanceof Number) {
                 result = ((Number) temp).longValue();
+            } else {
+                result = null;
             }
-            result = null;
         }
         if (result == null) {
             // cache missed
@@ -678,10 +679,12 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // get from cache
             Object temp = getFromCache(cacheKey);
-            if (temp instanceof NullValue) {
-                result = new ArrayList<Map<String, Object>>();
-            } else {
-                result = (List<Map<String, Object>>) temp;
+            if (!CacheUtils.isNullValue(temp)) {
+                try {
+                    result = (List<Map<String, Object>>) temp;
+                } catch (ClassCastException e) {
+                    result = null;
+                }
             }
         }
         if (result == null) {
@@ -749,17 +752,20 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     protected <T extends BaseJdbcBo> T[] executeSelect(final Object sqlKey,
             Map<String, Object> params, Class<T> clazz, final String cacheKey) throws SQLException {
         Map<String, Object>[] dbResult = executeSelect(sqlKey, params, cacheKey);
-        List<T> result = new ArrayList<T>();
-        for (Map<String, Object> data : dbResult) {
-            try {
-                T obj = createBusinessObject(clazz);
-                obj.populate(data);
-                result.add(obj);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        if (dbResult != null && dbResult.length > 0) {
+            List<T> result = new ArrayList<T>();
+            for (Map<String, Object> data : dbResult) {
+                try {
+                    T obj = createBusinessObject(clazz);
+                    obj.populate(data);
+                    result.add(obj);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
+            return result.toArray((T[]) Array.newInstance(clazz, 0));
         }
-        return result.toArray((T[]) Array.newInstance(clazz, 0));
+        return null;
     }
 
     /**
