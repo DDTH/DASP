@@ -34,6 +34,10 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         DEFAULT_MIMETYPES.put(".png", "image/png");
         DEFAULT_MIMETYPES.put(".css", "text/css");
         DEFAULT_MIMETYPES.put(".js", "text/javascript");
+
+        DEFAULT_MIMETYPES.put(".htm", "text/html");
+        DEFAULT_MIMETYPES.put(".html", "text/html");
+        DEFAULT_MIMETYPES.put(".txt", "text/txt");
     }
 
     private IResourceLoader resourceLoader;
