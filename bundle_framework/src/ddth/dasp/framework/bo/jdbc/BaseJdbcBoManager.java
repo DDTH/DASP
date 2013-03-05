@@ -676,6 +676,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
     protected Map<String, Object>[] executeSelect(final Object sqlKey, Map<String, Object> params,
             final String cacheKey) throws SQLException {
         List<Map<String, Object>> result = null;
+        boolean hitNullCache = false;
         if (!StringUtils.isBlank(cacheKey) && cacheEnabled()) {
             // get from cache
             Object temp = getFromCache(cacheKey);
@@ -685,7 +686,14 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                 } catch (ClassCastException e) {
                     result = null;
                 }
+            } else {
+                // "is null value" but "object is not null" means
+                // "hit null cache"
+                hitNullCache = temp != null;
             }
+        }
+        if (result == null && hitNullCache) {
+            return null;
         }
         if (result == null) {
             // cache missed
