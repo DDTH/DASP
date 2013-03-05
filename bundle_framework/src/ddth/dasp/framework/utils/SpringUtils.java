@@ -24,4 +24,20 @@ public class SpringUtils {
             return null;
         }
     }
+
+    /**
+     * Gets a bean by its id/name and class.
+     * 
+     * @param appContext
+     * @param name
+     * @param clazz
+     * @return
+     */
+    public static <T> T getBean(ApplicationContext appContext, String name, Class<T> clazz) {
+        try {
+            return appContext.getBean(name, clazz);
+        } catch (BeansException e) {
+            return null;
+        }
+    }
 }
