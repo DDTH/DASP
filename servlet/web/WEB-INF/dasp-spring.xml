@@ -7,22 +7,19 @@
         http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="false">
 
-    <!-- Uncomment the following section to enable Thrift Json API interface -->
-    <!--
-	<bean id="daspThriftJsonApiServer" class="ddth.dasp.servlet.thrift.api.DaspThriftJsonApiServer"
-		scope="singleton" init-method="start" destroy-method="destroy">
-		<property name="maxFrameSize" ref="_thriftMaxFrameSize" />
-		<property name="maxReadBufferSize" ref="_thriftMaxReadBufferSize" />
-		<property name="clientTimeoutMillisecs" ref="_thriftClientTimeoutMillisecs" />
-		<property name="port" value="9092,9094,9096" />
-		<property name="nonBlockingServer" value="true" />
-	</bean>
-	-->
+	<!-- Uncomment the following section to enable Thrift Json API interface -->
+	<!-- <bean id="daspThriftJsonApiServer" class="ddth.dasp.servlet.thrift.api.DaspThriftJsonApiServer" 
+		scope="singleton" init-method="start" destroy-method="destroy"> <property 
+		name="maxFrameSize" ref="_thriftMaxFrameSize" /> <property name="maxReadBufferSize" 
+		ref="_thriftMaxReadBufferSize" /> <property name="clientTimeoutMillisecs" 
+		ref="_thriftClientTimeoutMillisecs" /> <property name="port" value="9092,9094,9096" 
+		/> <property name="nonBlockingServer" value="true" /> </bean> -->
 
 	<bean id="daspNettyJsonApiServer" class="ddth.dasp.servlet.netty.api.DaspNettyJsonApiServer"
 		scope="singleton" init-method="start" destroy-method="destroy">
 		<property name="readTimeoutMillisecs" ref="_nettyReadTimeout" />
 		<property name="writeTimeoutMillisecs" ref="_nettyWriteTimeout" />
+		<property name="maxRequestSize" ref="_nettyMaxRequestSize" />
 		<property name="port" value="8082,8084,8086" /> <!-- server chooses first available port -->
 		<property name="numWorkers" ref="_numWorkersConn" />
 	</bean>
@@ -49,6 +46,9 @@
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="16" />
 		</bean>
+		<bean id="_nettyMaxRequestSize" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="65536" />
+		</bean>
 	</beans>
 
 	<beans default-lazy-init="false" profile="prod,production">
@@ -65,13 +65,16 @@
 		</bean>
 
 		<bean id="_nettyReadTimeout" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="10000" />
+			<constructor-arg value="5000" />
 		</bean>
 		<bean id="_nettyWriteTimeout" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="10000" />
 		</bean>
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="128" />
+		</bean>
+		<bean id="_nettyMaxRequestSize" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="65536" />
 		</bean>
 	</beans>
 </beans>

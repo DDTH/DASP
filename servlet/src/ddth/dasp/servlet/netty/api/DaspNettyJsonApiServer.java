@@ -26,7 +26,8 @@ public class DaspNettyJsonApiServer {
             DaspNettyJsonApiServer.class.getCanonicalName());
     private final Logger LOGGER = LoggerFactory.getLogger(DaspNettyJsonApiServer.class);
 
-    private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
+    private long readTimeoutMillisecs = 5000, writeTimeoutMillisecs = 10000;
+    private int maxRequestSize = 64 * 1024;
     private int numWorkers = 32;
     private String portStr = "8082";
     private Timer timer;
@@ -50,6 +51,15 @@ public class DaspNettyJsonApiServer {
 
     public DaspNettyJsonApiServer setWriteTimeoutMillisecs(long writeTimeoutMillisecs) {
         this.writeTimeoutMillisecs = writeTimeoutMillisecs;
+        return this;
+    }
+
+    public int getMaxRequestSize() {
+        return maxRequestSize;
+    }
+
+    public DaspNettyJsonApiServer setMaxRequestSize(int maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
         return this;
     }
 
@@ -110,7 +120,7 @@ public class DaspNettyJsonApiServer {
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
         nettyServer.setPipelineFactory(new JsonApiPipelineFactory(timer, readTimeoutMillisecs,
-                writeTimeoutMillisecs));
+                writeTimeoutMillisecs, maxRequestSize));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
         nettyServer.bind(new InetSocketAddress(port));

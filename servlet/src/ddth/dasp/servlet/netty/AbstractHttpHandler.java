@@ -10,15 +10,15 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractHttpHandler extends SimpleChannelUpstreamHandler {
+public abstract class AbstractHttpHandler extends IdleStateAwareChannelHandler {
     public static ChannelGroup ALL_CHANNELS = new DefaultChannelGroup("NettyHttpServer");
     public static AtomicLong COUNTER = new AtomicLong();
 

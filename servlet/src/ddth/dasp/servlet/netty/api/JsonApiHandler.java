@@ -11,6 +11,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -18,6 +19,8 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.timeout.IdleState;
+import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,9 +117,31 @@ public class JsonApiHandler extends AbstractHttpHandler {
     }
 
     @Override
+    public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) {
+        IdleState state = e.getState();
+        if (state == IdleState.READER_IDLE || state == IdleState.WRITER_IDLE) {
+            long duration = System.currentTimeMillis() - e.getLastActivityTimeMillis();
+            String msg = (state == IdleState.READER_IDLE ? "Read timeout (" : "Write timeout (")
+                    + duration + " ms)!";
+            msg = e.getChannel() + ": " + msg;
+            LOGGER.warn(msg);
+            if (state == IdleState.READER_IDLE) {
+                e.getChannel().close();
+                e.getFuture().cancel();
+            }
+        }
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         Throwable t = e.getCause();
-        LOGGER.error(t.getMessage(), t);
+        if (t instanceof TooLongFrameException) {
+            Channel channel = e.getChannel();
+            String msg = channel.toString() + "/" + t.getMessage();
+            LOGGER.error(msg, t);
+        } else {
+            LOGGER.error(t.getMessage(), t);
+        }
         e.getChannel().close();
         e.getFuture().cancel();
     }
