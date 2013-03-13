@@ -408,6 +408,14 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
             LOGGER.debug("Initialzing Apache Felix Framework, OSGi container ["
                     + osgiContainerLocation + "]...");
         }
+
+        class _DaspGlobal extends DaspGlobal {
+            public _DaspGlobal(IOsgiBootstrap osgiBootstrap) {
+                this.setOsgiBootstrap(osgiBootstrap);
+            }
+        }
+        new _DaspGlobal(this);
+
         Properties configProps = loadConfigProperties();
         Map<String, String> config = new HashMap<String, String>();
         for (Entry<Object, Object> entry : configProps.entrySet()) {

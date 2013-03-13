@@ -119,7 +119,7 @@ public class DaspContextListener implements ServletContextListener {
         new _DaspGlobal(data);
     }
 
-    static class _DaspGlobal extends DaspGlobal {
+    private class _DaspGlobal extends DaspGlobal {
         public _DaspGlobal(Map<String, Object> data) {
             Object obj;
 
