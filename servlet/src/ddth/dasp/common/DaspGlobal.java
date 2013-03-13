@@ -3,6 +3,7 @@ package ddth.dasp.common;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -12,12 +13,14 @@ import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.tempdir.TempDir;
 
 public class DaspGlobal {
-
     private static IOsgiBootstrap osgiBootstrap;
     private static TempDir contextTempDir;
+    private static ServletContext servletContext;
+
     private static Timer timer = new Timer(DaspGlobal.class.getName(), true);
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
-    private static ServletContext servletContext;
+    private static ExecutorService executorService = Executors.newCachedThreadPool();
+
     private static ConcurrentMap<String, Object> globalStorage = new ConcurrentHashMap<String, Object>();
 
     public static Object getGlobalVar(String name) {
@@ -44,6 +47,10 @@ public class DaspGlobal {
         if (DaspGlobal.servletContext == null) {
             DaspGlobal.servletContext = servletContext;
         }
+    }
+
+    public static ExecutorService getExecutorService() {
+        return executorService;
     }
 
     public static ScheduledExecutorService getScheduler() {
