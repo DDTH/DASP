@@ -27,6 +27,10 @@ public class DaspGlobal {
         return globalStorage.get(name);
     }
 
+    public static void removeGlobalVar(String name) {
+        globalStorage.remove(name);
+    }
+
     public static void setGlobalVar(String name, Object value) {
         globalStorage.put(name, value);
     }
