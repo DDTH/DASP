@@ -33,6 +33,18 @@ import ddth.dasp.common.DaspGlobal;
  */
 public class ApplicationContextProvider implements ApplicationContextAware, BundleContextAware {
 
+    private static String calcKey(long bundleId) {
+        return "SPRING_APP_CONTEXT_" + bundleId;
+    }
+
+    public static ApplicationContext getApplicationContext(Bundle bundle) {
+        return getApplicationContext(bundle.getBundleId());
+    }
+
+    public static ApplicationContext getApplicationContext(long bundleId) {
+        return (ApplicationContext) DaspGlobal.getGlobalVar(calcKey(bundleId));
+    }
+
     private ApplicationContext applicationContext;
     private Bundle bundle;
     private String KEY;
@@ -59,6 +71,6 @@ public class ApplicationContextProvider implements ApplicationContextAware, Bund
     @Override
     public void setBundleContext(BundleContext bundleContext) {
         this.bundle = bundleContext.getBundle();
-        KEY = "SPRING_APP_CONTEXT_" + bundle.getBundleId();
+        KEY = calcKey(bundle.getBundleId());
     }
 }
