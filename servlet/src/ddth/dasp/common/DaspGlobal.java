@@ -32,7 +32,11 @@ public class DaspGlobal {
     }
 
     public static void setGlobalVar(String name, Object value) {
-        globalStorage.put(name, value);
+        if (value == null) {
+            removeGlobalVar(name);
+        } else {
+            globalStorage.put(name, value);
+        }
     }
 
     protected void setOsgiBootstrap(IOsgiBootstrap osgiBootstrap) {
