@@ -19,8 +19,8 @@ public abstract class AbstractTaskRegistry implements ITaskRegistry {
     public void init() {
         Thread bufferWatcherThread = new Thread() {
             public void run() {
-                try {
-                    while (!interrupted() && valid) {
+                while (!interrupted() && valid) {
+                    try {
                         TaskSchedulingInfo schedulingInfo = taskSchedulingBuffer.poll();
                         if (schedulingInfo != null) {
                             if (!_scheduleTask(schedulingInfo)) {
@@ -32,9 +32,9 @@ public abstract class AbstractTaskRegistry implements ITaskRegistry {
                         // Thread.sleep(5000);
                         // } catch (InterruptedException e) {
                         // }
+                    } catch (Exception e) {
+                        LOGGER.warn(e.getMessage(), e);
                     }
-                } catch (Exception e) {
-                    LOGGER.warn(e.getMessage(), e);
                 }
             }
         };
