@@ -24,7 +24,7 @@
 		<property name="numWorkers" ref="_numWorkersConn" />
 	</bean>
 
-	<beans default-lazy-init="false" profile="dev">
+	<beans default-lazy-init="false">
 		<bean id="_thriftMaxFrameSize" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="1048576" /> <!-- 1Mb -->
 		</bean>
