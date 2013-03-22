@@ -379,8 +379,16 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
     }
 
     private void autoDeployBundles(Properties configProps, Framework framework) {
+        // make sure bundles are deployed and started in order!
         File dir = new File(configProps.getProperty(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY));
-        for (File file : dir.listFiles()) {
+        File[] files = dir.listFiles();
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File file1, File file2) {
+                return file1.compareTo(file2);
+            }
+        });
+        for (File file : files) {
             if (file.isDirectory() && !file.getName().startsWith(".")) {
                 autoDeployBundles(file, framework);
             }
@@ -388,7 +396,15 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
     }
 
     private void autoDeployBundles(File dir, Framework framework) {
-        for (File file : dir.listFiles()) {
+        // make sure bundles are deployed and started in order!
+        File[] files = dir.listFiles();
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File file1, File file2) {
+                return file1.compareTo(file2);
+            }
+        });
+        for (File file : files) {
             if (file.isFile() && file.getAbsolutePath().endsWith(".jar")) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Auto deploying bundle [" + file + "]...");
