@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,8 +106,10 @@ public class HettyRequestHandlerServer {
             String module = requestParser.getModule(request);
             String action = requestParser.getAction(request);
             Map<String, String> filter = new HashMap<String, String>();
-            filter.put(IRequestActionHandler.FILTER_KEY_MODULE, module != null ? module : "");
-            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, action != null ? action : "");
+            filter.put(IRequestActionHandler.FILTER_KEY_MODULE,
+                    !StringUtils.isBlank(module) ? module : "_");
+            filter.put(IRequestActionHandler.FILTER_KEY_ACTION,
+                    !StringUtils.isBlank(action) ? action : "_");
             IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
             if (handler == null) {
