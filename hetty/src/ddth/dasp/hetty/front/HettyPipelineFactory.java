@@ -23,19 +23,36 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
     private final ChannelHandler idleStateHandler;
 
     private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
-    // private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
     public HettyPipelineFactory(Map<String, IQueueWriter> hostQueueWriterMapping,
             IMessageFactory messageFactory, Timer timer, long readTimeoutMillisecs,
             long writeTimeoutMillisecs) {
-        // this.queueWriter = queeuWriter;
         if (hostQueueWriterMapping != null) {
             this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
         }
         this.messageFactory = messageFactory;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
                 writeTimeoutMillisecs, 0, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Maps a host-queueWriter.
+     * 
+     * @param host
+     * @param queueWriter
+     */
+    public void mapHostQueueWriter(String host, IQueueWriter queueWriter) {
+        hostQueueWriterMapping.put(host, queueWriter);
+    }
+
+    /**
+     * Unmaps an existing host-queueWriter.
+     * 
+     * @param host
+     */
+    public void unmapHostQueueWriter(String host) {
+        hostQueueWriterMapping.remove(host);
     }
 
     @Override
@@ -47,8 +64,6 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("timeout", idleStateHandler);
         // compression with minimum memory usage
         pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
-        // pipeline.addLast("handler", new HettyHttpHandler(queueWriter,
-        // messageFactory));
         pipeline.addLast("handler", new HettyHttpHandler(hostQueueWriterMapping, messageFactory));
         return pipeline;
     }

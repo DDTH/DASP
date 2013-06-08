@@ -37,14 +37,10 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     private ByteArrayOutputStream currentRequestContent = new ByteArrayOutputStream(4096);
 
     private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
-    // /private ConcurrentMap<String, IQueueWriter> cachedHostQueueWriterMapping
-    // = new ConcurrentHashMap<String, IQueueWriter>();
-    // private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
     public HettyHttpHandler(Map<String, IQueueWriter> hostQueueWriterMapping,
             IMessageFactory messageFactory) {
-        // this.queueWriter = queeuWriter;
         if (hostQueueWriterMapping != null) {
             this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
         }
