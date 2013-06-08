@@ -8,6 +8,7 @@ Bundle-ClassPath: .
 Require-Bundle: ddth.dasp.framework,
  ddth.dasp.hetty.mvc
 Import-Package: ddth.dasp.common,
+ ddth.dasp.common.hazelcast,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,
  ddth.dasp.common.utils,

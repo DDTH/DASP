@@ -1,6 +1,9 @@
 package ddth.dasp.framework.scheduletask;
 
 public interface ITaskRegistry {
+    
+    public final static String GLOBAL_KEY = "ALL_TASK_REGISTRIES";
+    
     /**
      * Schedules a task, override old scheduling if exists.
      * 

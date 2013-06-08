@@ -1,6 +1,9 @@
 package ddth.dasp.hetty.front;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,7 +30,8 @@ public class HettyConnServer {
             HettyConnServer.class.getCanonicalName());
     private final Logger LOGGER = LoggerFactory.getLogger(HettyConnServer.class);
 
-    private IQueueWriter queueWriter;
+    private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    // private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
     private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
     private int numWorkers = 32;
@@ -39,12 +43,24 @@ public class HettyConnServer {
     public HettyConnServer() {
     }
 
-    public IQueueWriter getQueueWriter() {
-        return queueWriter;
+    // public IQueueWriter getQueueWriter() {
+    // return queueWriter;
+    // }
+    //
+    // public HettyConnServer setQueueWriter(IQueueWriter queueWriter) {
+    // this.queueWriter = queueWriter;
+    // return this;
+    // }
+
+    public Map<String, IQueueWriter> getHostQueueWriterMapping() {
+        return hostQueueWriterMapping;
     }
 
-    public HettyConnServer setQueueWriter(IQueueWriter queueWriter) {
-        this.queueWriter = queueWriter;
+    public HettyConnServer setHostQueueWriterMapping(
+            Map<String, IQueueWriter> hostQueueWriterMapping) {
+        if (hostQueueWriterMapping != null) {
+            this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
+        }
         return this;
     }
 
@@ -131,8 +147,11 @@ public class HettyConnServer {
                 });
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
-        nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter, messageFactory, timer,
-                readTimeoutMillisecs, writeTimeoutMillisecs));
+        // nettyServer.setPipelineFactory(new HettyPipelineFactory(queueWriter,
+        // messageFactory, timer,
+        // readTimeoutMillisecs, writeTimeoutMillisecs));
+        nettyServer.setPipelineFactory(new HettyPipelineFactory(hostQueueWriterMapping,
+                messageFactory, timer, readTimeoutMillisecs, writeTimeoutMillisecs));
         nettyServer.setOption("child.tcpNoDelay", true);
         nettyServer.setOption("child.keepAlive", false);
         nettyServer.bind(new InetSocketAddress(port));

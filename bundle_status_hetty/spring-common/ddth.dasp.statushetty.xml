@@ -73,6 +73,17 @@
 		</property>
 	</bean>
 
+	<bean id="rahTask"
+		class="ddth.dasp.statushetty.actionhandler.TaskStatusActionHandler"
+		scope="singleton">
+		<property name="viewName" value="task" />
+		<property name="properties">
+			<props>
+				<prop key="Action"><![CDATA[task]]></prop>
+			</props>
+		</property>
+	</bean>
+
 	<bean id="_requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />

@@ -75,6 +75,10 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
         this.hazelcastServers = hazelcastServers;
     }
 
+    public List<String> getHazelcastServers() {
+        return hazelcastServers;
+    }
+
     private class HazelcastClientPing implements Runnable {
         @Override
         public void run() {
@@ -117,6 +121,22 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
     public void destroy() {
         _destroyed = true;
         dispostHazelcastClient();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getQueueSize(String queueName) {
+        HazelcastClient client = getHazelcastClient();
+        if (client != null) {
+            try {
+                IQueue<Object> queue = client.getQueue(queueName);
+                return queue != null ? queue.size() : -1;
+            } finally {
+                returnHazelcastClient();
+            }
+        }
+        return -1;
     }
 
     /**

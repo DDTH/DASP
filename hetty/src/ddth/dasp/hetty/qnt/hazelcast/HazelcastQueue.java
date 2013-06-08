@@ -14,21 +14,33 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
     private final Logger LOGGER = LoggerFactory.getLogger(HazelcastQueue.class);
     private IHazelcastClientFactory hazelcastClientFactory;
     private String hazelcastQueueName;
+    private int queueSizeThreshold = 1000;
 
     protected String getHazelcastQueueName() {
         return hazelcastQueueName;
     }
 
-    public void setHazelcastQueueName(String hazelcastQueueName) {
+    public HazelcastQueue setHazelcastQueueName(String hazelcastQueueName) {
         this.hazelcastQueueName = hazelcastQueueName;
+        return this;
     }
 
     protected IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
     }
 
-    public void setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
+    public HazelcastQueue setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
         this.hazelcastClientFactory = hazelcastClientFactory;
+        return this;
+    }
+
+    protected int getQueueSizeThreshold() {
+        return queueSizeThreshold;
+    }
+
+    public HazelcastQueue setQueueSizeThreshold(int queueSizeThreshold) {
+        this.queueSizeThreshold = queueSizeThreshold;
+        return this;
     }
 
     public void init() {
@@ -51,6 +63,11 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
     @Override
     public boolean writeToQueue(Object value, long timeout, TimeUnit timeUnit) {
         try {
+            int queueSize = hazelcastClientFactory.getQueueSize(hazelcastQueueName);
+            if (queueSize < 0 || queueSize > queueSizeThreshold) {
+                LOGGER.warn("Queue not available or full!");
+                return false;
+            }
             return hazelcastClientFactory
                     .writeToQueue(hazelcastQueueName, value, timeout, timeUnit);
         } catch (Exception e) {

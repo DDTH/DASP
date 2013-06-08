@@ -21,7 +21,7 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     private String hazelcastUsername, hazelcastPassword;
     private List<String> hazelcastServers;
 
-    protected IHazelcastClientFactory getHazelcastClientFactory() {
+    public IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
     }
 
@@ -41,7 +41,7 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         this.hazelcastServers = hazelcastServers;
     }
 
-    protected List<String> getHazelcastServers() {
+    public List<String> getHazelcastServers() {
         return hazelcastServers;
     }
 

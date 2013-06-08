@@ -1,5 +1,8 @@
 package ddth.dasp.hetty.front;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.channel.ChannelHandler;
@@ -19,12 +22,17 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
 
     private final ChannelHandler idleStateHandler;
 
-    private IQueueWriter queueWriter;
+    private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    // private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
-    public HettyPipelineFactory(IQueueWriter queueWriter, IMessageFactory messageFactory,
-            Timer timer, long readTimeoutMillisecs, long writeTimeoutMillisecs) {
-        this.queueWriter = queueWriter;
+    public HettyPipelineFactory(Map<String, IQueueWriter> hostQueueWriterMapping,
+            IMessageFactory messageFactory, Timer timer, long readTimeoutMillisecs,
+            long writeTimeoutMillisecs) {
+        // this.queueWriter = queeuWriter;
+        if (hostQueueWriterMapping != null) {
+            this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
+        }
         this.messageFactory = messageFactory;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
                 writeTimeoutMillisecs, 0, TimeUnit.MILLISECONDS);
@@ -39,7 +47,9 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("timeout", idleStateHandler);
         // compression with minimum memory usage
         pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
-        pipeline.addLast("handler", new HettyHttpHandler(queueWriter, messageFactory));
+        // pipeline.addLast("handler", new HettyHttpHandler(queueWriter,
+        // messageFactory));
+        pipeline.addLast("handler", new HettyHttpHandler(hostQueueWriterMapping, messageFactory));
         return pipeline;
     }
 }

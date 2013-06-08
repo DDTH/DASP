@@ -11,6 +11,14 @@ public interface IHazelcastClientFactory {
     public void returnHazelcastClient();
 
     /**
+     * Gets number of items of a queue.
+     * 
+     * @param queueName
+     * @return
+     */
+    public int getQueueSize(String queueName);
+
+    /**
      * Reads from a queue, with default timeout.
      * 
      * @param queueName

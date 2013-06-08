@@ -1,6 +1,9 @@
 package ddth.dasp.hetty.front;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -31,15 +34,20 @@ import ddth.dasp.hetty.qnt.IQueueWriter;
 public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     private static Logger LOGGER = LoggerFactory.getLogger(HettyHttpHandler.class);
     private HttpRequest currentRequest;
-    // private long maxRequestContentlength = 64 * 1024;
     private ByteArrayOutputStream currentRequestContent = new ByteArrayOutputStream(4096);
 
-    // private long currentRequestContentLength = 0;
-    private IQueueWriter queueWriter;
+    private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    // /private ConcurrentMap<String, IQueueWriter> cachedHostQueueWriterMapping
+    // = new ConcurrentHashMap<String, IQueueWriter>();
+    // private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
-    public HettyHttpHandler(IQueueWriter queeuWriter, IMessageFactory messageFactory) {
-        this.queueWriter = queeuWriter;
+    public HettyHttpHandler(Map<String, IQueueWriter> hostQueueWriterMapping,
+            IMessageFactory messageFactory) {
+        // this.queueWriter = queeuWriter;
+        if (hostQueueWriterMapping != null) {
+            this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
+        }
         this.messageFactory = messageFactory;
     }
 
@@ -55,6 +63,14 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         if (currentRequest == null || currentRequest.getContent() == null) {
             throw new IllegalStateException("No chunk started!");
         }
+    }
+
+    private IQueueWriter lookupQueueWriter(String host) {
+        IQueueWriter queueWriter = hostQueueWriterMapping.get(host);
+        if (queueWriter == null) {
+            queueWriter = hostQueueWriterMapping.get("*");
+        }
+        return queueWriter;
     }
 
     protected void handleRequest(HttpRequest httpRequest, byte[] requestContent, Channel userChannel)
@@ -78,7 +94,36 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
 
         IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
                 requestContent);
-        queueWriter.writeToQueue(request.serialize());
+        String host = request.getDomain();
+        IQueueWriter queueWriter = lookupQueueWriter(host);
+        if (queueWriter != null) {
+            if (!queueWriter.writeToQueue(request.serialize())) {
+                StringBuilder content = new StringBuilder();
+                content.append("No request queue for [" + host + "], or queue is full!");
+                HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+                        HttpResponseStatus.BAD_GATEWAY);
+                response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+                response.setContent(ChannelBuffers.copiedBuffer(content.toString(),
+                        CharsetUtil.UTF_8));
+                userChannel.write(response).addListener(new ChannelFutureListener() {
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        future.getChannel().close();
+                    }
+                });
+            }
+        } else {
+            StringBuilder content = new StringBuilder();
+            content.append("Host [" + host + "] is not mapped!");
+            HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.BAD_REQUEST);
+            response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+            response.setContent(ChannelBuffers.copiedBuffer(content.toString(), CharsetUtil.UTF_8));
+            userChannel.write(response).addListener(new ChannelFutureListener() {
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    future.getChannel().close();
+                }
+            });
+        }
     }
 
     /**
