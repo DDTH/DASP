@@ -61,7 +61,7 @@ public class HettyConnServer {
      * 
      * @param host
      */
-    public void unmapHostQueueWriter(String host) {
+    public static void unmapHostQueueWriter(String host) {
         hostQueueWriterMapping.remove(host);
         if (hettyPipelineFactory != null) {
             hettyPipelineFactory.unmapHostQueueWriter(host);
