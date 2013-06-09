@@ -163,7 +163,7 @@ public class HettyConnServer {
                 });
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
-        if (hettyPipelineFactory != null) {
+        if (hettyPipelineFactory == null) {
             hettyPipelineFactory = new HettyPipelineFactory(hostQueueWriterMapping, messageFactory,
                     timer, readTimeoutMillisecs, writeTimeoutMillisecs);
         }
