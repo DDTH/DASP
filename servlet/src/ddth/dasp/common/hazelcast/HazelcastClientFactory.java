@@ -82,31 +82,32 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
     private class HazelcastClientPing implements Runnable {
         @Override
         public void run() {
-            try {
-                HazelcastClient client = getHazelcastClient();
-                if (client != null) {
-                    try {
-                        IMap<Object, Object> map = client.getMap("_PING_");
-                        map.put(IdGenerator.getMacAddr(), System.currentTimeMillis());
-                    } finally {
-                        returnHazelcastClient();
+            if (!_destroyed) {
+                try {
+                    HazelcastClient client = getHazelcastClient();
+                    if (client != null) {
+                        try {
+                            IMap<Object, Object> map = client.getMap("_PING_");
+                            map.put(IdGenerator.getMacAddr(), System.currentTimeMillis());
+                        } finally {
+                            returnHazelcastClient();
+                        }
                     }
+                } catch (Exception e) {
+                    LOGGER.warn(e.getMessage(), e);
+                } finally {
+                    DaspGlobal.getScheduler().schedule(this, 10, TimeUnit.SECONDS);
                 }
-            } catch (Exception e) {
-                LOGGER.warn(e.getMessage(), e);
-            } finally {
-                DaspGlobal.getScheduler().schedule(this, 10, TimeUnit.SECONDS);
             }
         }
     }
 
     public void init() {
         clientConfig = new ClientConfig();
-        // ClientConfig clientConfig = new ClientConfig();
-        // clientConfig.setConnectionTimeout(10000);
-        // clientConfig.setReconnectionAttemptLimit(10);
-        // clientConfig.setInitialConnectionAttemptLimit(10);
-        // clientConfig.setReConnectionTimeOut(10000);
+        clientConfig.setConnectionTimeout(2000);
+        clientConfig.setInitialConnectionAttemptLimit(2);
+        clientConfig.setReconnectionAttemptLimit(2);
+        clientConfig.setReConnectionTimeOut(2000);
         if (!StringUtils.isBlank(hazelcastUsername)) {
             clientConfig.setCredentials(new UsernamePasswordCredentials(hazelcastUsername,
                     hazelcastPassword));
