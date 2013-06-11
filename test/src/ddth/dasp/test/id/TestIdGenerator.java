@@ -1,5 +1,7 @@
 package ddth.dasp.test.id;
 
+import java.util.Date;
+
 import ddth.dasp.common.id.IdGenerator;
 
 public class TestIdGenerator {
@@ -37,10 +39,7 @@ public class TestIdGenerator {
         return new String(buf, charPos, (65 - charPos));
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
+    public static void main(String... args) {
         long l = 12345;
         System.out.println(toString(l, 46));
 
@@ -49,25 +48,36 @@ public class TestIdGenerator {
         System.out.println(Character.MAX_RADIX);
         System.out.println();
 
-        long value;
+        long temp = (System.currentTimeMillis() - IdGenerator.TIMESTAMP_EPOCH) / 10;
+        System.out.println(temp);
+        System.out.println(IdGenerator.toString(temp, 16));
+        System.out.println(IdGenerator.toString(temp, 36));
+        System.out.println(IdGenerator.toString(temp, 46));
 
-        value = idGen.generateId48();
-        System.out.println(idGen.generateId48());
-        System.out.println(idGen.generateId48Hex());
-        System.out.println(idGen.generateId48Ascii());
-        System.out.println(toString(value, 46));
         System.out.println();
+
+        long value;
+        String hex, ascii36, ascii46;
 
         value = idGen.generateId64();
-        System.out.println(idGen.generateId64());
-        System.out.println(idGen.generateId64Hex());
-        System.out.println(idGen.generateId64Ascii());
-        System.out.println(toString(value, 46));
-        System.out.println();
+        hex = Long.toHexString(value);
+        ascii36 = Long.toString(value, Character.MAX_RADIX);
+        ascii46 = IdGenerator.toString(value, IdGenerator.MAX_RADIX);
+        System.out.println(value);
+        System.out.println(hex);
+        System.out.println(ascii36);
+        System.out.println(ascii46);
 
-        System.out.println(idGen.generateId128());
-        System.out.println(idGen.generateId128Hex());
-        System.out.println(idGen.generateId128Ascii());
-        System.out.println();
+        System.out.println(IdGenerator.parseLong(hex, 16));
+        System.out.println(IdGenerator.parseLong(ascii36, Character.MAX_RADIX));
+        System.out.println(IdGenerator.parseLong(ascii46, IdGenerator.MAX_RADIX));
+
+        long timestamp = IdGenerator.extractTimestamp64(value);
+        System.out.println(timestamp);
+        System.out.println(timestamp - IdGenerator.TIMESTAMP_EPOCH);
+        System.out.println((timestamp - IdGenerator.TIMESTAMP_EPOCH) / 1000.0);
+
+        System.out.println(new Date(timestamp));
+        System.out.println(new Date(timestamp - IdGenerator.TIMESTAMP_EPOCH));
     }
 }
