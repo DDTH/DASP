@@ -12,7 +12,7 @@
 	<!-- Frontend server: Hetty Connection server accepts HTTP connections on 
 		"port", and out requests to a queue via "queueWriter" -->
 	<bean id="hettyConnServer" class="ddth.dasp.hetty.front.HettyConnServer"
-		scope="singleton" init-method="start" destroy-method="destroy">
+		scope="singleton" init-method="init" destroy-method="destroy">
 		<!-- <property name="queueWriter" ref="hazelcastQueue" /> -->
 		<property name="messageFactory" ref="messageFactory" />
 		<property name="readTimeoutMillisecs" ref="_nettyReadTimeout" />

@@ -79,8 +79,8 @@ public class ProtoBufResponse implements IResponse {
      * {@inheritDoc}
      */
     @Override
-    public long getRequestTimestamp() {
-        return response.hasRequestTimestamp() ? response.getRequestTimestamp() : 0;
+    public long getRequestTimestampNano() {
+        return response.hasRequestTimestampNano() ? response.getRequestTimestampNano() : 0;
     }
 
     /**

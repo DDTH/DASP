@@ -20,7 +20,7 @@ message Request {
     required string    id            =  1;
     required string    responseTopic =  2;
     required int32     channelId     =  3;    
-    required int64     timestamp     =  4;
+    required int64     timestampNano =  4;
     required string    method        =  5;
     required string    uri           =  6;
     required string    domain        =  7;
@@ -36,13 +36,13 @@ message Request {
 }
 
 message Response {
-    required string    requestId        = 1;
-    required int64     requestTimestamp = 2;
-    required int32     channelId        = 3;
-    optional int32     status           = 4 [default = 200];
-    repeated Cookie    cookies          = 5;
-    repeated NameValue headers          = 6;
-    optional bytes     content          = 7;
-    optional bool      isChunk          = 8 [default = false];
-    optional int32     chunkSeq         = 9 [default = 0];
+    required string    requestId            = 1;
+    required int64     requestTimestampNano = 2;
+    required int32     channelId            = 3;
+    optional int32     status               = 4 [default = 200];
+    repeated Cookie    cookies              = 5;
+    repeated NameValue headers              = 6;
+    optional bytes     content              = 7;
+    optional bool      isChunk              = 8 [default = false];
+    optional int32     chunkSeq             = 9 [default = 0];
 }

@@ -50,12 +50,11 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
 
     public void init() {
         Runnable command = new MessageListenerBootstrap(this);
-        // DaspGlobal.getScheduler().scheduleAtFixedRate(command, 10000, 5000,
-        // TimeUnit.MILLISECONDS);
         DaspGlobal.getScheduler().schedule(command, 10000, TimeUnit.MILLISECONDS);
     }
 
     public void destroy() {
+        _listening = false;
         hazelcastClientFactory.unsubscribeFromTopic(hazelcastTopicName, this);
     }
 

@@ -392,7 +392,7 @@ public final class HettyProtoBuf {
         return ddth.dasp.hetty.message.protobuf.HettyProtoBuf.internal_static_Cookie_fieldAccessorTable;
       }
       
-      // Construct using ddth.dasp.hetty.message.HettyProtoBuf.Cookie.newBuilder()
+      // Construct using ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Cookie.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1039,7 +1039,7 @@ public final class HettyProtoBuf {
         return ddth.dasp.hetty.message.protobuf.HettyProtoBuf.internal_static_NameValue_fieldAccessorTable;
       }
       
-      // Construct using ddth.dasp.hetty.message.HettyProtoBuf.NameValue.newBuilder()
+      // Construct using ddth.dasp.hetty.message.protobuf.HettyProtoBuf.NameValue.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1279,9 +1279,9 @@ public final class HettyProtoBuf {
     boolean hasChannelId();
     int getChannelId();
     
-    // required int64 timestamp = 4;
-    boolean hasTimestamp();
-    long getTimestamp();
+    // required int64 timestampNano = 4;
+    boolean hasTimestampNano();
+    long getTimestampNano();
     
     // required string method = 5;
     boolean hasMethod();
@@ -1453,14 +1453,14 @@ public final class HettyProtoBuf {
       return channelId_;
     }
     
-    // required int64 timestamp = 4;
-    public static final int TIMESTAMP_FIELD_NUMBER = 4;
-    private long timestamp_;
-    public boolean hasTimestamp() {
+    // required int64 timestampNano = 4;
+    public static final int TIMESTAMPNANO_FIELD_NUMBER = 4;
+    private long timestampNano_;
+    public boolean hasTimestampNano() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public long getTimestamp() {
-      return timestamp_;
+    public long getTimestampNano() {
+      return timestampNano_;
     }
     
     // required string method = 5;
@@ -1712,7 +1712,7 @@ public final class HettyProtoBuf {
       id_ = "";
       responseTopic_ = "";
       channelId_ = 0;
-      timestamp_ = 0L;
+      timestampNano_ = 0L;
       method_ = "";
       uri_ = "";
       domain_ = "";
@@ -1743,7 +1743,7 @@ public final class HettyProtoBuf {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasTimestamp()) {
+      if (!hasTimestampNano()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1802,7 +1802,7 @@ public final class HettyProtoBuf {
         output.writeInt32(3, channelId_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, timestamp_);
+        output.writeInt64(4, timestampNano_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, getMethodBytes());
@@ -1863,7 +1863,7 @@ public final class HettyProtoBuf {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, timestamp_);
+          .computeInt64Size(4, timestampNano_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2023,7 +2023,7 @@ public final class HettyProtoBuf {
         return ddth.dasp.hetty.message.protobuf.HettyProtoBuf.internal_static_Request_fieldAccessorTable;
       }
       
-      // Construct using ddth.dasp.hetty.message.HettyProtoBuf.Request.newBuilder()
+      // Construct using ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2051,7 +2051,7 @@ public final class HettyProtoBuf {
         bitField0_ = (bitField0_ & ~0x00000002);
         channelId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
-        timestamp_ = 0L;
+        timestampNano_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
         method_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -2142,7 +2142,7 @@ public final class HettyProtoBuf {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.timestamp_ = timestamp_;
+        result.timestampNano_ = timestampNano_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
@@ -2233,8 +2233,8 @@ public final class HettyProtoBuf {
         if (other.hasChannelId()) {
           setChannelId(other.getChannelId());
         }
-        if (other.hasTimestamp()) {
-          setTimestamp(other.getTimestamp());
+        if (other.hasTimestampNano()) {
+          setTimestampNano(other.getTimestampNano());
         }
         if (other.hasMethod()) {
           setMethod(other.getMethod());
@@ -2365,7 +2365,7 @@ public final class HettyProtoBuf {
           
           return false;
         }
-        if (!hasTimestamp()) {
+        if (!hasTimestampNano()) {
           
           return false;
         }
@@ -2450,7 +2450,7 @@ public final class HettyProtoBuf {
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              timestamp_ = input.readInt64();
+              timestampNano_ = input.readInt64();
               break;
             }
             case 42: {
@@ -2615,23 +2615,23 @@ public final class HettyProtoBuf {
         return this;
       }
       
-      // required int64 timestamp = 4;
-      private long timestamp_ ;
-      public boolean hasTimestamp() {
+      // required int64 timestampNano = 4;
+      private long timestampNano_ ;
+      public boolean hasTimestampNano() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public long getTimestamp() {
-        return timestamp_;
+      public long getTimestampNano() {
+        return timestampNano_;
       }
-      public Builder setTimestamp(long value) {
+      public Builder setTimestampNano(long value) {
         bitField0_ |= 0x00000008;
-        timestamp_ = value;
+        timestampNano_ = value;
         onChanged();
         return this;
       }
-      public Builder clearTimestamp() {
+      public Builder clearTimestampNano() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        timestamp_ = 0L;
+        timestampNano_ = 0L;
         onChanged();
         return this;
       }
@@ -3499,9 +3499,9 @@ public final class HettyProtoBuf {
     boolean hasRequestId();
     String getRequestId();
     
-    // required int64 requestTimestamp = 2;
-    boolean hasRequestTimestamp();
-    long getRequestTimestamp();
+    // required int64 requestTimestampNano = 2;
+    boolean hasRequestTimestampNano();
+    long getRequestTimestampNano();
     
     // required int32 channelId = 3;
     boolean hasChannelId();
@@ -3604,14 +3604,14 @@ public final class HettyProtoBuf {
       }
     }
     
-    // required int64 requestTimestamp = 2;
-    public static final int REQUESTTIMESTAMP_FIELD_NUMBER = 2;
-    private long requestTimestamp_;
-    public boolean hasRequestTimestamp() {
+    // required int64 requestTimestampNano = 2;
+    public static final int REQUESTTIMESTAMPNANO_FIELD_NUMBER = 2;
+    private long requestTimestampNano_;
+    public boolean hasRequestTimestampNano() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public long getRequestTimestamp() {
-      return requestTimestamp_;
+    public long getRequestTimestampNano() {
+      return requestTimestampNano_;
     }
     
     // required int32 channelId = 3;
@@ -3708,7 +3708,7 @@ public final class HettyProtoBuf {
     
     private void initFields() {
       requestId_ = "";
-      requestTimestamp_ = 0L;
+      requestTimestampNano_ = 0L;
       channelId_ = 0;
       status_ = 200;
       cookies_ = java.util.Collections.emptyList();
@@ -3726,7 +3726,7 @@ public final class HettyProtoBuf {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasRequestTimestamp()) {
+      if (!hasRequestTimestampNano()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3757,7 +3757,7 @@ public final class HettyProtoBuf {
         output.writeBytes(1, getRequestIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt64(2, requestTimestamp_);
+        output.writeInt64(2, requestTimestampNano_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeInt32(3, channelId_);
@@ -3795,7 +3795,7 @@ public final class HettyProtoBuf {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, requestTimestamp_);
+          .computeInt64Size(2, requestTimestampNano_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -3930,7 +3930,7 @@ public final class HettyProtoBuf {
         return ddth.dasp.hetty.message.protobuf.HettyProtoBuf.internal_static_Response_fieldAccessorTable;
       }
       
-      // Construct using ddth.dasp.hetty.message.HettyProtoBuf.Response.newBuilder()
+      // Construct using ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Response.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3953,7 +3953,7 @@ public final class HettyProtoBuf {
         super.clear();
         requestId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        requestTimestamp_ = 0L;
+        requestTimestampNano_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
         channelId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -4022,7 +4022,7 @@ public final class HettyProtoBuf {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.requestTimestamp_ = requestTimestamp_;
+        result.requestTimestampNano_ = requestTimestampNano_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -4080,8 +4080,8 @@ public final class HettyProtoBuf {
         if (other.hasRequestId()) {
           setRequestId(other.getRequestId());
         }
-        if (other.hasRequestTimestamp()) {
-          setRequestTimestamp(other.getRequestTimestamp());
+        if (other.hasRequestTimestampNano()) {
+          setRequestTimestampNano(other.getRequestTimestampNano());
         }
         if (other.hasChannelId()) {
           setChannelId(other.getChannelId());
@@ -4159,7 +4159,7 @@ public final class HettyProtoBuf {
           
           return false;
         }
-        if (!hasRequestTimestamp()) {
+        if (!hasRequestTimestampNano()) {
           
           return false;
         }
@@ -4212,7 +4212,7 @@ public final class HettyProtoBuf {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              requestTimestamp_ = input.readInt64();
+              requestTimestampNano_ = input.readInt64();
               break;
             }
             case 24: {
@@ -4294,23 +4294,23 @@ public final class HettyProtoBuf {
         onChanged();
       }
       
-      // required int64 requestTimestamp = 2;
-      private long requestTimestamp_ ;
-      public boolean hasRequestTimestamp() {
+      // required int64 requestTimestampNano = 2;
+      private long requestTimestampNano_ ;
+      public boolean hasRequestTimestampNano() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public long getRequestTimestamp() {
-        return requestTimestamp_;
+      public long getRequestTimestampNano() {
+        return requestTimestampNano_;
       }
-      public Builder setRequestTimestamp(long value) {
+      public Builder setRequestTimestampNano(long value) {
         bitField0_ |= 0x00000002;
-        requestTimestamp_ = value;
+        requestTimestampNano_ = value;
         onChanged();
         return this;
       }
-      public Builder clearRequestTimestamp() {
+      public Builder clearRequestTimestampNano() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        requestTimestamp_ = 0L;
+        requestTimestampNano_ = 0L;
         onChanged();
         return this;
       }
@@ -4839,21 +4839,22 @@ public final class HettyProtoBuf {
       "\005value\030\002 \001(\t\022\016\n\006domain\030\003 \001(\t\022\017\n\004port\030\004 \001" +
       "(\005:\0010\022\014\n\004path\030\005 \001(\t\022\022\n\006maxAge\030\006 \001(\005:\002-1\"" +
       "(\n\tNameValue\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \001(" +
-      "\t\"\303\002\n\007Request\022\n\n\002id\030\001 \002(\t\022\025\n\rresponseTop" +
-      "ic\030\002 \002(\t\022\021\n\tchannelId\030\003 \002(\005\022\021\n\ttimestamp" +
-      "\030\004 \002(\003\022\016\n\006method\030\005 \002(\t\022\013\n\003uri\030\006 \002(\t\022\016\n\006d" +
-      "omain\030\007 \002(\t\022\014\n\004port\030\010 \002(\005\022\014\n\004path\030\t \002(\t\022" +
-      "\035\n\turlParams\030\n \003(\0132\n.NameValue\022\022\n\npathPa" +
-      "rams\030\013 \003(\t\022\030\n\007cookies\030\014 \003(\0132\007.Cookie\022\033\n\007",
-      "headers\030\r \003(\0132\n.NameValue\022\017\n\007content\030\016 \001" +
-      "(\014\022\026\n\007isChunk\030\017 \001(\010:\005false\022\023\n\010chunkSeq\030\020" +
-      " \001(\005:\0010\"\324\001\n\010Response\022\021\n\trequestId\030\001 \002(\t\022" +
-      "\030\n\020requestTimestamp\030\002 \002(\003\022\021\n\tchannelId\030\003" +
-      " \002(\005\022\023\n\006status\030\004 \001(\005:\003200\022\030\n\007cookies\030\005 \003" +
-      "(\0132\007.Cookie\022\033\n\007headers\030\006 \003(\0132\n.NameValue" +
-      "\022\017\n\007content\030\007 \001(\014\022\026\n\007isChunk\030\010 \001(\010:\005fals" +
-      "e\022\023\n\010chunkSeq\030\t \001(\005:\0010B*\n\027ddth.dasp.hett" +
-      "y.messageB\rHettyProtoBufH\001"
+      "\t\"\307\002\n\007Request\022\n\n\002id\030\001 \002(\t\022\025\n\rresponseTop" +
+      "ic\030\002 \002(\t\022\021\n\tchannelId\030\003 \002(\005\022\025\n\rtimestamp" +
+      "Nano\030\004 \002(\003\022\016\n\006method\030\005 \002(\t\022\013\n\003uri\030\006 \002(\t\022" +
+      "\016\n\006domain\030\007 \002(\t\022\014\n\004port\030\010 \002(\005\022\014\n\004path\030\t " +
+      "\002(\t\022\035\n\turlParams\030\n \003(\0132\n.NameValue\022\022\n\npa" +
+      "thParams\030\013 \003(\t\022\030\n\007cookies\030\014 \003(\0132\007.Cookie",
+      "\022\033\n\007headers\030\r \003(\0132\n.NameValue\022\017\n\007content" +
+      "\030\016 \001(\014\022\026\n\007isChunk\030\017 \001(\010:\005false\022\023\n\010chunkS" +
+      "eq\030\020 \001(\005:\0010\"\330\001\n\010Response\022\021\n\trequestId\030\001 " +
+      "\002(\t\022\034\n\024requestTimestampNano\030\002 \002(\003\022\021\n\tcha" +
+      "nnelId\030\003 \002(\005\022\023\n\006status\030\004 \001(\005:\003200\022\030\n\007coo" +
+      "kies\030\005 \003(\0132\007.Cookie\022\033\n\007headers\030\006 \003(\0132\n.N" +
+      "ameValue\022\017\n\007content\030\007 \001(\014\022\026\n\007isChunk\030\010 \001" +
+      "(\010:\005false\022\023\n\010chunkSeq\030\t \001(\005:\0010B3\n ddth.d" +
+      "asp.hetty.message.protobufB\rHettyProtoBu" +
+      "fH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4881,7 +4882,7 @@ public final class HettyProtoBuf {
           internal_static_Request_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Request_descriptor,
-              new java.lang.String[] { "Id", "ResponseTopic", "ChannelId", "Timestamp", "Method", "Uri", "Domain", "Port", "Path", "UrlParams", "PathParams", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
+              new java.lang.String[] { "Id", "ResponseTopic", "ChannelId", "TimestampNano", "Method", "Uri", "Domain", "Port", "Path", "UrlParams", "PathParams", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
               ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request.class,
               ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Request.Builder.class);
           internal_static_Response_descriptor =
@@ -4889,7 +4890,7 @@ public final class HettyProtoBuf {
           internal_static_Response_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Response_descriptor,
-              new java.lang.String[] { "RequestId", "RequestTimestamp", "ChannelId", "Status", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
+              new java.lang.String[] { "RequestId", "RequestTimestampNano", "ChannelId", "Status", "Cookies", "Headers", "Content", "IsChunk", "ChunkSeq", },
               ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Response.class,
               ddth.dasp.hetty.message.protobuf.HettyProtoBuf.Response.Builder.class);
           return null;

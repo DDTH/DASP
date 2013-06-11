@@ -26,7 +26,7 @@ import ddth.dasp.hetty.qnt.IQueueWriter;
 import ddth.dasp.servlet.utils.NetUtils;
 
 public class HettyConnServer {
-    public static ChannelGroup ALL_CHANNELS = new DefaultChannelGroup(
+    protected static ChannelGroup ALL_CHANNELS = new DefaultChannelGroup(
             HettyConnServer.class.getCanonicalName());
     private final Logger LOGGER = LoggerFactory.getLogger(HettyConnServer.class);
 
@@ -125,7 +125,7 @@ public class HettyConnServer {
         return this;
     }
 
-    public void start() {
+    public void init() {
         Integer port = 8083;
         if (!StringUtils.isBlank(portStr)) {
             // find free port

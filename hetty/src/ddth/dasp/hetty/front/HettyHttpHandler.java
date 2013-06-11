@@ -93,6 +93,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         String host = request.getDomain();
         IQueueWriter queueWriter = lookupQueueWriter(host);
         if (queueWriter != null) {
+            userChannel.setAttachment(request.getId());
             if (!queueWriter.writeToQueue(request.serialize())) {
                 StringBuilder content = new StringBuilder();
                 content.append("No request queue for [" + host + "], or queue is full!");

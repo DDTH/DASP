@@ -12,7 +12,7 @@ public interface IRequest {
 
     public int getChannelId();
 
-    public long getTimestamp();
+    public long getTimestampNano();
 
     public String getMethod();
 

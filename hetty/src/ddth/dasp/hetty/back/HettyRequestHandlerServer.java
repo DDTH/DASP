@@ -100,32 +100,49 @@ public class HettyRequestHandlerServer {
     }
 
     protected void handleRequest(IRequest request) throws Exception {
-        ProfileLogger.push("lookup_handler");
-        IRequestActionHandler handler = null;
-        try {
-            String module = requestParser.getModule(request);
-            String action = requestParser.getAction(request);
-            Map<String, String> filter = new HashMap<String, String>();
-            filter.put(IRequestActionHandler.FILTER_KEY_MODULE,
-                    !StringUtils.isBlank(module) ? module : "_");
-            filter.put(IRequestActionHandler.FILTER_KEY_ACTION,
-                    !StringUtils.isBlank(action) ? action : "_");
-            IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
+        long queueTimeMs = (long) ((System.nanoTime() - request.getTimestampNano()) / 1E6);
+        if (queueTimeMs > 10000) {
+            // in queue more than 10 secs
+            String msg = "Request [" + request.getId() + ":" + request.getUri()
+                    + "] has stayed in queue too long!";
+            IResponse response = ResponseUtils.newResponse(request).setStatus(408)
+                    .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(msg);
+            topicPublisher.publishToTopic(response, writeTimeoutMillisecs, TimeUnit.MILLISECONDS);
+            LOGGER.warn(msg);
+        } else {
+            internalHandleRequest(request);
+        }
+    }
+
+    /**
+     * Actually handles the request. Called by {@link #handleRequest(IRequest)},
+     * sub-class may override this method to implement its own logic.
+     * 
+     * @param request
+     * @throws Exception
+     */
+    protected void internalHandleRequest(IRequest request) throws Exception {
+        String module = requestParser.getModule(request);
+        String action = requestParser.getAction(request);
+        Map<String, String> filter = new HashMap<String, String>();
+        filter.put(IRequestActionHandler.FILTER_KEY_MODULE, !StringUtils.isBlank(module) ? module
+                : "_");
+        filter.put(IRequestActionHandler.FILTER_KEY_ACTION, !StringUtils.isBlank(action) ? action
+                : "_");
+        IOsgiBootstrap osgiBootstrap = DaspGlobal.getOsgiBootstrap();
+        IRequestActionHandler handler = osgiBootstrap.getService(IRequestActionHandler.class,
+                filter);
+        if (handler == null) {
+            // fallback 1: lookup for wildcard handler
+            // note: do not use "*" for filtering as OSGi will match "any"
+            // service, which is not what we want!
+            filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
-            if (handler == null) {
-                // fallback 1: lookup for wildcard handler
-                // note: do not use "*" for filtering as OSGi will match "any"
-                // service, which is not what we want!
-                filter.put(IRequestActionHandler.FILTER_KEY_ACTION, "_");
-                handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
-            }
-            if (handler == null) {
-                // fallback 2: lookup for non-action handler
-                filter.remove(IRequestActionHandler.FILTER_KEY_ACTION);
-                handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
-            }
-        } finally {
-            ProfileLogger.pop();
+        }
+        if (handler == null) {
+            // fallback 2: lookup for non-action handler
+            filter.remove(IRequestActionHandler.FILTER_KEY_ACTION);
+            handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
         if (handler != null) {
             handler.handleRequest(request, topicPublisher);
@@ -152,15 +169,16 @@ public class HettyRequestHandlerServer {
                     while (!interrupted()) {
                         Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
-                        if (obj != null) {
+                        if (obj == null) {
+                            Thread.yield();
+                        } else {
                             // init the request local
                             RequestLocal requestLocal = RequestLocal.get();
                             if (requestLocal == null) {
                                 requestLocal = new RequestLocal();
                                 RequestLocal.set(requestLocal);
                             }
-
-                            RequestLocal.get();
+                            // RequestLocal.get();
                             ProfileLogger.push("start_request_handler_worker");
                             try {
                                 if (obj instanceof byte[]) {
@@ -175,19 +193,26 @@ public class HettyRequestHandlerServer {
                                     handleRequest((IRequest) obj);
                                 }
                             } catch (Exception e) {
-                                try {
-                                    LOGGER.error(e.getMessage(), e);
-                                    IResponse response = ResponseUtils.response500((IRequest) obj,
-                                            e.getMessage(), e);
-                                    topicPublisher.publishToTopic(response);
-                                } catch (Exception ex) {
-                                    LOGGER.error(e.getMessage(), e);
+                                LOGGER.error(e.getMessage(), e);
+                                if (obj instanceof IRequest) {
+                                    try {
+                                        IResponse response = ResponseUtils.response500(
+                                                (IRequest) obj, e.getMessage(), e);
+                                        topicPublisher.publishToTopic(response);
+                                    } catch (Exception ex) {
+                                        LOGGER.error(ex.getMessage(), ex);
+                                    }
                                 }
                             } finally {
                                 try {
                                     ProfileLogger.pop();
-                                } finally {
+                                } catch (Exception e) {
+                                    LOGGER.warn(e.getMessage(), e);
+                                }
+                                try {
                                     RequestLocal.remove();
+                                } catch (Exception e) {
+                                    LOGGER.warn(e.getMessage(), e);
                                 }
                             }
                         }

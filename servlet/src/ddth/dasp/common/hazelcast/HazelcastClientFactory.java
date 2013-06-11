@@ -104,10 +104,10 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
 
     public void init() {
         clientConfig = new ClientConfig();
-        clientConfig.setConnectionTimeout(2000);
-        clientConfig.setInitialConnectionAttemptLimit(2);
-        clientConfig.setReconnectionAttemptLimit(2);
-        clientConfig.setReConnectionTimeOut(2000);
+        // clientConfig.setConnectionTimeout(2000);
+        // clientConfig.setInitialConnectionAttemptLimit(2);
+        // clientConfig.setReconnectionAttemptLimit(2);
+        // clientConfig.setReConnectionTimeOut(2000);
         if (!StringUtils.isBlank(hazelcastUsername)) {
             clientConfig.setCredentials(new UsernamePasswordCredentials(hazelcastUsername,
                     hazelcastPassword));

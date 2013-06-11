@@ -40,7 +40,7 @@ public class ProtoBufMessageFactory implements IMessageFactory {
         HettyProtoBuf.Request.Builder requestProtoBuf = HettyProtoBuf.Request.newBuilder();
 
         // populate required fields
-        requestProtoBuf.setTimestamp(System.nanoTime());
+        requestProtoBuf.setTimestampNano(System.nanoTime());
         requestProtoBuf.setId(requestId);
         requestProtoBuf.setResponseTopic(requestId);
         requestProtoBuf.setChannelId(channelId);

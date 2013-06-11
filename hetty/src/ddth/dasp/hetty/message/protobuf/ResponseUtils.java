@@ -294,7 +294,7 @@ public class ResponseUtils {
      */
     public static IResponse newResponse(IRequest request) {
         HettyProtoBuf.Response.Builder responseBuilder = HettyProtoBuf.Response.newBuilder()
-                .setRequestId(request.getId()).setRequestTimestamp(request.getTimestamp())
+                .setRequestId(request.getId()).setRequestTimestampNano(request.getTimestampNano())
                 .setChannelId(request.getChannelId()).setStatus(200);
         // .addHeaders(newHeader("Server", SERVER)).setContent(EMPTY_CONTENT)
         // .addHeaders(newHeader("Date", new Date()));

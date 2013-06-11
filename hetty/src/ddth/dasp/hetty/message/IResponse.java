@@ -9,7 +9,7 @@ public interface IResponse {
 
     public String getRequestId();
 
-    public long getRequestTimestamp();
+    public long getRequestTimestampNano();
 
     public int getChannelId();
 

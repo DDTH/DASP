@@ -31,7 +31,7 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
     public void writeResponse(IResponse response) {
         Integer channelId = response.getChannelId();
         Channel channel = HettyConnServer.ALL_CHANNELS.find(channelId);
-        if (channel != null) {
+        if (channel != null && response.getRequestId().equals(channel.getAttachment())) {
             HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatus());
             HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
                     status != null ? status : HttpResponseStatus.OK);
@@ -78,7 +78,7 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
                 long timestamp = System.nanoTime();
                 StringBuilder logMsg = new StringBuilder(response.getRequestId()).append("/")
                         .append(response.getStatus()).append("/")
-                        .append((timestamp - response.getRequestTimestamp()) / 1E6).append(" ms");
+                        .append((timestamp - response.getRequestTimestampNano()) / 1E6).append(" ms");
                 LOGGER.debug(logMsg.toString());
             }
         }

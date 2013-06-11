@@ -67,8 +67,8 @@ public class ProtoBufRequest implements IRequest {
      * {@inheritDoc}
      */
     @Override
-    public long getTimestamp() {
-        return request.hasTimestamp() ? request.getTimestamp() : 0;
+    public long getTimestampNano() {
+        return request.hasTimestampNano() ? request.getTimestampNano() : 0;
     }
 
     /**
