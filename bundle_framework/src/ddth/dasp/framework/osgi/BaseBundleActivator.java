@@ -113,8 +113,10 @@ public abstract class BaseBundleActivator implements BundleActivator {
         bundleExtractDir = toDir;
 
         Enumeration<String> entryPaths = bundle.getEntryPaths(bundleRootPath);
-        while (entryPaths.hasMoreElements()) {
-            extractContent(bundleRootPath, entryPaths.nextElement(), bundleExtractDir);
+        if (entryPaths != null) {
+            while (entryPaths.hasMoreElements()) {
+                extractContent(bundleRootPath, entryPaths.nextElement(), bundleExtractDir);
+            }
         }
     }
 
@@ -130,8 +132,10 @@ public abstract class BaseBundleActivator implements BundleActivator {
         File dir = new File(rootDir, path.substring(pathPrefix.length()));
         FileUtils.forceMkdir(dir);
         Enumeration<String> entryPaths = bundle.getEntryPaths(path);
-        while (entryPaths.hasMoreElements()) {
-            extractContent(pathPrefix, entryPaths.nextElement(), bundleExtractDir);
+        if (entryPaths != null) {
+            while (entryPaths.hasMoreElements()) {
+                extractContent(pathPrefix, entryPaths.nextElement(), bundleExtractDir);
+            }
         }
     }
 
