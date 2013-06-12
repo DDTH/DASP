@@ -130,8 +130,9 @@ public class HazelcastCache extends AbstractCache implements ICache {
                 if (ttl > 0) {
                     map.set(key, entry, ttl, TimeUnit.SECONDS);
                 } else {
+                    map.put(key, entry);
                     // map.putAsync(key, entry);
-                    map.tryPut(key, entry, 5000, TimeUnit.MILLISECONDS);
+                    // map.tryPut(key, entry, 5000, TimeUnit.MILLISECONDS);
                 }
             } finally {
                 dispostHazelcastMap();

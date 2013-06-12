@@ -52,8 +52,9 @@ import ddth.dasp.common.id.IdGenerator;
  */
 public class HazelcastClientFactory implements IHazelcastClientFactory {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(HazelcastClientFactory.class);
     private final static long DEFAULT_TIMEOUT = 5000;
+    
+    private final Logger LOGGER = LoggerFactory.getLogger(HazelcastClientFactory.class);
     private final Map<String, Set<MessageListener<?>>> topicSubcription = new ConcurrentHashMap<String, Set<MessageListener<?>>>();
     private final AtomicLong counter = new AtomicLong(0);
 
@@ -96,7 +97,8 @@ public class HazelcastClientFactory implements IHazelcastClientFactory {
                 } catch (Exception e) {
                     LOGGER.warn(e.getMessage(), e);
                 } finally {
-                    DaspGlobal.getScheduler().schedule(this, 10, TimeUnit.SECONDS);
+                    ScheduledExecutorService ses = DaspGlobal.getScheduler();
+                    ses.schedule(this, 10, TimeUnit.SECONDS);
                 }
             }
         }

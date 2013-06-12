@@ -7,7 +7,8 @@ Bundle-Activator: ddth.dasp.status.osgi.DaspBundleActivator
 Bundle-ClassPath: .
 Require-Bundle: ddth.dasp.framework,
  org.springframework.web.servlet,
- org.springframework.web
+ org.springframework.web,
+ org.apache.commons.lang3
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,

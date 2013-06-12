@@ -6,7 +6,8 @@ Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.statushetty.osgi.DaspBundleActivator
 Bundle-ClassPath: .
 Require-Bundle: ddth.dasp.framework,
- ddth.dasp.hetty.mvc
+ ddth.dasp.hetty.mvc,
+ org.apache.commons.lang3
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.hazelcast,
  ddth.dasp.common.id,

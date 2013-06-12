@@ -106,38 +106,40 @@ public abstract class BaseBundleActivator implements BundleActivator {
             throw new RuntimeException("[" + toDir.getAbsolutePath()
                     + "] is not a valid directory or does not exist!");
         }
-        toDir = new File(toDir, String.valueOf(bundle.getBundleId()));
+        // toDir = new File(toDir, String.valueOf(bundle.getBundleId()));
+        toDir = new File(toDir, getModuleName());
         toDir = new File(toDir, bundle.getVersion().toString());
         FileUtils.forceMkdir(toDir);
         bundleExtractDir = toDir;
 
         Enumeration<String> entryPaths = bundle.getEntryPaths(bundleRootPath);
         while (entryPaths.hasMoreElements()) {
-            extractContent(entryPaths.nextElement(), bundleExtractDir);
+            extractContent(bundleRootPath, entryPaths.nextElement(), bundleExtractDir);
         }
     }
 
-    private void extractContentDir(String path, File rootDir) throws IOException {
-        File dir = new File(rootDir, path);
+    private void extractContent(String pathPrefix, String path, File rootDir) throws IOException {
+        if (path.endsWith("/")) {
+            extractContentDir(pathPrefix, path, rootDir);
+        } else {
+            extractContentFile(pathPrefix, path, rootDir);
+        }
+    }
+
+    private void extractContentDir(String pathPrefix, String path, File rootDir) throws IOException {
+        File dir = new File(rootDir, path.substring(pathPrefix.length()));
         FileUtils.forceMkdir(dir);
         Enumeration<String> entryPaths = bundle.getEntryPaths(path);
         while (entryPaths.hasMoreElements()) {
-            extractContent(entryPaths.nextElement(), bundleExtractDir);
+            extractContent(pathPrefix, entryPaths.nextElement(), bundleExtractDir);
         }
     }
 
-    private void extractContentFile(String path, File rootDir) throws IOException {
+    private void extractContentFile(String pathPrefix, String path, File rootDir)
+            throws IOException {
         URL source = bundle.getResource(path);
-        File destination = new File(rootDir, path);
+        File destination = new File(rootDir, path.substring(pathPrefix.length()));
         FileUtils.copyURLToFile(source, destination);
-    }
-
-    private void extractContent(String path, File rootDir) throws IOException {
-        if (path.endsWith("/")) {
-            extractContentDir(path, rootDir);
-        } else {
-            extractContentFile(path, rootDir);
-        }
     }
 
     /**
