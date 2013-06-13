@@ -18,7 +18,7 @@ import freemarker.template.Template;
 public class FreeMarkerViewResolver extends CacheViewResolver {
 
     private final Logger LOGGER = LoggerFactory.getLogger(FreeMarkerViewResolver.class);
-    private final static Pattern PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
+    private final static Pattern PATTERN = Pattern.compile("\\@\\{([^}]+)\\}");
 
     private Configuration cfg;
     private String defaultEncoding = "UTF-8";
