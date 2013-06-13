@@ -193,7 +193,8 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * @param topicPublisher
      * @return
      */
-    protected abstract Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher);
+    protected abstract Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher)
+            throws Exception;
 
     /**
      * {@link #handleRequest(IRequest, ITopicPublisher)} calls this method after
