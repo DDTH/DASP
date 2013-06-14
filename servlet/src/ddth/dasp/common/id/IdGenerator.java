@@ -16,7 +16,7 @@ public class IdGenerator {
             'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
             'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
     /**
-     * Max radix: 46
+     * Max radix: 62
      */
     public final static int MAX_RADIX = digits.length;
 
@@ -219,18 +219,21 @@ public class IdGenerator {
     private final static long MASK_TIMESTAMP_MINI = 0x1FFFFFFFFFFL; // 41 bits
     private final static long MASK_NODE_ID_MINI = 0x0L; // 0 bits
     private final static long MASK_SEQUENCE_MINI = 0x7FL; // 7 bits
+    private final static long MAX_SEQUENCE_MINI = 0x7FL; // 7 bits
     private final static long SHIFT_TIMESTAMP_MINI = 7L;
     private final static long SHIFT_NODE_ID_MINI = 7L;
 
     private final static long MASK_TIMESTAMP_48 = 0xFFFFFFFFL; // 32 bits
     private final static long MASK_NODE_ID_48 = 0x7L; // 3 bits
     private final static long MASK_SEQUENCE_48 = 0x1FFFL; // 13 bits
+    private final static long MAX_SEQUENCE_48 = 0x1FFFL; // 13 bits
     private final static long SHIFT_TIMESTAMP_48 = 16L;
     private final static long SHIFT_NODE_ID_48 = 13L;
 
     private final static long MASK_TIMESTAMP_64 = 0x1FFFFFFFFFFL; // 41 bits
     private final static long MASK_NODE_ID_64 = 0x3FFL; // 10 bits
     private final static long MASK_SEQUENCE_64 = 0x1FFFL; // 13 bits
+    private final static long MAX_SEQUENCE_64 = 0x1FFFL; // 13 bits
     private final static long SHIFT_TIMESTAMP_64 = 23L;
     private final static long SHIFT_NODE_ID_64 = 13L;
     // private final static long TIMESTAMP_EPOCH = 1330534800000L; // 1-Mar-2012
@@ -238,14 +241,17 @@ public class IdGenerator {
 
     private final static long MASK_NODE_ID_128 = 0xFFFFFFFFFFFFL; // 48 bits
     private final static long MASK_SEQUENCE_128 = 0xFFFF; // 16 bits
+    private final static long MAX_SEQUENCE_128 = 0xFFFF; // 16 bits
     private final static long SHIFT_TIMESTAMP_128 = 64L;
     private final static long SHIFT_NODE_ID_128 = 16L;
 
     private long nodeId;
     private long template48, template64, templateMini;
     private BigInteger template128;
-    private AtomicLong sequence = new AtomicLong();
-    private AtomicLong lastTimestamp = new AtomicLong();
+    private AtomicLong sequenceMillisec = new AtomicLong();
+    private AtomicLong sequenceSecond = new AtomicLong();
+    private AtomicLong lastTimestampMillisec = new AtomicLong();
+    private AtomicLong lastTimestampSecond = new AtomicLong();
 
     protected IdGenerator(long nodeId) {
         this.nodeId = nodeId;
@@ -263,24 +269,153 @@ public class IdGenerator {
         // EMPTY
     }
 
+    public static long waitTillNextMillisec(long currentMillisec) {
+        long nextMillisec = System.currentTimeMillis();
+        for (; nextMillisec <= currentMillisec; nextMillisec = System.currentTimeMillis()) {
+            Thread.yield();
+        }
+        return nextMillisec;
+    }
+
+    public static long waitTillNextSecond(long currentSecond) {
+        long nextSecond = System.currentTimeMillis() / 1000L;
+        for (; nextSecond <= currentSecond; nextSecond = System.currentTimeMillis() / 1000) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }
+        return nextSecond;
+    }
+
+    public static long waitTillNextBlock(long currentBlock, long blockSize) {
+        long nextBlock = System.currentTimeMillis() / blockSize;
+        for (; nextBlock <= currentBlock; nextBlock = System.currentTimeMillis() / blockSize) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+        }
+        return nextBlock;
+    }
+
+    /* tiny id */
+    /**
+     * Extracts the (UNIX) timestamp from a tiny id.
+     * 
+     * @param idTiny
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestampTiny(long idTiny) {
+        final long division = 10000L;
+        final long seqBits = 16L;
+        final long threshold = 0x800000000L;
+        long timestamp = idTiny > threshold ? idTiny >> seqBits : idTiny;
+        return timestamp * division + TIMESTAMP_EPOCH;
+    }
+
+    /**
+     * Generates a tiny id (various bit long).
+     * 
+     * Format: <41-bit: timestamp><0-7bit:sequence number>
+     * 
+     * Where timestamp is in second, minus the epoch.
+     * 
+     * Note: the generated id is NOT in order!
+     * 
+     * @return
+     */
+    synchronized public long generateIdTiny() {
+        final long division = 10000L;
+        final long seqBits = 16L;
+        final long maxSeqTiny = 0xFFFFL; // 16 bits
+
+        long timestamp = System.currentTimeMillis() / division;
+        long sequence = 0;
+        if (timestamp == this.lastTimestampSecond.get()) {
+            // increase sequence
+            sequence = this.sequenceSecond.incrementAndGet();
+            if (sequence > maxSeqTiny) {
+                // reset sequence
+                this.sequenceSecond.set(0);
+                waitTillNextBlock(timestamp, division);
+                return generateIdTiny();
+            }
+        } else {
+            // reset sequence
+            this.sequenceSecond.set(sequence);
+            this.lastTimestampSecond.set(timestamp);
+        }
+        timestamp -= TIMESTAMP_EPOCH / division;
+        long result = timestamp;
+        if (sequence != 0) {
+            result = (result << seqBits) | sequence;
+        }
+        return result;
+    }
+
+    /* tiny id */
+
+    /* 48-bit id */
+
+    /**
+     * Extracts the (UNIX) timestamp from a 48-bit id.
+     * 
+     * @param id48
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestamp48(long id48) {
+        long timestamp = (id48 >> SHIFT_TIMESTAMP_48) + TIMESTAMP_EPOCH;
+        return timestamp;
+    }
+
+    /**
+     * Extracts the (UNIX) timestamp from a 48-bit hex id.
+     * 
+     * @param id48hex
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestamp48(String id48hex) {
+        long id48 = Long.parseLong(id48hex, 16);
+        return extractTimestamp64(id48);
+    }
+
+    /**
+     * Extracts the (UNIX) timestamp from a 48-bit ASCII id (radix 36).
+     * 
+     * @param id48ascii
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestamp48Ascii(String id48ascii) {
+        long id48 = Long.parseLong(id48ascii, Character.MAX_RADIX);
+        return extractTimestamp64(id48);
+    }
+
     /**
      * Generates a 48-bit id.
      * 
-     * Format of 48-bit: <32-bit: timestamp><3-bit: node id><13 bit: sequence
-     * number>
+     * Format: <32-bit: timestamp><3-bit: node id><13 bit: sequence number>
+     * 
+     * Where timestamp is in millisec, minus the epoch.
      * 
      * @return
      */
     synchronized public long generateId48() {
         long timestamp = System.currentTimeMillis();
         long sequence = 0;
-        if (timestamp == this.lastTimestamp.get()) {
+        if (timestamp == this.lastTimestampMillisec.get()) {
             // increase sequence
-            sequence = this.sequence.incrementAndGet();
+            sequence = this.sequenceMillisec.incrementAndGet();
+            if (sequence > MAX_SEQUENCE_48) {
+                // reset sequence
+                this.sequenceMillisec.set(0);
+                waitTillNextMillisec(timestamp);
+                return generateId48();
+            }
         } else {
             // reset sequence
-            this.sequence.set(sequence);
-            this.lastTimestamp.set(timestamp);
+            this.sequenceMillisec.set(sequence);
+            this.lastTimestampMillisec.set(timestamp);
         }
         timestamp = (timestamp - TIMESTAMP_EPOCH) & MASK_TIMESTAMP_48;
         long result = timestamp << SHIFT_TIMESTAMP_48 | template48 | (sequence & MASK_SEQUENCE_48);
@@ -306,6 +441,8 @@ public class IdGenerator {
         long id = generateId48();
         return Long.toString(id, Character.MAX_RADIX);
     }
+
+    /* 48-bit id */
 
     /* mini id */
     /**
@@ -342,22 +479,30 @@ public class IdGenerator {
     }
 
     /**
-     * Generates a mini id.
+     * Generates a mini id (48 bit long).
      * 
      * Format: <41-bit: timestamp><0-bit: node id><7 bit: sequence number>
+     * 
+     * Where timestamp is in millisec, minus the epoch.
      * 
      * @return
      */
     synchronized public long generateIdMini() {
         long timestamp = System.currentTimeMillis();
         long sequence = 0;
-        if (timestamp == this.lastTimestamp.get()) {
+        if (timestamp == this.lastTimestampMillisec.get()) {
             // increase sequence
-            sequence = this.sequence.incrementAndGet();
+            sequence = this.sequenceMillisec.incrementAndGet();
+            if (sequence > MAX_SEQUENCE_MINI) {
+                // reset sequence
+                this.sequenceMillisec.set(0);
+                waitTillNextMillisec(timestamp);
+                return generateIdMini();
+            }
         } else {
             // reset sequence
-            this.sequence.set(sequence);
-            this.lastTimestamp.set(timestamp);
+            this.sequenceMillisec.set(sequence);
+            this.lastTimestampMillisec.set(timestamp);
         }
         timestamp = (timestamp - TIMESTAMP_EPOCH) & MASK_TIMESTAMP_MINI;
         long result = timestamp << SHIFT_TIMESTAMP_MINI | templateMini
@@ -424,21 +569,28 @@ public class IdGenerator {
     /**
      * Generates a 64-bit id.
      * 
-     * Format of 64-bit: <41-bit: timestamp><10-bit: node id><13 bit: sequence
-     * number>
+     * Format: <41-bit: timestamp><10-bit: node id><13 bit: sequence number>
+     * 
+     * Where timestamp is in millisec, minus the epoch.
      * 
      * @return
      */
     synchronized public long generateId64() {
         long timestamp = System.currentTimeMillis();
         long sequence = 0;
-        if (timestamp == this.lastTimestamp.get()) {
+        if (timestamp == this.lastTimestampMillisec.get()) {
             // increase sequence
-            sequence = this.sequence.incrementAndGet();
+            sequence = this.sequenceMillisec.incrementAndGet();
+            if (sequence > MAX_SEQUENCE_64) {
+                // reset sequence
+                this.sequenceMillisec.set(0);
+                waitTillNextMillisec(timestamp);
+                return generateId64();
+            }
         } else {
             // reset sequence
-            this.sequence.set(sequence);
-            this.lastTimestamp.set(timestamp);
+            this.sequenceMillisec.set(sequence);
+            this.lastTimestampMillisec.set(timestamp);
         }
         timestamp = (timestamp - TIMESTAMP_EPOCH) & MASK_TIMESTAMP_64;
         long result = timestamp << SHIFT_TIMESTAMP_64 | template64 | (sequence & MASK_SEQUENCE_64);
@@ -472,21 +624,28 @@ public class IdGenerator {
     /**
      * Generates a 128-bit id.
      * 
-     * Format of 128-bit: <64-bit: timestamp><48-bit: node id><16 bit: sequence
-     * number>
+     * Format: <64-bit: timestamp><48-bit: node id><16 bit: sequence number>
+     * 
+     * Where timestamp is in millisec.
      * 
      * @return
      */
     synchronized public BigInteger generateId128() {
         long timestamp = System.currentTimeMillis();
         long sequence = 0;
-        if (timestamp == this.lastTimestamp.get()) {
+        if (timestamp == this.lastTimestampMillisec.get()) {
             // increase sequence
-            sequence = this.sequence.incrementAndGet();
+            sequence = this.sequenceMillisec.incrementAndGet();
+            if (sequence > MAX_SEQUENCE_128) {
+                // reset sequence
+                this.sequenceMillisec.set(0);
+                waitTillNextMillisec(timestamp);
+                return generateId128();
+            }
         } else {
             // reset sequence
-            this.sequence.set(sequence);
-            this.lastTimestamp.set(timestamp);
+            this.sequenceMillisec.set(sequence);
+            this.lastTimestampMillisec.set(timestamp);
         }
 
         BigInteger biSequence = BigInteger.valueOf(sequence & MASK_SEQUENCE_128);
