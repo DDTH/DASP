@@ -11,10 +11,10 @@ public class IdGenerator {
 
     private final static Map<Long, IdGenerator> cache = new HashMap<Long, IdGenerator>();
     private static long macAddr = 0;
-    private final static char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-            'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-            's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-            'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+    private final static char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+            'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+            'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+            'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
     /**
      * Max radix: 46
      */
@@ -458,24 +458,27 @@ public class IdGenerator {
     }
 
     public static void main(String... args) throws InterruptedException {
-        IdGenerator idGen = IdGenerator.getInstance(getMacAddr());
-        int COUNT = 100000;
-        long[] TEST_DATA = new long[COUNT];
-        long id;
-        long time1 = System.currentTimeMillis();
-        for (int i = 0; i < COUNT; i++) {
-            id = idGen.generateId64();
-            TEST_DATA[i] = id;
-        }
-        long time2 = System.currentTimeMillis();
-        System.out.println(time2 - time1);
+        System.out.println('a' < 'A');
 
-        for (int i = 1; i < COUNT; i++) {
-            if (TEST_DATA[i] == TEST_DATA[i - 1]) {
-                System.out.println("Error: DATA[" + i + "] vs DATA[" + (i - 1) + "]: "
-                        + TEST_DATA[i]);
-            }
-        }
+        // IdGenerator idGen = IdGenerator.getInstance(getMacAddr());
+        // int COUNT = 100000;
+        // long[] TEST_DATA = new long[COUNT];
+        // long id;
+        // long time1 = System.currentTimeMillis();
+        // for (int i = 0; i < COUNT; i++) {
+        // id = idGen.generateId64();
+        // TEST_DATA[i] = id;
+        // }
+        // long time2 = System.currentTimeMillis();
+        // System.out.println(time2 - time1);
+        //
+        // for (int i = 1; i < COUNT; i++) {
+        // if (TEST_DATA[i] == TEST_DATA[i - 1]) {
+        // System.out.println("Error: DATA[" + i + "] vs DATA[" + (i - 1) +
+        // "]: "
+        // + TEST_DATA[i]);
+        // }
+        // }
 
         // Calendar cal = Calendar.getInstance();
         // cal.set(Calendar.MILLISECOND, 0);
