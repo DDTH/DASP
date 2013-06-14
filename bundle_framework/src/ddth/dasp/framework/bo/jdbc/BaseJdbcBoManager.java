@@ -725,7 +725,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
             // put to cache
             putToCache(cacheKey, result);
         }
-        return result.toArray(EMPTY_MAP_ARR);
+        return result != null && result.size() > 0 ? result.toArray(EMPTY_MAP_ARR) : null;
     }
 
     /**
@@ -771,7 +771,7 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
                     throw new RuntimeException(e);
                 }
             }
-            return result.toArray((T[]) Array.newInstance(clazz, 0));
+            return result.size() > 0 ? result.toArray((T[]) Array.newInstance(clazz, 0)) : null;
         }
         return null;
     }
