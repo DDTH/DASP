@@ -216,6 +216,12 @@ public class IdGenerator {
         }
     }
 
+    private final static long MASK_TIMESTAMP_MINI = 0x1FFFFFFFFFFL; // 41 bits
+    private final static long MASK_NODE_ID_MINI = 0x0L; // 0 bits
+    private final static long MASK_SEQUENCE_MINI = 0x7FL; // 7 bits
+    private final static long SHIFT_TIMESTAMP_MINI = 7L;
+    private final static long SHIFT_NODE_ID_MINI = 7L;
+
     private final static long MASK_TIMESTAMP_48 = 0xFFFFFFFFL; // 32 bits
     private final static long MASK_NODE_ID_48 = 0x7L; // 3 bits
     private final static long MASK_SEQUENCE_48 = 0x1FFFL; // 13 bits
@@ -236,7 +242,7 @@ public class IdGenerator {
     private final static long SHIFT_NODE_ID_128 = 16L;
 
     private long nodeId;
-    private long template48, template64;
+    private long template48, template64, templateMini;
     private BigInteger template128;
     private AtomicLong sequence = new AtomicLong();
     private AtomicLong lastTimestamp = new AtomicLong();
@@ -246,6 +252,7 @@ public class IdGenerator {
     }
 
     protected void init() {
+        this.templateMini = (this.nodeId & MASK_NODE_ID_MINI) << SHIFT_NODE_ID_MINI;
         this.template64 = (this.nodeId & MASK_NODE_ID_64) << SHIFT_NODE_ID_64;
         this.template48 = (this.nodeId & MASK_NODE_ID_48) << SHIFT_NODE_ID_48;
         this.template128 = BigInteger
@@ -300,6 +307,87 @@ public class IdGenerator {
         return Long.toString(id, Character.MAX_RADIX);
     }
 
+    /* mini id */
+    /**
+     * Extracts the (UNIX) timestamp from a mini id.
+     * 
+     * @param idMini
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestampMini(long idMini) {
+        long timestamp = (idMini >> SHIFT_TIMESTAMP_MINI) + TIMESTAMP_EPOCH;
+        return timestamp;
+    }
+
+    /**
+     * Extracts the (UNIX) timestamp from a mini hex id.
+     * 
+     * @param idMinihex
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestampMini(String idMinihex) {
+        long idMini = Long.parseLong(idMinihex, 16);
+        return extractTimestampMini(idMini);
+    }
+
+    /**
+     * Extracts the (UNIX) timestamp from a mini ASCII id (radix 36).
+     * 
+     * @param idMiniascii
+     * @return the UNIX timestamp (milliseconds)
+     */
+    public static long extractTimestampMiniAscii(String idMiniAscii) {
+        long idMini = Long.parseLong(idMiniAscii, Character.MAX_RADIX);
+        return extractTimestampMini(idMini);
+    }
+
+    /**
+     * Generates a mini id.
+     * 
+     * Format: <41-bit: timestamp><0-bit: node id><7 bit: sequence number>
+     * 
+     * @return
+     */
+    synchronized public long generateIdMini() {
+        long timestamp = System.currentTimeMillis();
+        long sequence = 0;
+        if (timestamp == this.lastTimestamp.get()) {
+            // increase sequence
+            sequence = this.sequence.incrementAndGet();
+        } else {
+            // reset sequence
+            this.sequence.set(sequence);
+            this.lastTimestamp.set(timestamp);
+        }
+        timestamp = (timestamp - TIMESTAMP_EPOCH) & MASK_TIMESTAMP_MINI;
+        long result = timestamp << SHIFT_TIMESTAMP_MINI | templateMini
+                | (sequence & MASK_SEQUENCE_MINI);
+        return result;
+    }
+
+    /**
+     * Generate a mini id as hex string.
+     * 
+     * @return
+     */
+    public String generateIdMiniHex() {
+        long id = generateIdMini();
+        return Long.toHexString(id);
+    }
+
+    /**
+     * Generate a mini id as ASCII string (radix 36).
+     * 
+     * @return
+     */
+    public String generateIdMiniAscii() {
+        long id = generateIdMini();
+        return Long.toString(id, Character.MAX_RADIX);
+    }
+
+    /* mini id */
+
+    /* 64-bit id */
     /**
      * Extracts the (UNIX) timestamp from a 64-bit id.
      * 
@@ -318,7 +406,7 @@ public class IdGenerator {
      * @return the UNIX timestamp (milliseconds)
      */
     public static long extractTimestamp64(String id64hex) {
-        long id64 = parseLong(id64hex, 16);
+        long id64 = Long.parseLong(id64hex, 16);
         return extractTimestamp64(id64);
     }
 
@@ -376,6 +464,10 @@ public class IdGenerator {
         long id = generateId64();
         return Long.toString(id, Character.MAX_RADIX);
     }
+
+    /* 64-bit id */
+
+    /* 128-bit id */
 
     /**
      * Generates a 128-bit id.
@@ -456,6 +548,8 @@ public class IdGenerator {
         BigInteger id128 = new BigInteger(id128ascii, Character.MAX_RADIX);
         return extractTimestamp128(id128);
     }
+
+    /* 128-bit id */
 
     public static void main(String... args) throws InterruptedException {
         System.out.println('a' < 'A');
