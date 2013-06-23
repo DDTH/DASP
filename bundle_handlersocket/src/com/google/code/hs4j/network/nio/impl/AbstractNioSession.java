@@ -10,7 +10,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Arrays;
 
 import com.google.code.hs4j.network.buffer.IoBuffer;
 import com.google.code.hs4j.network.core.EventType;

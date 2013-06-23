@@ -1,4 +1,11 @@
-DASP bootstrap
+DASP bootstrap & system services
+
+## History ##
+### v0.1.1 (2013-06-20) ###
+
+- *ddth.dasp.common.redis*: [Redis](http://redis.io) client factory and utilities.
+
+### v0.1.0 (too old to remember) ###
 
 ## OSGi remote shell configurations ##
 The remote shell provides a simple telnet interface to manage OSGi bundles. The IP and Port to bind can be configured via `servlet/common/web.xml`:

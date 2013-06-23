@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.code.hs4j.Command;
 import com.google.code.hs4j.CommandFactory;
-import com.google.code.hs4j.FindOperator;
 import com.google.code.hs4j.Filter;
+import com.google.code.hs4j.FindOperator;
 import com.google.code.hs4j.HSClient;
 import com.google.code.hs4j.HSClientStateListener;
 import com.google.code.hs4j.IndexSession;

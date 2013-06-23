@@ -4,7 +4,9 @@
  * http://creativecommons.org/licenses/publicdomain
  */
 package com.google.code.hs4j.network.util;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link BlockingQueue} in which producers may wait for consumers

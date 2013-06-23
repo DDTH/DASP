@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.code.hs4j.Command;
 import com.google.code.hs4j.network.buffer.IoBuffer;
-import com.google.code.hs4j.network.core.Session;
 import com.google.code.hs4j.network.core.CodecFactory.Decoder;
+import com.google.code.hs4j.network.core.Session;
 import com.google.code.hs4j.network.hs.HandlerSocketSession;
 
 /**

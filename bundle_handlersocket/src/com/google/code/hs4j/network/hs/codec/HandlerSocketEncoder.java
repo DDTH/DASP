@@ -13,8 +13,8 @@ package com.google.code.hs4j.network.hs.codec;
 
 import com.google.code.hs4j.Command;
 import com.google.code.hs4j.network.buffer.IoBuffer;
-import com.google.code.hs4j.network.core.Session;
 import com.google.code.hs4j.network.core.CodecFactory.Encoder;
+import com.google.code.hs4j.network.core.Session;
 
 /**
  * HandlerSocket protocol encoder

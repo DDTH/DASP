@@ -22,9 +22,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/org.apache.felix.main-4.0.2.jar"/>
 	<classpathentry kind="lib" path="resources/lib/freemarker-2.3.19.jar" sourcepath="/JavaSources/freemarker/2.3.19/freemarker-2.3.19-src.zip"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.org.apache.log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.slf4j.api-1.5.6.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.slf4j.log4j-1.5.6.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/00.log/com.springsource.slf4j.org.apache.commons.logging-1.5.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-collections-3.2.1.jar"/>
@@ -72,5 +69,8 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.transaction-3.1.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web-3.1.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web.servlet-3.1.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/slf4j-jcl-1.6.2.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jedis-2.2.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/jboss-serialization-1.0.3.GA.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
