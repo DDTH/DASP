@@ -1,6 +1,12 @@
 DASP bootstrap & system services
 
 ## History ##
+
+### v0.2.0 (2013-06-26) ###
+
+- *ddth.dasp.common.hazelcastex*: [Hazelcast](http://www.hazelcast.com/) client factory and utilities.
+- *ddth.dasp.common.hazelcast*: is now deprecated.
+
 ### v0.1.1 (2013-06-20) ###
 
 - *ddth.dasp.common.redis*: [Redis](http://redis.io) client factory and utilities.
