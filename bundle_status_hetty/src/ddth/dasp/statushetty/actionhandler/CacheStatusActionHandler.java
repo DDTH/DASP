@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ddth.dasp.common.DaspGlobal;
-import ddth.dasp.common.hazelcast.HazelcastClientFactory;
-import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
 import ddth.dasp.framework.cache.ICacheManager;
 import ddth.dasp.framework.cache.hazelcast.HazelcastCacheManager;
 
@@ -38,9 +36,7 @@ public class CacheStatusActionHandler extends BaseActionHandler {
             modelEntry.put("id", entry.getKey());
             modelEntry.put("cacheManager", cacheManager);
             if (cacheManager instanceof HazelcastCacheManager) {
-                IHazelcastClientFactory hcf = ((HazelcastCacheManager) cacheManager)
-                        .getHazelcastClientFactory();
-                List<String> servers = ((HazelcastClientFactory) hcf).getHazelcastServers();
+                List<String> servers = ((HazelcastCacheManager) cacheManager).getHazelcastServers();
                 modelEntry.put("cacheServer", servers != null ? servers.toString() : "null");
             } else {
                 modelEntry.put("cacheServer", "-");
