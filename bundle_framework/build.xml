@@ -13,7 +13,7 @@
 		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.framework" />
-	<property name="product.version" value="0.1.1" />
+	<property name="product.version" value="0.1.2" />
 	<property name="product.version.micro" value="${product.version}.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">

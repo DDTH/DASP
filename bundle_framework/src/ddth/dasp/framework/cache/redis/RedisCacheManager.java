@@ -2,7 +2,6 @@ package ddth.dasp.framework.cache.redis;
 
 import ddth.dasp.common.redis.IRedisClient;
 import ddth.dasp.common.redis.IRedisClientFactory;
-import ddth.dasp.common.redis.PoolConfig;
 import ddth.dasp.common.redis.impl.jedis.RedisClientFactory;
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
@@ -20,9 +19,8 @@ public class RedisCacheManager extends AbstractCacheManager {
     private IRedisClientFactory redisClientFactory;
     private String redisHost = "localhost", redisUsername, redisPassword;
     private int redisPort = IRedisClient.DEFAULT_REDIS_PORT;
-    private PoolConfig poolConfig;
 
-    protected IRedisClientFactory getRedisClientFactory() {
+    public IRedisClientFactory getRedisClientFactory() {
         return redisClientFactory;
     }
 
@@ -40,7 +38,7 @@ public class RedisCacheManager extends AbstractCacheManager {
         return this;
     }
 
-    public String getRedisUsername() {
+    protected String getRedisUsername() {
         return redisUsername;
     }
 
@@ -49,7 +47,7 @@ public class RedisCacheManager extends AbstractCacheManager {
         return this;
     }
 
-    public String getRedisPassword() {
+    protected String getRedisPassword() {
         return redisPassword;
     }
 
@@ -64,15 +62,6 @@ public class RedisCacheManager extends AbstractCacheManager {
 
     public RedisCacheManager setRedisPort(int redisPort) {
         this.redisPort = redisPort;
-        return this;
-    }
-
-    public PoolConfig getPoolConfig() {
-        return poolConfig;
-    }
-
-    public RedisCacheManager setPoolConfig(PoolConfig poolConfig) {
-        this.poolConfig = poolConfig;
         return this;
     }
 

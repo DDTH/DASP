@@ -2,8 +2,8 @@ package ddth.dasp.framework.cache.hazelcast;
 
 import java.util.List;
 
-import ddth.dasp.common.hazelcast.HazelcastClientFactory;
-import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
+import ddth.dasp.common.hazelcastex.IHazelcastClientFactory;
+import ddth.dasp.common.hazelcastex.impl.HazelcastClientFactory;
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -16,33 +16,46 @@ import ddth.dasp.framework.cache.ICacheManager;
  */
 public class HazelcastCacheManager extends AbstractCacheManager {
 
-    private IHazelcastClientFactory hazelcastClientFactory;
     private boolean myOwnHazelcastClientFactory = false;
-    private String hazelcastUsername, hazelcastPassword;
+    private IHazelcastClientFactory hazelcastClientFactory;
     private List<String> hazelcastServers;
+    private String hazelcastUsername, hazelcastPassword;
 
     public IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
     }
 
-    public void setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
+    public HazelcastCacheManager setHazelcastClientFactory(
+            IHazelcastClientFactory hazelcastClientFactory) {
         this.hazelcastClientFactory = hazelcastClientFactory;
+        return this;
     }
 
-    public void setHazelcastUsername(String hazelcastUsername) {
+    protected String getHazelcastUsername() {
+        return hazelcastUsername;
+    }
+
+    public HazelcastCacheManager setHazelcastUsername(String hazelcastUsername) {
         this.hazelcastUsername = hazelcastUsername;
+        return this;
     }
 
-    public void setHazelcastPassword(String hazelcastPassword) {
+    protected String getHazelcastPassword() {
+        return hazelcastPassword;
+    }
+
+    public HazelcastCacheManager setHazelcastPassword(String hazelcastPassword) {
         this.hazelcastPassword = hazelcastPassword;
-    }
-
-    public void setHazelcastServers(List<String> hazelcastServers) {
-        this.hazelcastServers = hazelcastServers;
+        return this;
     }
 
     public List<String> getHazelcastServers() {
         return hazelcastServers;
+    }
+
+    public HazelcastCacheManager setHazelcastServers(List<String> hazelcastServers) {
+        this.hazelcastServers = hazelcastServers;
+        return this;
     }
 
     /**
@@ -53,9 +66,6 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         super.init();
         if (hazelcastClientFactory == null) {
             HazelcastClientFactory hzcf = new HazelcastClientFactory();
-            hzcf.setHazelcastUsername(hazelcastUsername);
-            hzcf.setHazelcastPassword(hazelcastPassword);
-            hzcf.setHazelcastServers(hazelcastServers);
             hzcf.init();
             hazelcastClientFactory = hzcf;
             myOwnHazelcastClientFactory = true;
@@ -86,6 +96,10 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         cache.setCapacity(capacity > 0 ? capacity : getDefaultCacheCapacity());
         cache.setExpireAfterAccess(expireAfterAccess);
         cache.setExpireAfterWrite(expireAfterWrite);
+
+        cache.setHazelcastServer(hazelcastServers).setHazelcastUsername(hazelcastUsername)
+                .setHazelcastPassword(hazelcastPassword);
+
         cache.init();
         return cache;
     }
