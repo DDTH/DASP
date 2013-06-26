@@ -43,7 +43,7 @@ public interface IHazelcastClient {
      * 
      * @param mapName
      */
-    public boolean deleteAllMapEntries(String mapName);
+    public boolean mapDeleteAll(String mapName);
 
     /**
      * Deletes a value from a map.
@@ -51,7 +51,7 @@ public interface IHazelcastClient {
      * @param mapName
      * @param key
      */
-    public boolean deleteFromMap(String mapName, String key);
+    public boolean mapDelete(String mapName, String key);
 
     /**
      * Updates TTL of a map entry.
@@ -60,7 +60,7 @@ public interface IHazelcastClient {
      * @param key
      * @param ttlSeconds
      */
-    public boolean expireMapEntry(String mapName, String key, int ttlSeconds);
+    public boolean mapSetExpiry(String mapName, String key, int ttlSeconds);
 
     /**
      * Gets a value from a map.
@@ -70,7 +70,7 @@ public interface IHazelcastClient {
      * @param ttlSeconds
      * @return
      */
-    public Object getFromMap(String mapName, String key);
+    public Object mapGet(String mapName, String key);
 
     /**
      * Puts a value to a map.
@@ -80,37 +80,45 @@ public interface IHazelcastClient {
      * @param value
      * @param ttlSeconds
      */
-    public boolean putToMap(String mapName, String key, Object value, int ttlSeconds);
+    public boolean mapSet(String mapName, String key, Object value, int ttlSeconds);
 
     /**
-     * Gets an item from queue.
+     * Gets number of items of a map.
+     * 
+     * @param mapName
+     * @return
+     */
+    public int mapSize(String mapName);
+
+    /**
+     * Polls an item from queue.
      * 
      * @param queueName
      * @return
      */
-    public Object getFromQueue(String queueName);
+    public Object queuePoll(String queueName);
 
     /**
-     * Gets an item from queue.
+     * Polls an item from queue.
      * 
      * @param queueName
      * @param timeout
      * @param timeoutTimeUnit
      * @return
      */
-    public Object getFromQueue(String queueName, long timeout, TimeUnit timeoutTimeUnit);
+    public Object queuePoll(String queueName, long timeout, TimeUnit timeoutTimeUnit);
 
     /**
-     * Puts an item to a queue.
+     * Pushes an item to a queue.
      * 
      * @param queueName
      * @param value
      * @return
      */
-    public boolean putToQueue(String queueName, String value);
+    public boolean queuePush(String queueName, String value);
 
     /**
-     * Puts an item to queue.
+     * Pushes an item to queue.
      * 
      * @param queueName
      * @param value
@@ -118,7 +126,15 @@ public interface IHazelcastClient {
      * @param timeoutTimeUnit
      * @return
      */
-    public boolean putToQueue(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit);
+    public boolean queuePush(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit);
+
+    /**
+     * Gets number of items of a queue.
+     * 
+     * @param queueName
+     * @return
+     */
+    public int queueSize(String queueName);
 
     /**
      * Publishes to a topic.

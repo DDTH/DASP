@@ -109,7 +109,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean deleteAllMapEntries(String mapName) {
+    public boolean mapDeleteAll(String mapName) {
         IMap<String, Object> map = hazelcastClient.getMap(mapName);
         if (map != null) {
             map.clear();
@@ -122,7 +122,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean deleteFromMap(String mapName, String key) {
+    public boolean mapDelete(String mapName, String key) {
         IMap<String, Object> map = hazelcastClient.getMap(mapName);
         if (map != null) {
             map.remove(key);
@@ -135,7 +135,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean expireMapEntry(String mapName, String key, int ttlSeconds) {
+    public boolean mapSetExpiry(String mapName, String key, int ttlSeconds) {
         if (ttlSeconds > 0) {
             IMap<String, Object> map = hazelcastClient.getMap(mapName);
             Object value = map != null ? map.get(key) : null;
@@ -151,7 +151,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public Object getFromMap(String mapName, String key) {
+    public Object mapGet(String mapName, String key) {
         IMap<String, Object> map = hazelcastClient.getMap(mapName);
         return map != null ? map.get(key) : null;
     }
@@ -160,7 +160,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean putToMap(String mapName, String key, Object value, int ttlSeconds) {
+    public boolean mapSet(String mapName, String key, Object value, int ttlSeconds) {
         IMap<String, Object> map = hazelcastClient.getMap(mapName);
         if (map != null) {
             if (ttlSeconds > 0) {
@@ -177,15 +177,24 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public Object getFromQueue(String queueName) {
-        return getFromQueue(queueName, DEFAULT_TIMEOUT, DEFAULT_TIMEUNIT);
+    public int mapSize(String mapName) {
+        IMap<String, Object> map = hazelcastClient.getMap(mapName);
+        return map != null ? map.size() : -1;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object getFromQueue(String queueName, long timeout, TimeUnit timeoutTimeUnit) {
+    public Object queuePoll(String queueName) {
+        return queuePoll(queueName, DEFAULT_TIMEOUT, DEFAULT_TIMEUNIT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object queuePoll(String queueName, long timeout, TimeUnit timeoutTimeUnit) {
         IQueue<Object> queue = hazelcastClient.getQueue(queueName);
         try {
             return queue != null ? queue.poll(timeout, timeoutTimeUnit) : null;
@@ -198,15 +207,15 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean putToQueue(String queueName, String value) {
-        return putToQueue(queueName, value, DEFAULT_TIMEOUT, DEFAULT_TIMEUNIT);
+    public boolean queuePush(String queueName, String value) {
+        return queuePush(queueName, value, DEFAULT_TIMEOUT, DEFAULT_TIMEUNIT);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean putToQueue(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit) {
+    public boolean queuePush(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit) {
         IQueue<Object> queue = hazelcastClient.getQueue(queueName);
         if (queue != null) {
             try {
@@ -216,6 +225,15 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
             }
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int queueSize(String queueName) {
+        IQueue<Object> queue = hazelcastClient.getQueue(queueName);
+        return queue != null ? queue.size() : -1;
     }
 
     /**
