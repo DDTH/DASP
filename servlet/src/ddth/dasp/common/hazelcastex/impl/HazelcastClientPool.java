@@ -1,9 +1,13 @@
 package ddth.dasp.common.hazelcastex.impl;
 
+import java.util.Set;
+
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.hazelcast.util.ConcurrentHashSet;
 
 import ddth.dasp.common.hazelcastex.IHazelcastClient;
 import ddth.dasp.common.hazelcastex.IHazelcastClientPool;
@@ -14,6 +18,7 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
 
     private Logger LOGGER = LoggerFactory.getLogger(HazelcastClientPool.class);
     private PoolConfig poolConfig;
+    private Set<IHazelcastClient> activeClients = new ConcurrentHashSet<IHazelcastClient>();
 
     public HazelcastClientPool(PoolableObjectFactory<AbstractHazelcastClient> factory,
             PoolConfig poolConfig) {
@@ -21,6 +26,25 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
         setPoolConfig(poolConfig);
         setTestOnBorrow(true);
         setTestWhileIdle(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void init() {
+        // EMPTY
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() throws Exception {
+        try {
+
+        } finally {
+            super.close();
+        }
     }
 
     public HazelcastClientPool setPoolConfig(PoolConfig poolConfig) {
@@ -57,7 +81,23 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
         if (hazelcastClient != null) {
             hazelcastClient.setHazelcastClientPool(this);
         }
+        activeClients.add(hazelcastClient);
         return hazelcastClient;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws Exception
+     */
+    @Override
+    public void returnObject(AbstractHazelcastClient hazelcastClient) throws Exception {
+        try {
+            super.returnObject(hazelcastClient);
+            // super.invalidateObject(hazelcastClient);
+        } finally {
+            activeClients.remove(hazelcastClient);
+        }
     }
 
     /**

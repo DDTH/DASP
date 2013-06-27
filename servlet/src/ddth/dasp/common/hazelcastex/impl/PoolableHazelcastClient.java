@@ -197,8 +197,9 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
     public Object queuePoll(String queueName, long timeout, TimeUnit timeoutTimeUnit) {
         IQueue<Object> queue = hazelcastClient.getQueue(queueName);
         try {
-            return queue != null ? queue.poll(timeout, timeoutTimeUnit) : null;
-        } catch (InterruptedException e) {
+            return queue != null ? ((timeout <= 0 || timeoutTimeUnit == null) ? queue.poll()
+                    : queue.poll(timeout, timeoutTimeUnit)) : null;
+        } catch (Exception e) {
             return null;
         }
     }
@@ -207,7 +208,7 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean queuePush(String queueName, String value) {
+    public boolean queuePush(String queueName, Object value) {
         return queuePush(queueName, value, DEFAULT_TIMEOUT, DEFAULT_TIMEUNIT);
     }
 
@@ -215,12 +216,13 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      * {@inheritDoc}
      */
     @Override
-    public boolean queuePush(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit) {
+    public boolean queuePush(String queueName, Object value, long timeout, TimeUnit timeoutTimeUnit) {
         IQueue<Object> queue = hazelcastClient.getQueue(queueName);
         if (queue != null) {
             try {
-                return queue.offer(value, timeout, timeoutTimeUnit);
-            } catch (InterruptedException e) {
+                return (timeout <= 0 || timeoutTimeUnit == null) ? queue.offer(value) : queue
+                        .offer(value, timeout, timeoutTimeUnit);
+            } catch (Exception e) {
                 return false;
             }
         }

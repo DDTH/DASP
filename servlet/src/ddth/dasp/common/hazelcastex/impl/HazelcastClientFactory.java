@@ -24,6 +24,7 @@ public class HazelcastClientFactory extends AbstractHazelcastClientFactory {
         HazelcastClientPoolableObjectFactory factory = new HazelcastClientPoolableObjectFactory(
                 servers, username, password);
         HazelcastClientPool hazelcastClientPool = new HazelcastClientPool(factory, poolConfig);
+        hazelcastClientPool.init();
         return hazelcastClientPool;
     }
 }

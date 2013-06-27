@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 public interface IHazelcastClient {
 
     public final static int DEFAULT_HAZELCAST_PORT = 5701;
-    public final static long DEFAULT_TIMEOUT = 3;
-    public final static TimeUnit DEFAULT_TIMEUNIT = TimeUnit.SECONDS;
+    public final static long DEFAULT_TIMEOUT = 0;
+    public final static TimeUnit DEFAULT_TIMEUNIT = null;
 
     /**
      * Initializes this Hazelcast client before use. The Hazelcast client is not
@@ -115,7 +115,7 @@ public interface IHazelcastClient {
      * @param value
      * @return
      */
-    public boolean queuePush(String queueName, String value);
+    public boolean queuePush(String queueName, Object value);
 
     /**
      * Pushes an item to queue.
@@ -126,7 +126,7 @@ public interface IHazelcastClient {
      * @param timeoutTimeUnit
      * @return
      */
-    public boolean queuePush(String queueName, String value, long timeout, TimeUnit timeoutTimeUnit);
+    public boolean queuePush(String queueName, Object value, long timeout, TimeUnit timeoutTimeUnit);
 
     /**
      * Gets number of items of a queue.
