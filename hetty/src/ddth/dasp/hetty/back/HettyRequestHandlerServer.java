@@ -129,7 +129,7 @@ public class HettyRequestHandlerServer {
         if (queueTimeMs > 10000) {
             // in queue more than 10 secs
             String msg = "Request [" + request.getId() + ":" + request.getUri()
-                    + "] has stayed in queue too long!";
+                    + "] has stayed in queue too long [" + queueTimeMs + " ms]!";
             IResponse response = ResponseUtils.newResponse(request).setStatus(408)
                     .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(msg);
             topicPublisher.publish(topicName, response, writeTimeoutMillisecs,

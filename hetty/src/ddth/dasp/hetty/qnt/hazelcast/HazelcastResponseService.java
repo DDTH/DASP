@@ -24,7 +24,7 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     private PoolConfig poolConfig;
     private IMessageFactory messageFactory;
     private String topicName;
-    private boolean _listening = false;
+    private boolean _listening = false, _destroyed = false;
 
     protected String getTopicName() {
         return topicName;
@@ -89,12 +89,51 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
         this.messageFactory = messageFactory;
     }
 
+    private class MessageListenerKeeper implements Runnable {
+        private IMessageListener<Object> messageListener;
+
+        public MessageListenerKeeper(IMessageListener<Object> messageListener) {
+            this.messageListener = messageListener;
+        }
+
+        private void ping() {
+            try {
+                if (!_hazelcastClient.ping()) {
+                    unsubscribe();
+                }
+            } catch (Exception e) {
+                _listening = false;
+                returnHazelcastClient();
+            }
+        }
+
+        @Override
+        public void run() {
+            if (!_destroyed) {
+                try {
+                    if (_listening) {
+                        ping();
+                    } else {
+                        IHazelcastClient hazelcastClient = getHazelcastClient();
+                        if (hazelcastClient != null) {
+                            hazelcastClient.subscribe(topicName, messageListener);
+                            _listening = true;
+                        }
+                    }
+                } finally {
+                    DaspGlobal.getScheduler().schedule(this, 5000, TimeUnit.MILLISECONDS);
+                }
+            }
+        }
+    }
+
     public void init() {
-        Runnable command = new MessageListenerBootstrap(this);
+        Runnable command = new MessageListenerKeeper(this);
         DaspGlobal.getScheduler().schedule(command, 10000, TimeUnit.MILLISECONDS);
     }
 
     public void destroy() {
+        _destroyed = false;
         try {
             unsubscribe();
         } finally {
@@ -116,30 +155,7 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
         try {
             hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
         } finally {
-            hazelcastClientFactory = null;
-        }
-    }
-
-    private class MessageListenerBootstrap implements Runnable {
-        private IMessageListener<Object> messageListener;
-
-        public MessageListenerBootstrap(IMessageListener<Object> messageListener) {
-            this.messageListener = messageListener;
-        }
-
-        @Override
-        public void run() {
-            if (!_listening) {
-                IHazelcastClient hazelcastClient = getHazelcastClient();
-                if (hazelcastClient != null) {
-                    hazelcastClient.subscribe(topicName, messageListener);
-                    _listening = true;
-                }
-            }
-            // if (!_listening) {
-            // DaspGlobal.getScheduler().schedule(this, 5000,
-            // TimeUnit.MILLISECONDS);
-            // }
+            _hazelcastClient = null;
         }
     }
 
