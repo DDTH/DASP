@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.MessageListener;
 
+@Deprecated
 public interface IHazelcastClientFactory {
     public HazelcastClient getHazelcastClient();
 

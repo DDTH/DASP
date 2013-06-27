@@ -50,6 +50,7 @@ import ddth.dasp.common.id.IdGenerator;
  * @see #unsubscribeFromTopic(String, MessageListener)
  * @see #publishToTopic(String, Object)
  */
+@Deprecated
 public class HazelcastClientFactory implements IHazelcastClientFactory {
 
     private final static long DEFAULT_TIMEOUT = 5000;
