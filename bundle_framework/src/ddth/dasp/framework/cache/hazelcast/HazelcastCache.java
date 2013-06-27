@@ -115,21 +115,22 @@ public class HazelcastCache extends AbstractCache implements ICache {
         // EMPTY
     }
 
-    private IHazelcastClient hazelcastClient;
+    private IHazelcastClient _hazelcastClient;
 
     synchronized protected IHazelcastClient getHazelcastClient() {
-        if (hazelcastClient == null) {
-            hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
+        if (_hazelcastClient == null) {
+            _hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
                     hazelcastUsername, hazelcastPassword, poolConfig);
         }
-        return hazelcastClient;
+        return _hazelcastClient;
     }
 
     synchronized protected void returnHazelcastClient() {
-        if (hazelcastClient != null) {
-            hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+        try {
+            hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
+        } finally {
+            _hazelcastClient = null;
         }
-        hazelcastClient = null;
     }
 
     /**
