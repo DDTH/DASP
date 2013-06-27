@@ -18,7 +18,7 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
 
     private Logger LOGGER = LoggerFactory.getLogger(HazelcastClientPool.class);
     private PoolConfig poolConfig;
-    private Set<IHazelcastClient> activeClients = new ConcurrentHashSet<IHazelcastClient>();
+    private Set<AbstractHazelcastClient> activeClients = new ConcurrentHashSet<AbstractHazelcastClient>();
 
     public HazelcastClientPool(PoolableObjectFactory<AbstractHazelcastClient> factory,
             PoolConfig poolConfig) {
@@ -41,7 +41,9 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
     @Override
     public void close() throws Exception {
         try {
-
+            for (AbstractHazelcastClient client : activeClients) {
+                invalidateObject(client);
+            }
         } finally {
             super.close();
         }
