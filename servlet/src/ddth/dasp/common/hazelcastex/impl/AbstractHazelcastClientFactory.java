@@ -118,6 +118,8 @@ public abstract class AbstractHazelcastClientFactory implements IHazelcastClient
      */
     @Override
     public void returnHazelcastClient(IHazelcastClient hazelcastClient) {
-        hazelcastClient.close();
+        if (hazelcastClient != null) {
+            hazelcastClient.close();
+        }
     }
 }

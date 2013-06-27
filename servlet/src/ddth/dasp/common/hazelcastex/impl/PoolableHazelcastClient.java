@@ -97,10 +97,12 @@ public class PoolableHazelcastClient extends AbstractHazelcastClient {
      */
     @Override
     public boolean ping() {
-        AtomicNumber ping = hazelcastClient.getAtomicNumber("_PING_");
-        if (ping != null) {
-            ping.incrementAndGet();
-            return true;
+        if (hazelcastClient.isActive()) {
+            AtomicNumber ping = hazelcastClient.getAtomicNumber("_PING_");
+            if (ping != null) {
+                ping.incrementAndGet();
+                return true;
+            }
         }
         return false;
     }
