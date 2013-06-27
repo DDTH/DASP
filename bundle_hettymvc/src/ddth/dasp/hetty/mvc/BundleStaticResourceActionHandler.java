@@ -127,7 +127,8 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
      * {@inheritDoc}
      */
     @Override
-    public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception {
+    public void handleRequest(IRequest request, ITopicPublisher topicPublisher, String topicName)
+            throws Exception {
         String path = request.getPath();
         if (module != null && path.startsWith("/" + module)) {
             path = path.substring(module.length() + 1);
@@ -161,6 +162,6 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
         } else {
             response = ResponseUtils.response404(request);
         }
-        topicPublisher.publishToTopic(response);
+        topicPublisher.publish(topicName, response);
     }
 }

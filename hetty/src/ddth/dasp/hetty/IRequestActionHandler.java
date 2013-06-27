@@ -8,5 +8,6 @@ public interface IRequestActionHandler {
     public final static String FILTER_KEY_MODULE = "Module";
     public final static String FILTER_KEY_ACTION = "Action";
 
-    public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception;
+    public void handleRequest(IRequest request, ITopicPublisher topicPublisher, String topicName)
+            throws Exception;
 }

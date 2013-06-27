@@ -101,8 +101,8 @@ public abstract class CacheViewResolver implements IViewResolver {
 
     protected static class NullView implements IView {
         @Override
-        public void render(IRequest request, Object model, ITopicPublisher topicPublisher)
-                throws Exception {
+        public void render(IRequest request, Object model, ITopicPublisher topicPublisher,
+                String topicName) throws Exception {
             // empty
         }
     }

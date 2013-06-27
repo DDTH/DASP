@@ -2,8 +2,6 @@ package ddth.dasp.hetty.front;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +28,9 @@ public class HettyConnServer {
             HettyConnServer.class.getCanonicalName());
     private final Logger LOGGER = LoggerFactory.getLogger(HettyConnServer.class);
 
-    private static ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    // private static ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping
+    // = new ConcurrentHashMap<String, IQueueWriter>();
+    private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
     private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
     private int numWorkers = 32;
@@ -50,7 +50,7 @@ public class HettyConnServer {
      * @param queueWriter
      */
     public static void mapHostQueueWriter(String host, IQueueWriter queueWriter) {
-        hostQueueWriterMapping.put(host, queueWriter);
+        // hostQueueWriterMapping.put(host, queueWriter);
         if (hettyPipelineFactory != null) {
             hettyPipelineFactory.mapHostQueueWriter(host, queueWriter);
         }
@@ -62,21 +62,31 @@ public class HettyConnServer {
      * @param host
      */
     public static void unmapHostQueueWriter(String host) {
-        hostQueueWriterMapping.remove(host);
+        // hostQueueWriterMapping.remove(host);
         if (hettyPipelineFactory != null) {
             hettyPipelineFactory.unmapHostQueueWriter(host);
         }
     }
 
     public Map<String, IQueueWriter> getHostQueueWriterMapping() {
-        return hostQueueWriterMapping;
+        return null;
+        // return hostQueueWriterMapping;
     }
 
     public HettyConnServer setHostQueueWriterMapping(
             Map<String, IQueueWriter> hostQueueWriterMapping) {
         if (hostQueueWriterMapping != null) {
-            HettyConnServer.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
+            // HettyConnServer.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
         }
+        return this;
+    }
+
+    public IQueueWriter getQueueWriter() {
+        return queueWriter;
+    }
+
+    public HettyConnServer setQueueWriter(IQueueWriter queueWriter) {
+        this.queueWriter = queueWriter;
         return this;
     }
 
@@ -164,8 +174,8 @@ public class HettyConnServer {
         nettyServer = new ServerBootstrap(new NioServerSocketChannelFactory(serverBossPool,
                 workerPool));
         if (hettyPipelineFactory == null) {
-            hettyPipelineFactory = new HettyPipelineFactory(hostQueueWriterMapping, messageFactory,
-                    timer, readTimeoutMillisecs, writeTimeoutMillisecs);
+            hettyPipelineFactory = new HettyPipelineFactory(queueWriter, messageFactory, timer,
+                    readTimeoutMillisecs, writeTimeoutMillisecs);
         }
         nettyServer.setPipelineFactory(hettyPipelineFactory);
         nettyServer.setOption("child.tcpNoDelay", true);

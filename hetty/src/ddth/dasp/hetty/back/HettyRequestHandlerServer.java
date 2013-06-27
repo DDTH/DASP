@@ -12,6 +12,7 @@ import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.RequestLocal;
 import ddth.dasp.common.logging.ProfileLogger;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
+import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.IRequestActionHandler;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IRequest;
@@ -26,17 +27,23 @@ public class HettyRequestHandlerServer {
     private final Logger LOGGER = LoggerFactory.getLogger(HettyRequestHandlerServer.class);
 
     private IQueueReader queueReader;
+    private String queueName = HettyConstants.DEFAULT_HETTY_QUEUE;
+
     private ITopicPublisher topicPublisher;
+    private String topicName = HettyConstants.DEFAULT_HETTY_TOPIC;
+
     private long readTimeoutMillisecs = 5000, writeTimeoutMillisecs = 5000;
+
     private IRequestParser requestParser;
+    private IMessageFactory messageFactory;
+
     private int numWorkers = Runtime.getRuntime().availableProcessors();
     private Thread[] workerThreads;
-    private IMessageFactory messageFactory;
 
     public HettyRequestHandlerServer() {
     }
 
-    public IMessageFactory getMessageFactory() {
+    protected IMessageFactory getMessageFactory() {
         return messageFactory;
     }
 
@@ -45,7 +52,7 @@ public class HettyRequestHandlerServer {
         return this;
     }
 
-    public IQueueReader getQueueReader() {
+    protected IQueueReader getQueueReader() {
         return queueReader;
     }
 
@@ -54,12 +61,30 @@ public class HettyRequestHandlerServer {
         return this;
     }
 
-    public ITopicPublisher getTopicPublisher() {
+    protected ITopicPublisher getTopicPublisher() {
         return topicPublisher;
     }
 
     public HettyRequestHandlerServer setTopicPublisher(ITopicPublisher topicPublisher) {
         this.topicPublisher = topicPublisher;
+        return this;
+    }
+
+    protected String getQueueName() {
+        return queueName;
+    }
+
+    public HettyRequestHandlerServer setQueueName(String queueName) {
+        this.queueName = queueName;
+        return this;
+    }
+
+    protected String getTopicName() {
+        return topicName;
+    }
+
+    public HettyRequestHandlerServer setTopicName(String topicName) {
+        this.topicName = topicName;
         return this;
     }
 
@@ -107,7 +132,8 @@ public class HettyRequestHandlerServer {
                     + "] has stayed in queue too long!";
             IResponse response = ResponseUtils.newResponse(request).setStatus(408)
                     .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(msg);
-            topicPublisher.publishToTopic(response, writeTimeoutMillisecs, TimeUnit.MILLISECONDS);
+            topicPublisher.publish(topicName, response, writeTimeoutMillisecs,
+                    TimeUnit.MILLISECONDS);
             LOGGER.warn(msg);
         } else {
             internalHandleRequest(request);
@@ -145,10 +171,11 @@ public class HettyRequestHandlerServer {
             handler = osgiBootstrap.getService(IRequestActionHandler.class, filter);
         }
         if (handler != null) {
-            handler.handleRequest(request, topicPublisher);
+            handler.handleRequest(request, topicPublisher, topicName);
         } else {
             IResponse response = ResponseUtils.response404(request);
-            topicPublisher.publishToTopic(response, writeTimeoutMillisecs, TimeUnit.MILLISECONDS);
+            topicPublisher.publish(topicName, response, writeTimeoutMillisecs,
+                    TimeUnit.MILLISECONDS);
         }
     }
 
@@ -167,9 +194,14 @@ public class HettyRequestHandlerServer {
             Thread t = new Thread(HettyRequestHandlerServer.class.getName() + " - " + i) {
                 public void run() {
                     while (!interrupted()) {
-                        Object obj = queueReader.readFromQueue(readTimeoutMillisecs,
+                        Object obj = queueReader.queueRead(queueName, readTimeoutMillisecs,
                                 TimeUnit.MILLISECONDS);
                         if (obj == null) {
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             Thread.yield();
                         } else {
                             // init the request local
@@ -198,7 +230,7 @@ public class HettyRequestHandlerServer {
                                     try {
                                         IResponse response = ResponseUtils.response500(
                                                 (IRequest) obj, e.getMessage(), e);
-                                        topicPublisher.publishToTopic(response);
+                                        topicPublisher.publish(topicName, response);
                                     } catch (Exception ex) {
                                         LOGGER.error(ex.getMessage(), ex);
                                     }

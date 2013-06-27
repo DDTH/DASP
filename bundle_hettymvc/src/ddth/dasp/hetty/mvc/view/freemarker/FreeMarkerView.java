@@ -55,14 +55,14 @@ public class FreeMarkerView implements IView {
      * {@inheritDoc}
      */
     @Override
-    public void render(IRequest request, Object model, ITopicPublisher topicPublisher)
-            throws Exception {
+    public void render(IRequest request, Object model, ITopicPublisher topicPublisher,
+            String topicName) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Writer out = new OutputStreamWriter(baos, encoding);
         template.process(model, out);
         out.flush();
         byte[] content = baos.toByteArray();
         IResponse response = ResponseUtils.response200(request, content, getContentType());
-        topicPublisher.publishToTopic(response);
+        topicPublisher.publish(topicName, response);
     }
 }

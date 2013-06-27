@@ -3,7 +3,6 @@ package ddth.dasp.hetty.front;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -27,6 +26,7 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.qnt.IQueueWriter;
@@ -36,15 +36,15 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     private HttpRequest currentRequest;
     private ByteArrayOutputStream currentRequestContent = new ByteArrayOutputStream(4096);
 
-    private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    private Map<String, Object> hostQueueNameMapping = new ConcurrentHashMap<String, Object>();
+    private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
-    public HettyHttpHandler(Map<String, IQueueWriter> hostQueueWriterMapping,
-            IMessageFactory messageFactory) {
-        if (hostQueueWriterMapping != null) {
-            this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
-        }
+    public HettyHttpHandler(IQueueWriter queueWriter, IMessageFactory messageFactory) {
+        this.queueWriter = queueWriter;
         this.messageFactory = messageFactory;
+        hostQueueNameMapping.put("127.0.0.1", HettyConstants.DEFAULT_HETTY_QUEUE);
+        hostQueueNameMapping.put("localhost", HettyConstants.DEFAULT_HETTY_QUEUE);
     }
 
     /**
@@ -61,12 +61,16 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         }
     }
 
-    private IQueueWriter lookupQueueWriter(String host) {
-        IQueueWriter queueWriter = hostQueueWriterMapping.get(host);
-        if (queueWriter == null) {
-            queueWriter = hostQueueWriterMapping.get("*");
+    private String lookupQueueName(String host, Object queueConfig) {
+        if (queueConfig instanceof Map<?, ?>) {
+            Object obj = ((Map<?, ?>) queueConfig).get(host);
+            if (obj == null) {
+                obj = ((Map<?, ?>) queueConfig).get("*");
+            }
+            return lookupQueueName(host, obj);
+        } else {
+            return queueConfig != null ? queueConfig.toString() : null;
         }
-        return queueWriter;
     }
 
     protected void handleRequest(HttpRequest httpRequest, byte[] requestContent, Channel userChannel)
@@ -91,10 +95,10 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
                 requestContent);
         String host = request.getDomain();
-        IQueueWriter queueWriter = lookupQueueWriter(host);
-        if (queueWriter != null) {
+        String queueName = lookupQueueName(host, hostQueueNameMapping);
+        if (queueName != null) {
             userChannel.setAttachment(request.getId());
-            if (!queueWriter.writeToQueue(request.serialize())) {
+            if (!queueWriter.queueWrite(queueName, request.serialize())) {
                 StringBuilder content = new StringBuilder();
                 content.append("No request queue for [" + host + "], or queue is full!");
                 HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,

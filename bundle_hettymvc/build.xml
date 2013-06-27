@@ -15,7 +15,7 @@
 		<format property="MICROSTAMP" pattern="yyMMddHHmm" />
 	</tstamp>
 	<property name="product.name" value="ddth.dasp.hetty.mvc" />
-	<property name="product.version" value="0.1.0" />
+	<property name="product.version" value="0.2.0" />
 	<property name="product.version.micro" value="${product.version}.${MICROSTAMP}" />
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">

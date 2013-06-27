@@ -11,15 +11,15 @@ public class GuavaTopicPublisher implements ITopicPublisher {
      * {@inheritDoc}
      */
     @Override
-    public boolean publishToTopic(Object obj) {
-        return publishToTopic(obj, 5000, TimeUnit.MILLISECONDS);
+    public boolean publish(String topicName, Object obj) {
+        return publish(topicName, obj, 5000, TimeUnit.MILLISECONDS);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean publishToTopic(Object obj, long timeout, TimeUnit timeunit) {
+    public boolean publish(String topicName, Object obj, long timeout, TimeUnit timeunit) {
         GuavaUtils.EVENT_BUS.post(obj);
         return true;
     }

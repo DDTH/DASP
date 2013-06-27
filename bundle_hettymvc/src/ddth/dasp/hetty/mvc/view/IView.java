@@ -9,6 +9,6 @@ import ddth.dasp.hetty.qnt.ITopicPublisher;
  * @author NBThanh <btnguyen2k@gmail.com>
  */
 public interface IView {
-    public void render(IRequest request, Object model, ITopicPublisher topicPublisher)
-            throws Exception;
+    public void render(IRequest request, Object model, ITopicPublisher topicPublisher,
+            String topicName) throws Exception;
 }

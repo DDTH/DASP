@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author Thanh Ba Nguyen <btnguyen2k@gmail.com>
  */
-public class DefaultRequestParser implements IRequestParser {
+public class HettyRequestParser implements IRequestParser {
 
     public final static int PATH_PARAM_INDEX_MODULE = 0;
     public final static int PATH_PARAM_INDEX_ACTION = 1;

@@ -132,7 +132,8 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * {@inheritDoc}
      */
     @Override
-    public void handleRequest(IRequest request, ITopicPublisher topicPublisher) throws Exception {
+    public void handleRequest(IRequest request, ITopicPublisher topicPublisher, String topicName)
+            throws Exception {
         if (!preHandleRequest(request, topicPublisher)) {
             return;
         }
@@ -151,7 +152,7 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
         if (view instanceof IView) {
             Map<String, Object> model = view instanceof RedirectView ? null : buildViewModel();
             postHandleRequest(request, model, (IView) view);
-            ((IView) view).render(request, model, topicPublisher);
+            ((IView) view).render(request, model, topicPublisher, topicName);
         } else {
             postHandleRequest(request, null, null);
             String msg = "Can not resolve view for [" + oldView + "]!";

@@ -20,8 +20,9 @@ public class RedirectView implements IView {
     /**
      * {@inheritDoc}
      */
-    public void render(IRequest request, Object model, ITopicPublisher topicPublisher) {
+    public void render(IRequest request, Object model, ITopicPublisher topicPublisher,
+            String topicName) {
         IResponse response = ResponseUtils.response301(request, getUrl());
-        topicPublisher.publishToTopic(response);
+        topicPublisher.publish(topicName, response);
     }
 }

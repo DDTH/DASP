@@ -84,12 +84,12 @@
 		</property>
 	</bean>
 
-	<bean id="_requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+	<bean id="_requestParser" class="ddth.dasp.hetty.message.HettyRequestParser"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
 	</bean>
 
-	<bean id="_urlCreator" class="ddth.dasp.hetty.DefaultUrlCreator"
+	<bean id="_urlCreator" class="ddth.dasp.hetty.HettyUrlCreator"
 		scope="singleton">
 		<property name="urlSuffix" value=".html" />
 	</bean>
@@ -103,7 +103,7 @@
 		<property name="defaultContentType" value="text/html; charset=utf-8" />
 		<property name="dateFormat" value="yyyy-MM-dd" />
 		<property name="dateTimeFormat" value="yyyy-MM-dd HH:mm:ss" />
-		<property name="prefix" value="${skin}/page_" />
+		<property name="prefix" value="@{skin}/page_" />
 		<property name="suffix" value=".ftl" />
 		<property name="templateLoader" ref="_freemarkerTemplateLoader" />
 		<property name="enableCache" ref="_viewResolverEnableCache" />

@@ -1,43 +1,84 @@
 package ddth.dasp.hetty.qnt.hazelcast;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
-
 import ddth.dasp.common.DaspGlobal;
-import ddth.dasp.common.hazelcast.IHazelcastClientFactory;
+import ddth.dasp.common.hazelcastex.IHazelcastClient;
+import ddth.dasp.common.hazelcastex.IHazelcastClientFactory;
+import ddth.dasp.common.hazelcastex.IMessageListener;
+import ddth.dasp.common.hazelcastex.PoolConfig;
 import ddth.dasp.hetty.front.AbstractHettyResponseService;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IResponse;
 
 public class HazelcastResponseService extends AbstractHettyResponseService implements
-        MessageListener<Object> {
+        IMessageListener<Object> {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(HazelcastResponseService.class);
+    // private final Logger LOGGER =
+    // LoggerFactory.getLogger(HazelcastResponseService.class);
 
     private IHazelcastClientFactory hazelcastClientFactory;
+    private List<String> hazelcastServers;
+    private String hazelcastUsername, hazelcastPassword;
+    private PoolConfig poolConfig;
     private IMessageFactory messageFactory;
-    private String hazelcastTopicName;
+    private String topicName;
     private boolean _listening = false;
 
-    protected String getHazelcastTopicName() {
-        return hazelcastTopicName;
+    protected String getTopicName() {
+        return topicName;
     }
 
-    public void setHazelcastTopicName(String hazelcastTopicName) {
-        this.hazelcastTopicName = hazelcastTopicName;
+    public HazelcastResponseService setTopicName(String topicName) {
+        this.topicName = topicName;
+        return this;
     }
 
     protected IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
     }
 
-    public void setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
+    public HazelcastResponseService setHazelcastClientFactory(
+            IHazelcastClientFactory hazelcastClientFactory) {
         this.hazelcastClientFactory = hazelcastClientFactory;
+        return this;
+    }
+
+    protected List<String> getHazelcastServers() {
+        return hazelcastServers;
+    }
+
+    public HazelcastResponseService setHazelcastServers(List<String> hazelcastServers) {
+        this.hazelcastServers = hazelcastServers;
+        return this;
+    }
+
+    protected String getHazelcastUsername() {
+        return hazelcastUsername;
+    }
+
+    public HazelcastResponseService setHazelcastUsername(String hazelcastUsername) {
+        this.hazelcastUsername = hazelcastUsername;
+        return this;
+    }
+
+    protected String getHazelcastPassword() {
+        return hazelcastPassword;
+    }
+
+    public HazelcastResponseService setHazelcastPassword(String hazelcastPassword) {
+        this.hazelcastPassword = hazelcastPassword;
+        return this;
+    }
+
+    protected PoolConfig getPoolConfig() {
+        return poolConfig;
+    }
+
+    public HazelcastResponseService setPoolConfig(PoolConfig poolConfig) {
+        this.poolConfig = poolConfig;
+        return this;
     }
 
     protected IMessageFactory getMessageFactory() {
@@ -54,41 +95,78 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
     }
 
     public void destroy() {
-        _listening = false;
-        hazelcastClientFactory.unsubscribeFromTopic(hazelcastTopicName, this);
+        try {
+            unsubscribe();
+        } finally {
+            returnHazelcastClient();
+        }
+    }
+
+    private IHazelcastClient _hazelcastClient;
+
+    synchronized private IHazelcastClient getHazelcastClient() {
+        if (_hazelcastClient == null) {
+            _hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
+                    hazelcastUsername, hazelcastPassword, poolConfig);
+        }
+        return _hazelcastClient;
+    }
+
+    synchronized private void returnHazelcastClient() {
+        try {
+            hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
+        } finally {
+            hazelcastClientFactory = null;
+        }
     }
 
     private class MessageListenerBootstrap implements Runnable {
-        private MessageListener<Object> messageListener;
+        private IMessageListener<Object> messageListener;
 
-        public MessageListenerBootstrap(MessageListener<Object> messageListener) {
+        public MessageListenerBootstrap(IMessageListener<Object> messageListener) {
             this.messageListener = messageListener;
         }
 
         @Override
         public void run() {
             if (!_listening) {
-                try {
-                    hazelcastClientFactory.subcribeToTopic(hazelcastTopicName, messageListener);
+                IHazelcastClient hazelcastClient = getHazelcastClient();
+                if (hazelcastClient != null) {
+                    hazelcastClient.subscribe(topicName, messageListener);
                     _listening = true;
-                } catch (Exception e) {
-                    LOGGER.warn(e.getMessage(), e);
                 }
             }
-            if (!_listening) {
-                DaspGlobal.getScheduler().schedule(this, 5000, TimeUnit.MILLISECONDS);
-            }
+            // if (!_listening) {
+            // DaspGlobal.getScheduler().schedule(this, 5000,
+            // TimeUnit.MILLISECONDS);
+            // }
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void onMessage(Message<Object> message) {
-        Object obj = message.getMessageObject();
+    public void unsubscribe() {
+        try {
+            if (_hazelcastClient != null) {
+                _hazelcastClient.unsubscribe(topicName, this);
+            }
+        } finally {
+            _listening = false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onMessage(Object message) {
         IResponse response = null;
-        if (obj instanceof byte[]) {
-            response = messageFactory.deserializeResponse((byte[]) obj);
-        } else if (obj instanceof IResponse) {
-            response = (IResponse) obj;
+        if (message instanceof byte[]) {
+            response = messageFactory.deserializeResponse((byte[]) message);
+        } else if (message instanceof IResponse) {
+            response = (IResponse) message;
         }
         writeResponse(response);
     }

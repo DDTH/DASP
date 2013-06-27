@@ -1,8 +1,5 @@
 package ddth.dasp.hetty.front;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.channel.ChannelHandler;
@@ -22,15 +19,12 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
 
     private final ChannelHandler idleStateHandler;
 
-    private ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping = new ConcurrentHashMap<String, IQueueWriter>();
+    private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
-    public HettyPipelineFactory(Map<String, IQueueWriter> hostQueueWriterMapping,
-            IMessageFactory messageFactory, Timer timer, long readTimeoutMillisecs,
-            long writeTimeoutMillisecs) {
-        if (hostQueueWriterMapping != null) {
-            this.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
-        }
+    public HettyPipelineFactory(IQueueWriter queueWriter, IMessageFactory messageFactory,
+            Timer timer, long readTimeoutMillisecs, long writeTimeoutMillisecs) {
+        this.queueWriter = queueWriter;
         this.messageFactory = messageFactory;
         this.idleStateHandler = new IdleStateHandler(timer, readTimeoutMillisecs,
                 writeTimeoutMillisecs, 0, TimeUnit.MILLISECONDS);
@@ -43,7 +37,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
      * @param queueWriter
      */
     public void mapHostQueueWriter(String host, IQueueWriter queueWriter) {
-        hostQueueWriterMapping.put(host, queueWriter);
+        // hostQueueWriterMapping.put(host, queueWriter);
     }
 
     /**
@@ -52,7 +46,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
      * @param host
      */
     public void unmapHostQueueWriter(String host) {
-        hostQueueWriterMapping.remove(host);
+        // hostQueueWriterMapping.remove(host);
     }
 
     @Override
@@ -64,7 +58,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("timeout", idleStateHandler);
         // compression with minimum memory usage
         pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
-        pipeline.addLast("handler", new HettyHttpHandler(hostQueueWriterMapping, messageFactory));
+        pipeline.addLast("handler", new HettyHttpHandler(queueWriter, messageFactory));
         return pipeline;
     }
 }

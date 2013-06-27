@@ -3,7 +3,7 @@ package ddth.dasp.hetty.qnt;
 import java.util.concurrent.TimeUnit;
 
 public interface IQueueWriter {
-    public boolean writeToQueue(Object value);
+    public boolean queueWrite(String queueName, Object value);
 
-    public boolean writeToQueue(Object value, long timeout, TimeUnit timeUnit);
+    public boolean queueWrite(String queueName, Object value, long timeout, TimeUnit timeUnit);
 }
