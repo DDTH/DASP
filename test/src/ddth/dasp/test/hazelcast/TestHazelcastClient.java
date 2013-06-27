@@ -2,6 +2,7 @@ package ddth.dasp.test.hazelcast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ddth.dasp.common.hazelcastex.IHazelcastClient;
 import ddth.dasp.common.hazelcastex.IHazelcastClientFactory;
@@ -36,8 +37,50 @@ public class TestHazelcastClient {
         final List<String> hazelcastServers = new ArrayList<String>();
         hazelcastServers.add("localhost:8700");
 
-        IHazelcastClientFactory hazelcastClientFactory = new HazelcastClientFactory();
+        final IHazelcastClientFactory hazelcastClientFactory = new HazelcastClientFactory();
         hazelcastClientFactory.init();
+
+        Thread[] threads = new Thread[4];
+        for (int i = 0; i < threads.length; i++) {
+            threads[i] = new Thread() {
+                public void run() {
+                    for (int i = 0; i < 100; i++) {
+                        IHazelcastClient hazelcastClient = hazelcastClientFactory
+                                .getHazelcastClient(hazelcastServers, hazelcastUsername,
+                                        hazelcastPassword);
+                        try {
+                            System.out.println(hazelcastClient + ": " + hazelcastClient.ping()
+                                    + ":"
+                                    + hazelcastClient.queuePoll("_QUEUE_", 3, TimeUnit.SECONDS));
+                        } finally {
+                            hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+                        }
+                    }
+                }
+            };
+        }
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].start();
+        }
+
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].join();
+        }
+
+        // {
+        // for (int i = 0; i < 100; i++) {
+        // IHazelcastClient hazelcastClient =
+        // hazelcastClientFactory.getHazelcastClient(
+        // hazelcastServers, hazelcastUsername, hazelcastPassword);
+        // System.out.println(hazelcastClient + ": " + hazelcastClient.ping() +
+        // ":"
+        // + hazelcastClient.queuePoll("_QUEUE_"));
+        // hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+        // }
+        // }
+
+        System.exit(0);
 
         IHazelcastClient hazelcastClient = hazelcastClientFactory.getHazelcastClient(
                 hazelcastServers, hazelcastUsername, hazelcastPassword);
