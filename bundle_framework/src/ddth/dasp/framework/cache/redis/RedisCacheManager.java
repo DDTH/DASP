@@ -1,8 +1,11 @@
 package ddth.dasp.framework.cache.redis;
 
+import org.osgi.framework.BundleContext;
+
 import ddth.dasp.common.redis.IRedisClient;
 import ddth.dasp.common.redis.IRedisClientFactory;
 import ddth.dasp.common.redis.impl.jedis.RedisClientFactory;
+import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -21,6 +24,33 @@ public class RedisCacheManager extends AbstractCacheManager {
     private int redisPort = IRedisClient.DEFAULT_REDIS_PORT;
 
     public IRedisClientFactory getRedisClientFactory() {
+        if (redisClientFactory != null) {
+            return redisClientFactory;
+        }
+        /*
+         * If the Redis client factory has not been set, try to get it from OSGi
+         * container.
+         */
+        BundleContext bundleContext = getBundleContext();
+        if (bundleContext != null) {
+            IRedisClientFactory _redisClientFactory = OsgiUtils.getService(bundleContext,
+                    IRedisClientFactory.class);
+            if (_redisClientFactory != null) {
+                return _redisClientFactory;
+            }
+        }
+        /*
+         * Build an instance of Redis client factory for my own.
+         */
+        synchronized (this) {
+            // safeguard check
+            if (redisClientFactory == null) {
+                RedisClientFactory hzcf = new RedisClientFactory();
+                hzcf.init();
+                redisClientFactory = hzcf;
+                myOwnRedisClientFactory = true;
+            }
+        }
         return redisClientFactory;
     }
 
