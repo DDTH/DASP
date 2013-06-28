@@ -13,6 +13,11 @@ public class TestJedisClient {
             public void onMessage(String channel, byte[] message) {
                 System.out.println(channel + ":" + new String(message));
             }
+
+            @Override
+            public void unsubscribe(String channel) {
+                // EMPTY
+            }
         }), "channel-1".getBytes());
     }
 }
