@@ -2,8 +2,11 @@ package ddth.dasp.framework.cache.hazelcast;
 
 import java.util.List;
 
+import org.osgi.framework.BundleContext;
+
 import ddth.dasp.common.hazelcastex.IHazelcastClientFactory;
 import ddth.dasp.common.hazelcastex.impl.HazelcastClientFactory;
+import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.cache.AbstractCacheManager;
 import ddth.dasp.framework.cache.ICacheManager;
 
@@ -22,6 +25,33 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     private String hazelcastUsername, hazelcastPassword;
 
     public IHazelcastClientFactory getHazelcastClientFactory() {
+        if (hazelcastClientFactory != null) {
+            return hazelcastClientFactory;
+        }
+        /*
+         * If the Hazelcast client factory has not been set, try to get it from
+         * OSGi container.
+         */
+        BundleContext bundleContext = getBundleContext();
+        if (bundleContext != null) {
+            IHazelcastClientFactory _hazelcastClientFactory = OsgiUtils.getService(bundleContext,
+                    IHazelcastClientFactory.class);
+            if (_hazelcastClientFactory != null) {
+                return _hazelcastClientFactory;
+            }
+        }
+        /*
+         * Build an instance of Hazelcast client factory for my own.
+         */
+        synchronized (this) {
+            // safeguard check
+            if (hazelcastClientFactory == null) {
+                HazelcastClientFactory hzcf = new HazelcastClientFactory();
+                hzcf.init();
+                hazelcastClientFactory = hzcf;
+                myOwnHazelcastClientFactory = true;
+            }
+        }
         return hazelcastClientFactory;
     }
 
@@ -62,23 +92,9 @@ public class HazelcastCacheManager extends AbstractCacheManager {
      * {@inheritDoc}
      */
     @Override
-    public void init() {
-        super.init();
-        if (hazelcastClientFactory == null) {
-            HazelcastClientFactory hzcf = new HazelcastClientFactory();
-            hzcf.init();
-            hazelcastClientFactory = hzcf;
-            myOwnHazelcastClientFactory = true;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void destroy() {
         try {
-            if (myOwnHazelcastClientFactory) {
+            if (myOwnHazelcastClientFactory && hazelcastClientFactory != null) {
                 ((HazelcastClientFactory) hazelcastClientFactory).destroy();
             }
         } finally {
