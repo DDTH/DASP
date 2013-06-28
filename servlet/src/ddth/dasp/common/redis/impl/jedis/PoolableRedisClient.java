@@ -15,14 +15,18 @@ import ddth.dasp.common.redis.impl.AbstractRedisClient;
 public class PoolableRedisClient extends AbstractRedisClient {
 
     private Jedis redisClient;
-    private final Map<String, Set<WrappedJedisPubSub>> topicSubscriptions = new ConcurrentHashMap<String, Set<WrappedJedisPubSub>>();
+    private final Map<String, Set<IMessageListener>> topicSubscriptions = new ConcurrentHashMap<String, Set<IMessageListener>>();
+    private final Map<IMessageListener, WrappedJedisPubSub> topicSubscriptionMappings = new ConcurrentHashMap<IMessageListener, WrappedJedisPubSub>();
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void init() {
-        redisClient = new Jedis(getRedisHost(), getRedisPort(), 10);
+        int timeout = 10000; // timeout in milliseconds
+        // Jedis passes timeout value to a java.net.Socket, hence it should be
+        // in milliseconds
+        redisClient = new Jedis(getRedisHost(), getRedisPort(), timeout);
         if (!StringUtils.isBlank(getRedisPassword())) {
             redisClient.auth(getRedisPassword());
         }
@@ -246,21 +250,47 @@ public class PoolableRedisClient extends AbstractRedisClient {
      * {@inheritDoc}
      */
     @Override
-    public void subscribe(String channelName, IMessageListener messageListener) {
-        Set<WrappedJedisPubSub> subcription = topicSubscriptions.get(channelName);
+    public boolean subscribe(String channelName, IMessageListener messageListener) {
+        Set<IMessageListener> subcription = topicSubscriptions.get(channelName);
         if (subcription == null) {
-            subcription = new HashSet<WrappedJedisPubSub>();
+            subcription = new HashSet<IMessageListener>();
             topicSubscriptions.put(channelName, subcription);
         }
-        final WrappedJedisPubSub wrappedJedisPubSub = new WrappedJedisPubSub(channelName,
-                messageListener);
         synchronized (subcription) {
-            if (!subcription.contains(wrappedJedisPubSub)) {
-                subcription.add(wrappedJedisPubSub);
+            if (subcription.add(messageListener)) {
+                WrappedJedisPubSub wrappedJedisPubSub = new WrappedJedisPubSub(channelName,
+                        messageListener);
+                topicSubscriptionMappings.put(messageListener, wrappedJedisPubSub);
+                byte[] channel = SafeEncoder.encode(channelName);
+
+                // this operation blocks!
+                redisClient.subscribe(wrappedJedisPubSub, channel);
+                return true;
             }
         }
-        final byte[] channel = SafeEncoder.encode(channelName);
-        redisClient.subscribe(wrappedJedisPubSub, channel);
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean unsubscribe(String channelName, IMessageListener messageListener) {
+        Set<IMessageListener> subcription = topicSubscriptions.get(channelName);
+        if (subcription != null) {
+            synchronized (subcription) {
+                if (subcription.remove(messageListener)) {
+                    WrappedJedisPubSub wrappedJedisPubSub = topicSubscriptionMappings
+                            .remove(messageListener);
+                    if (wrappedJedisPubSub != null) {
+                        byte[] channel = SafeEncoder.encode(channelName);
+                        wrappedJedisPubSub.unsubscribe(channel);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // /**

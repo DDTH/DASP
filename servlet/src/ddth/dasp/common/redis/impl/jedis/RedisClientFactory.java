@@ -24,6 +24,7 @@ public class RedisClientFactory extends AbstractRedisClientFactory {
         RedisClientPoolableObjectFactory factory = new RedisClientPoolableObjectFactory(host, port,
                 username, password);
         RedisClientPool redisClientPool = new RedisClientPool(factory, poolConfig);
+        redisClientPool.init();
         return redisClientPool;
     }
 }

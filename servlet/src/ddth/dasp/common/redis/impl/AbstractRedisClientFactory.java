@@ -1,5 +1,6 @@
 package ddth.dasp.common.redis.impl;
 
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -32,11 +33,18 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
      */
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        for (Entry<String, RedisClientPool> entry : redisClientPools.entrySet()) {
+            RedisClientPool clientPool = entry.getValue();
+            try {
+                clientPool.close();
+            } catch (Exception e) {
+                LOGGER.warn(e.getMessage());
+            }
+        }
     }
 
     protected static String calcRedisPoolName(String host, int port, String username,
-            String password) {
+            String password, PoolConfig poolConfig) {
         StringBuilder sb = new StringBuilder();
         sb.append(host != null ? host : "NULL");
         sb.append(".");
@@ -45,7 +53,8 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
         sb.append(username != null ? username : "NULL");
         sb.append(".");
         int passwordHashcode = password != null ? password.hashCode() : "NULL".hashCode();
-        return sb.append(passwordHashcode).toString();
+        int poolHashcode = poolConfig != null ? poolConfig.hashCode() : "NULL".hashCode();
+        return sb.append(passwordHashcode).append(".").append(poolHashcode).toString();
     }
 
     protected RedisClientPool getPool(String poolName) {
@@ -90,7 +99,7 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
     @Override
     public IRedisClient getRedisClient(String host, int port, String username, String password,
             PoolConfig poolConfig) {
-        String poolName = calcRedisPoolName(host, port, username, password);
+        String poolName = calcRedisPoolName(host, port, username, password, poolConfig);
         RedisClientPool redisClientPool = getPool(poolName);
         if (redisClientPool == null) {
             synchronized (redisClientPools) {
@@ -117,6 +126,8 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
      */
     @Override
     public void returnRedisClient(IRedisClient redisClient) {
-        redisClient.close();
+        if (redisClient != null) {
+            redisClient.close();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package ddth.dasp.common.hazelcastex;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Pool configuration.
  * 
@@ -72,7 +74,13 @@ public class PoolConfig {
         return this;
     }
 
-    public static PoolConfig newInstance() {
-        return new PoolConfig();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hcb = new HashCodeBuilder(19, 81);
+        hcb.append(maxActive).append(maxIdle).append(minIdle).append(maxWaitTime);
+        return hcb.hashCode();
     }
 }

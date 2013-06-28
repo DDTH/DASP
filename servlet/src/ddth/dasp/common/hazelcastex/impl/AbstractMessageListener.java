@@ -21,6 +21,10 @@ public abstract class AbstractMessageListener<E> implements IMessageListener<E> 
         return topicName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void unsubscribe() {
         hazelcastClient.unsubscribe(topicName, this);
     }

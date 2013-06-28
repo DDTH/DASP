@@ -228,7 +228,17 @@ public interface IRedisClient {
      * 
      * @param channelName
      * @param messageListener
+     * @return
      */
-    public void subscribe(String channelName, IMessageListener messageListener);
+    public boolean subscribe(String channelName, IMessageListener messageListener);
+
+    /**
+     * Unsubscribes from a channel.
+     * 
+     * @param channelName
+     * @param messageListener
+     * @return
+     */
+    public boolean unsubscribe(String channelName, IMessageListener messageListener);
     /* Redis API */
 }

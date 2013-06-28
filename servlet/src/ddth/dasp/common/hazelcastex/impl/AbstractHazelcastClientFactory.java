@@ -46,14 +46,15 @@ public abstract class AbstractHazelcastClientFactory implements IHazelcastClient
     }
 
     protected static String calcHazelcastPoolName(List<String> servers, String username,
-            String password) {
+            String password, PoolConfig poolConfig) {
         StringBuilder sb = new StringBuilder();
         sb.append(servers != null ? servers : "NULL");
         sb.append(".");
         sb.append(username != null ? username : "NULL");
         sb.append(".");
         int passwordHashcode = password != null ? password.hashCode() : "NULL".hashCode();
-        return sb.append(passwordHashcode).toString();
+        int poolHashcode = poolConfig != null ? poolConfig.hashCode() : "NULL".hashCode();
+        return sb.append(passwordHashcode).append(".").append(poolHashcode).toString();
     }
 
     protected HazelcastClientPool getPool(String poolName) {
@@ -91,7 +92,7 @@ public abstract class AbstractHazelcastClientFactory implements IHazelcastClient
     @Override
     public IHazelcastClient getHazelcastClient(List<String> servers, String username,
             String password, PoolConfig poolConfig) {
-        String poolName = calcHazelcastPoolName(servers, username, password);
+        String poolName = calcHazelcastPoolName(servers, username, password, poolConfig);
         HazelcastClientPool hazelcastClientPool = getPool(poolName);
         if (hazelcastClientPool == null) {
             synchronized (hazelcastClientPools) {

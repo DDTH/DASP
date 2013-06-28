@@ -26,6 +26,7 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
         setPoolConfig(poolConfig);
         setTestOnBorrow(true);
         setTestWhileIdle(true);
+        setWhenExhaustedAction(WHEN_EXHAUSTED_FAIL);
     }
 
     /**
@@ -82,8 +83,8 @@ public class HazelcastClientPool extends GenericObjectPool<AbstractHazelcastClie
         AbstractHazelcastClient hazelcastClient = super.borrowObject();
         if (hazelcastClient != null) {
             hazelcastClient.setHazelcastClientPool(this);
+            activeClients.add(hazelcastClient);
         }
-        activeClients.add(hazelcastClient);
         return hazelcastClient;
     }
 
