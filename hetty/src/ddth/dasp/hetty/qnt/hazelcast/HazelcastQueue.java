@@ -1,6 +1,8 @@
 package ddth.dasp.hetty.qnt.hazelcast;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
     private String hazelcastUsername, hazelcastPassword;
     private PoolConfig poolConfig;
     private int queueSizeThreshold = 1000;
+    private Set<IHazelcastClient> allocatedHazelcastClients = new HashSet<IHazelcastClient>();
 
     protected IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
@@ -75,21 +78,22 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
         return this;
     }
 
-    private IHazelcastClient _hazelcastClient;
-
-    synchronized protected IHazelcastClient getHazelcastClient() {
-        if (_hazelcastClient == null) {
-            _hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
-                    hazelcastUsername, hazelcastPassword, poolConfig);
+    private IHazelcastClient getHazelcastClient() {
+        IHazelcastClient hazelcastClient = hazelcastClientFactory.getHazelcastClient(
+                hazelcastServers, hazelcastUsername, hazelcastPassword, poolConfig);
+        if (hazelcastClient != null) {
+            allocatedHazelcastClients.add(hazelcastClient);
         }
-        return _hazelcastClient;
+        return hazelcastClient;
     }
 
-    synchronized protected void returnHazelcastClient() {
-        try {
-            hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
-        } finally {
-            _hazelcastClient = null;
+    private void returnHazelcastClient(IHazelcastClient hazelcastClient) {
+        if (hazelcastClient != null) {
+            try {
+                allocatedHazelcastClients.remove(hazelcastClient);
+            } finally {
+                hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+            }
         }
     }
 
@@ -97,7 +101,13 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
     }
 
     public void destroy() {
-        returnHazelcastClient();
+        for (IHazelcastClient hazelcastClient : allocatedHazelcastClients) {
+            try {
+                hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+            } catch (Exception e) {
+            }
+        }
+        allocatedHazelcastClients.clear();
     }
 
     /**
@@ -123,7 +133,7 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
                 }
                 return hazelcastClient.queuePush(queueName, value, timeout, timeUnit);
             } finally {
-                returnHazelcastClient();
+                returnHazelcastClient(hazelcastClient);
             }
         }
         return false;
@@ -147,7 +157,7 @@ public class HazelcastQueue implements IQueueReader, IQueueWriter {
             return hazelcastClient != null ? hazelcastClient
                     .queuePoll(queueName, timeout, timeUnit) : null;
         } finally {
-            returnHazelcastClient();
+            returnHazelcastClient(hazelcastClient);
         }
     }
 }

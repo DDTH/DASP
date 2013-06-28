@@ -1,6 +1,8 @@
 package ddth.dasp.hetty.qnt.hazelcast;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import ddth.dasp.common.hazelcastex.IHazelcastClient;
@@ -15,6 +17,7 @@ public class HazelcastTopicPublisher implements ITopicPublisher {
     private List<String> hazelcastServers;
     private String hazelcastUsername, hazelcastPassword;
     private PoolConfig poolConfig;
+    private Set<IHazelcastClient> allocatedHazelcastClients = new HashSet<IHazelcastClient>();
 
     protected IHazelcastClientFactory getHazelcastClientFactory() {
         return hazelcastClientFactory;
@@ -60,21 +63,22 @@ public class HazelcastTopicPublisher implements ITopicPublisher {
         return this;
     }
 
-    private IHazelcastClient _hazelcastClient;
-
-    synchronized protected IHazelcastClient getHazelcastClient() {
-        if (_hazelcastClient == null) {
-            _hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
-                    hazelcastUsername, hazelcastPassword, poolConfig);
+    private IHazelcastClient getHazelcastClient() {
+        IHazelcastClient hazelcastClient = hazelcastClientFactory.getHazelcastClient(
+                hazelcastServers, hazelcastUsername, hazelcastPassword, poolConfig);
+        if (hazelcastClient != null) {
+            allocatedHazelcastClients.add(hazelcastClient);
         }
-        return _hazelcastClient;
+        return hazelcastClient;
     }
 
-    synchronized protected void returnHazelcastClient() {
-        try {
-            hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
-        } finally {
-            _hazelcastClient = null;
+    private void returnHazelcastClient(IHazelcastClient hazelcastClient) {
+        if (hazelcastClient != null) {
+            try {
+                allocatedHazelcastClients.remove(hazelcastClient);
+            } finally {
+                hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+            }
         }
     }
 
@@ -82,6 +86,13 @@ public class HazelcastTopicPublisher implements ITopicPublisher {
     }
 
     public void destroy() {
+        for (IHazelcastClient hazelcastClient : allocatedHazelcastClients) {
+            try {
+                hazelcastClientFactory.returnHazelcastClient(hazelcastClient);
+            } catch (Exception e) {
+            }
+        }
+        allocatedHazelcastClients.clear();
     }
 
     /**
@@ -108,7 +119,7 @@ public class HazelcastTopicPublisher implements ITopicPublisher {
                 }
                 return true;
             } finally {
-                returnHazelcastClient();
+                returnHazelcastClient(hazelcastClient);
             }
         }
         return false;

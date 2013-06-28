@@ -15,9 +15,6 @@ import ddth.dasp.hetty.message.IResponse;
 public class HazelcastResponseService extends AbstractHettyResponseService implements
         IMessageListener<Object> {
 
-    // private final Logger LOGGER =
-    // LoggerFactory.getLogger(HazelcastResponseService.class);
-
     private IHazelcastClientFactory hazelcastClientFactory;
     private List<String> hazelcastServers;
     private String hazelcastUsername, hazelcastPassword;
@@ -116,8 +113,8 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
                     } else {
                         IHazelcastClient hazelcastClient = getHazelcastClient();
                         if (hazelcastClient != null) {
-                            hazelcastClient.subscribe(topicName, messageListener);
                             _listening = true;
+                            hazelcastClient.subscribe(topicName, messageListener);
                         }
                     }
                 } finally {
@@ -129,11 +126,11 @@ public class HazelcastResponseService extends AbstractHettyResponseService imple
 
     public void init() {
         Runnable command = new MessageListenerKeeper(this);
-        DaspGlobal.getScheduler().schedule(command, 10000, TimeUnit.MILLISECONDS);
+        DaspGlobal.getScheduler().schedule(command, 2000, TimeUnit.MILLISECONDS);
     }
 
     public void destroy() {
-        _destroyed = false;
+        _destroyed = true;
         try {
             unsubscribe();
         } finally {

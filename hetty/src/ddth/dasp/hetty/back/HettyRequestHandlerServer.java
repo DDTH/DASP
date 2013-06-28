@@ -38,7 +38,7 @@ public class HettyRequestHandlerServer {
     private IMessageFactory messageFactory;
 
     private int numWorkers = Runtime.getRuntime().availableProcessors();
-    private Thread[] workerThreads;
+    private WorkerThread[] workerThreads;
 
     public HettyRequestHandlerServer() {
     }
@@ -180,84 +180,140 @@ public class HettyRequestHandlerServer {
     }
 
     public void destroy() {
-        for (Thread workerThread : workerThreads) {
+        for (WorkerThread workerThread : workerThreads) {
             try {
-                workerThread.interrupt();
+                workerThread.finish();
             } catch (Exception e) {
             }
         }
     }
 
     public void start() {
-        workerThreads = new Thread[numWorkers];
+        workerThreads = new WorkerThread[numWorkers];
         for (int i = 1; i <= numWorkers; i++) {
-            Thread t = new Thread(HettyRequestHandlerServer.class.getName() + " - " + i) {
-                public void run() {
-                    while (!interrupted()) {
-                        Object obj = queueReader.queueRead(queueName, readTimeoutMillisecs,
-                                TimeUnit.MILLISECONDS);
-                        if (obj == null) {
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            Thread.yield();
-                        } else {
-                            // init the request local
-                            RequestLocal requestLocal = RequestLocal.get();
-                            if (requestLocal == null) {
-                                requestLocal = new RequestLocal();
-                                RequestLocal.set(requestLocal);
-                            }
-                            // RequestLocal.get();
-                            ProfileLogger.push("start_request_handler_worker");
-                            try {
-                                if (obj instanceof byte[]) {
-                                    try {
-                                        ProfileLogger.push("deserialize_request");
-                                        obj = messageFactory.deserializeRequest((byte[]) obj);
-                                    } finally {
-                                        ProfileLogger.pop();
-                                    }
-                                }
-                                if (obj instanceof IRequest) {
-                                    handleRequest((IRequest) obj);
-                                }
-                            } catch (Exception e) {
-                                LOGGER.error(e.getMessage(), e);
-                                if (obj instanceof IRequest) {
-                                    try {
-                                        IResponse response = ResponseUtils.response500(
-                                                (IRequest) obj, e.getMessage(), e);
-                                        topicPublisher.publish(topicName, response);
-                                    } catch (Exception ex) {
-                                        LOGGER.error(ex.getMessage(), ex);
-                                    }
-                                }
-                            } finally {
-                                try {
-                                    ProfileLogger.pop();
-                                } catch (Exception e) {
-                                    LOGGER.warn(e.getMessage(), e);
-                                }
-                                try {
-                                    RequestLocal.remove();
-                                } catch (Exception e) {
-                                    LOGGER.warn(e.getMessage(), e);
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            t.setDaemon(true);
-            t.start();
+            WorkerThread t = new WorkerThread(this, queueReader, queueName, messageFactory,
+                    topicPublisher, topicName, readTimeoutMillisecs);
             workerThreads[i - 1] = t;
+            t.start();
         }
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Hetty request handler workers: " + numWorkers + " / Read timeout: "
                     + readTimeoutMillisecs + " / Write timeout: " + writeTimeoutMillisecs);
+        }
+    }
+
+    private static class WorkerThread extends Thread {
+        private Logger LOGGER = LoggerFactory.getLogger(WorkerThread.class);
+        private static int COUNTER = 1;
+
+        private HettyRequestHandlerServer requestHandler;
+        private IQueueReader queueReader;
+        private String queueName;
+        private IMessageFactory messageFactory;
+        private ITopicPublisher topicPublisher;
+        private String topicName;
+        private long readTimeoutMillisecs;
+        private boolean done = false;
+
+        public WorkerThread(HettyRequestHandlerServer requestHandler, IQueueReader queueReader,
+                String queueName, IMessageFactory messageFactory, ITopicPublisher topicPublisher,
+                String topicName, long readTimeoutMillisecs) {
+            setName("HRH-Worker-" + (COUNTER++));
+            setDaemon(true);
+
+            this.requestHandler = requestHandler;
+            this.queueReader = queueReader;
+            this.queueName = queueName;
+            this.messageFactory = messageFactory;
+            this.topicPublisher = topicPublisher;
+            this.topicName = topicName;
+            this.readTimeoutMillisecs = readTimeoutMillisecs;
+        }
+
+        private Object poll() {
+            Object obj = null;
+            try {
+                obj = queueReader.queueRead(queueName, readTimeoutMillisecs, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                obj = null;
+            }
+            if (obj == null) {
+                try {
+                    Thread.sleep(System.currentTimeMillis() & 0xF);
+                    Thread.yield();
+                } catch (Exception e) {
+                }
+            }
+            return obj;
+        }
+
+        private RequestLocal initRequestLocal() {
+            RequestLocal requestLocal = RequestLocal.get();
+            if (requestLocal == null) {
+                requestLocal = new RequestLocal();
+                RequestLocal.set(requestLocal);
+            }
+            return requestLocal;
+        }
+
+        private void doneRequestLocal() {
+            try {
+                RequestLocal.remove();
+            } catch (Exception e) {
+            }
+        }
+
+        private Object deserialize(Object obj) {
+            try {
+                if (obj instanceof byte[]) {
+                    ProfileLogger.push("deserialize_request");
+                    try {
+                        obj = messageFactory.deserializeRequest((byte[]) obj);
+                    } finally {
+                        ProfileLogger.pop();
+                    }
+                }
+                return obj;
+            } catch (Exception e) {
+                LOGGER.warn(((byte[]) obj).length + ": " + e.getMessage());
+                return null;
+            }
+        }
+
+        public void finish() {
+            done = true;
+            interrupt();
+        }
+
+        public void run() {
+            while (!done && !interrupted()) {
+                Object obj = poll();
+                initRequestLocal();
+                try {
+                    ProfileLogger.push("start_request_handler_worker");
+                    try {
+                        obj = deserialize(obj);
+                        if (obj instanceof IRequest) {
+                            requestHandler.handleRequest((IRequest) obj);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage(), e);
+                        if (obj instanceof IRequest) {
+                            try {
+                                IResponse response = ResponseUtils.response500((IRequest) obj,
+                                        e.getMessage(), e);
+                                topicPublisher.publish(topicName, response);
+                            } catch (Exception ex) {
+                                LOGGER.error(ex.getMessage(), ex);
+                            }
+                        }
+                    } finally {
+                        ProfileLogger.pop();
+                    }
+                } finally {
+                    doneRequestLocal();
+                }
+            }
         }
     }
 }
