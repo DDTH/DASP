@@ -93,9 +93,11 @@ public abstract class AbstractHazelcastClientFactory implements IHazelcastClient
     public IHazelcastClient getHazelcastClient(List<String> servers, String username,
             String password, PoolConfig poolConfig) {
         String poolName = calcHazelcastPoolName(servers, username, password, poolConfig);
-        HazelcastClientPool hazelcastClientPool = getPool(poolName);
-        if (hazelcastClientPool == null) {
-            synchronized (hazelcastClientPools) {
+
+        HazelcastClientPool hazelcastClientPool = null;
+        synchronized (hazelcastClientPools) {
+            hazelcastClientPool = getPool(poolName);
+            if (hazelcastClientPool == null) {
                 try {
                     hazelcastClientPool = buildHazelcastClientPool(servers, username, password,
                             poolConfig);
@@ -107,7 +109,7 @@ public abstract class AbstractHazelcastClientFactory implements IHazelcastClient
             }
         }
         try {
-            return hazelcastClientPool.borrowHazelcastClient();
+            return hazelcastClientPool != null ? hazelcastClientPool.borrowHazelcastClient() : null;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return null;

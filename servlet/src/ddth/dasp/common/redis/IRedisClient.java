@@ -26,11 +26,6 @@ public interface IRedisClient {
      */
     public void close();
 
-    /**
-     * Connects/Reconnects to Redis server.
-     */
-    public void connect();
-
     /* Redis API */
     /**
      * "Ping" the Redis server.

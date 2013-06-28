@@ -30,13 +30,18 @@ public class PoolableRedisClient extends AbstractRedisClient {
         if (!StringUtils.isBlank(getRedisPassword())) {
             redisClient.auth(getRedisPassword());
         }
+        redisClient.connect();
     }
 
     /**
      * {@inheritDoc}
      */
     public void destroy() {
-        redisClient.quit();
+        try {
+            redisClient.disconnect();
+        } finally {
+            redisClient.quit();
+        }
     }
 
     /**
@@ -49,21 +54,13 @@ public class PoolableRedisClient extends AbstractRedisClient {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void connect() {
-        redisClient.connect();
-    }
-
     /* Redis API */
     /**
      * {@inheritDoc}
      */
     @Override
     public String ping() {
-        return redisClient.ping();
+        return redisClient.isConnected() ? redisClient.ping() : null;
     }
 
     /**
@@ -256,19 +253,23 @@ public class PoolableRedisClient extends AbstractRedisClient {
             subcription = new HashSet<IMessageListener>();
             topicSubscriptions.put(channelName, subcription);
         }
+        boolean subscribe = false;
+        WrappedJedisPubSub wrappedJedisPubSub = null;
         synchronized (subcription) {
             if (subcription.add(messageListener)) {
-                WrappedJedisPubSub wrappedJedisPubSub = new WrappedJedisPubSub(channelName,
-                        messageListener);
+                wrappedJedisPubSub = new WrappedJedisPubSub(channelName, messageListener);
                 topicSubscriptionMappings.put(messageListener, wrappedJedisPubSub);
-                byte[] channel = SafeEncoder.encode(channelName);
-
-                // this operation blocks!
-                redisClient.subscribe(wrappedJedisPubSub, channel);
-                return true;
+                subscribe = true;
             }
         }
-        return false;
+        if (subscribe) {
+            byte[] channel = SafeEncoder.encode(channelName);
+            // this operation blocks!
+            redisClient.subscribe(wrappedJedisPubSub, channel);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -277,55 +278,25 @@ public class PoolableRedisClient extends AbstractRedisClient {
     @Override
     public boolean unsubscribe(String channelName, IMessageListener messageListener) {
         Set<IMessageListener> subcription = topicSubscriptions.get(channelName);
+        boolean unsubscribe = false;
+        WrappedJedisPubSub wrappedJedisPubSub = null;
         if (subcription != null) {
             synchronized (subcription) {
                 if (subcription.remove(messageListener)) {
-                    WrappedJedisPubSub wrappedJedisPubSub = topicSubscriptionMappings
-                            .remove(messageListener);
+                    wrappedJedisPubSub = topicSubscriptionMappings.remove(messageListener);
                     if (wrappedJedisPubSub != null) {
-                        byte[] channel = SafeEncoder.encode(channelName);
-                        wrappedJedisPubSub.unsubscribe(channel);
-                        return true;
+                        unsubscribe = true;
                     }
                 }
             }
         }
-        return false;
+        if (unsubscribe) {
+            byte[] channel = SafeEncoder.encode(channelName);
+            wrappedJedisPubSub.unsubscribe(channel);
+            return true;
+        } else {
+            return false;
+        }
     }
-
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public void subscribe(String channelName, IMessageListener
-    // messageListener) {
-    // Set<WrappedJedisPubSub> subcription =
-    // topicSubscriptions.get(channelName);
-    // if (subcription == null) {
-    // subcription = new HashSet<WrappedJedisPubSub>();
-    // topicSubscriptions.put(channelName, subcription);
-    // }
-    // final WrappedJedisPubSub wrappedJedisPubSub = new
-    // WrappedJedisPubSub(channelName,
-    // messageListener);
-    // synchronized (subcription) {
-    // if (!subcription.contains(wrappedJedisPubSub)) {
-    // subcription.add(wrappedJedisPubSub);
-    // final byte[] channel = SafeEncoder.encode(channelName);
-    // Thread t = new Thread() {
-    // public void run() {
-    // try {
-    // redisClient.subscribe(wrappedJedisPubSub, channel);
-    // } catch (Exception e) {
-    // LOGGER.warn(e.getMessage(), e);
-    // }
-    // }
-    // };
-    // t.setName("JedisTopicSubscription-" + channelName);
-    // t.setDaemon(true);
-    // t.start();
-    // }
-    // }
-    // }
     /* Redis API */
 }

@@ -25,7 +25,7 @@ public class RedisClientPoolableObjectFactory extends
      */
     @Override
     public void activateObject(AbstractRedisClient redisClient) throws Exception {
-        redisClient.connect();
+        //EMPTY
     }
 
     /**

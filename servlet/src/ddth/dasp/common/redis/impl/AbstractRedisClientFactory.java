@@ -100,9 +100,11 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
     public IRedisClient getRedisClient(String host, int port, String username, String password,
             PoolConfig poolConfig) {
         String poolName = calcRedisPoolName(host, port, username, password, poolConfig);
-        RedisClientPool redisClientPool = getPool(poolName);
-        if (redisClientPool == null) {
-            synchronized (redisClientPools) {
+
+        RedisClientPool redisClientPool = null;
+        synchronized (redisClientPools) {
+            redisClientPool = getPool(poolName);
+            if (redisClientPool == null) {
                 try {
                     redisClientPool = buildRedisClientPool(host, port, username, password,
                             poolConfig);
@@ -114,7 +116,7 @@ public abstract class AbstractRedisClientFactory implements IRedisClientFactory 
             }
         }
         try {
-            return redisClientPool.borrowObject();
+            return redisClientPool != null ? redisClientPool.borrowObject() : null;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return null;
