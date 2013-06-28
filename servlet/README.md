@@ -6,6 +6,7 @@ DASP bootstrap & system services
 
 - *ddth.dasp.common.hazelcastex*: [Hazelcast](http://www.hazelcast.com/) client factory and utilities.
 - *ddth.dasp.common.hazelcast*: is now deprecated.
+- Refactor Hetty's bootstrap configuration
 
 ### v0.1.1 (2013-06-20) ###
 

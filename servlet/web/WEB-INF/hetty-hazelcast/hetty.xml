@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+	default-lazy-init="false">
+
+	<!-- Hazelcast queue and pub/sub (using ddth.dasp.common.hazelcastex) -->
+	<bean id="_hazelcastUsername" class="java.lang.String">
+		<constructor-arg value="DzitAppServer"></constructor-arg>
+	</bean>
+	<bean id="_hazelcastPassword" class="java.lang.String">
+		<constructor-arg value="h2z3lc2st"></constructor-arg>
+	</bean>
+	<bean id="_hazelcastServers" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>127.0.0.1:8700</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="_hazelcastPoolConfig" class="ddth.dasp.common.hazelcastex.PoolConfig">
+		<property name="maxActive" value="128" />
+		<property name="maxIdle" value="8" />
+		<property name="minIdle" value="2" />
+		<property name="maxWaitTime" value="3000" />
+	</bean>
+	<bean id="_hazelcastClientFactory"
+		class="ddth.dasp.common.hazelcastex.impl.HazelcastClientFactory"
+		scope="singleton" init-method="init" destroy-method="destroy">
+	</bean>
+
+	<!-- Response service: Hetty Response service subscribes to topic, listens 
+		for response from Backend server and writes response to client -->
+	<bean id="_hettyResponseService" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastResponseService"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="messageFactory" ref="HETTY_MESSAGE_FACTORY" />
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastServers" ref="_hazelcastServers" />
+		<property name="hazelcastUsername" ref="_hazelcastUsername" />
+		<property name="hazelcastPassword" ref="_hazelcastPassword" />
+		<property name="topicName">
+			<util:constant static-field="ddth.dasp.hetty.HettyConstants.DEFAULT_HETTY_TOPIC" />
+		</property>
+	</bean>
+
+	<bean id="_hazelcastQueue" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastServers" ref="_hazelcastServers" />
+		<property name="hazelcastUsername" ref="_hazelcastUsername" />
+		<property name="hazelcastPassword" ref="_hazelcastPassword" />
+		<property name="poolConfig" ref="_hazelcastPoolConfig" />
+		<property name="queueSizeThreshold" ref="_queueSizeThreshold" />
+	</bean>
+	<bean id="HETTY_QUEUE_WRITER" parent="_hazelcastQueue" />
+	<bean id="HETTY_QUEUE_READER" parent="_hazelcastQueue" />
+
+	<bean id="HETTY_TOPIC_PUBLISHER" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastTopicPublisher"
+		scope="singleton">
+		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
+		<property name="hazelcastServers" ref="_hazelcastServers" />
+		<property name="hazelcastUsername" ref="_hazelcastUsername" />
+		<property name="hazelcastPassword" ref="_hazelcastPassword" />
+		<property name="poolConfig" ref="_hazelcastPoolConfig" />
+	</bean>
+</beans>

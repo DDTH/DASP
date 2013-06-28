@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+	default-lazy-init="false">
+
+	<!-- Redis queue and pub/sub (using ddth.dasp.common.redis) -->
+	<!-- <bean id="_redisUsername" class="java.lang.String"> <constructor-arg 
+		value="DzitAppServer"></constructor-arg> </bean> <bean id="_redisPassword" 
+		class="java.lang.String"> <constructor-arg value="h2z3lc2st"></constructor-arg> 
+		</bean> -->
+	<bean id="_redisHost" class="java.lang.String">
+		<constructor-arg value="127.0.0.1"></constructor-arg>
+	</bean>
+	<bean id="_redisPort" class="java.lang.Integer">
+		<constructor-arg>
+			<util:constant
+				static-field="ddth.dasp.common.redis.IRedisClient.DEFAULT_REDIS_PORT" />
+		</constructor-arg>
+	</bean>
+	<bean id="_redisPoolConfig" class="ddth.dasp.common.redis.PoolConfig">
+		<property name="maxActive" value="128" />
+		<property name="maxIdle" value="8" />
+		<property name="minIdle" value="2" />
+		<property name="maxWaitTime" value="3000" />
+	</bean>
+	<bean id="_redisClientFactory" class="ddth.dasp.common.redis.impl.jedis.RedisClientFactory"
+		scope="singleton" init-method="init" destroy-method="destroy">
+	</bean>
+
+	<!-- Response service: Hetty Response service subscribes to topic, listens 
+		for response from Backend server and writes response to client -->
+	<bean id="_hettyResponseService" class="ddth.dasp.hetty.qnt.redis.RedisResponseService"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="messageFactory" ref="HETTY_MESSAGE_FACTORY" />
+		<property name="redisClientFactory" ref="_redisClientFactory" />
+		<property name="redisHost" ref="_redisHost" />
+		<property name="redisPort" ref="_redisPort" />
+		<property name="topicName">
+			<util:constant static-field="ddth.dasp.hetty.HettyConstants.DEFAULT_HETTY_TOPIC" />
+		</property>
+	</bean>
+
+	<bean id="_redisQueue" class="ddth.dasp.hetty.qnt.redis.RedisQueue"
+		scope="singleton" init-method="init" destroy-method="destroy">
+		<property name="redisClientFactory" ref="_redisClientFactory" />
+		<property name="redisHost" ref="_redisHost" />
+		<property name="redisPort" ref="_redisPort" />
+		<property name="poolConfig" ref="_redisPoolConfig" />
+		<property name="queueSizeThreshold" ref="_queueSizeThreshold" />
+	</bean>
+	<alias name="_redisQueue" alias="HETTY_QUEUE_WRITER" />
+	<alias name="_redisQueue" alias="HETTY_QUEUE_READER" />
+
+	<bean id="HETTY_TOPIC_PUBLISHER" class="ddth.dasp.hetty.qnt.redis.RedisTopicPublisher"
+		scope="singleton">
+		<property name="redisClientFactory" ref="_redisClientFactory" />
+		<property name="redisHost" ref="_redisHost" />
+		<property name="redisPort" ref="_redisPort" />
+		<property name="poolConfig" ref="_redisPoolConfig" />
+	</bean>
+</beans>

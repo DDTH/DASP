@@ -7,95 +7,54 @@
         http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 	default-lazy-init="false">
 
-	<import resource="hetty-host_queue_mapping.xml" />
+	<!-- Use only one of the following three -->
+	<!-- for in-memory queue & pub/sub (using Google Guava library) -->
+	<!-- <import resource="hetty-guava/hetty.xml" /> -->
+
+	<!-- for Hazelcast queue & pub/sub -->
+	<!-- <import resource="hetty-hazelcast/hetty.xml" /> -->
+
+	<!-- for Redis queue & pub/sub -->
+	<import resource="hetty-redis/hetty.xml" />
 
 	<!-- Frontend server: Hetty Connection server accepts HTTP connections on 
-		"port", and out requests to a queue via "queueWriter" -->
-	<bean id="hettyConnServer" class="ddth.dasp.hetty.front.HettyConnServer"
+		"port", and put requests to a queue via "queueWriter" -->
+	<bean id="_hettyConnServer" class="ddth.dasp.hetty.front.HettyConnServer"
 		scope="singleton" init-method="init" destroy-method="destroy">
-		<!-- <property name="queueWriter" ref="hazelcastQueue" /> -->
-		<property name="messageFactory" ref="messageFactory" />
+		<property name="queueWriter" ref="HETTY_QUEUE_WRITER" />
+		<property name="messageFactory" ref="HETTY_MESSAGE_FACTORY" />
 		<property name="readTimeoutMillisecs" ref="_nettyReadTimeout" />
 		<property name="writeTimeoutMillisecs" ref="_nettyWriteTimeout" />
 		<property name="port" value="8083,8085,8087" /> <!-- server chooses first available port -->
 		<property name="numWorkers" ref="_numWorkersConn" />
-		<property name="hostQueueWriterMapping" ref="_hostQueueWriterMapping" />
 	</bean>
 
 	<!-- Backend server: Hetty Request Handler Server reads requests from a 
 		queue via "queueReader", handles the request, and publish the response via 
 		"topicPublisher" -->
-	<bean id="hettyRequestHandlerServer" class="ddth.dasp.hetty.back.HettyRequestHandlerServer"
+	<bean id="_hettyDaspRequestHandlerServer" class="ddth.dasp.hetty.back.HettyRequestHandlerServer"
 		scope="singleton" init-method="start" destroy-method="destroy">
-		<property name="queueReader" ref="hazelcastQueue" />
-		<property name="messageFactory" ref="messageFactory" />
-		<property name="readTimeoutMillisecs" value="5000" />
-		<property name="writeTimeoutMillisecs" value="5000" />
-		<property name="topicPublisher" ref="topicPublisher" />
+		<property name="queueReader" ref="HETTY_QUEUE_READER" />
+		<property name="queueName">
+			<util:constant static-field="ddth.dasp.hetty.HettyConstants.DEFAULT_HETTY_QUEUE" />
+		</property>
+		<property name="topicPublisher" ref="HETTY_TOPIC_PUBLISHER" />
+		<property name="topicName">
+			<util:constant static-field="ddth.dasp.hetty.HettyConstants.DEFAULT_HETTY_TOPIC" />
+		</property>
+		<property name="messageFactory" ref="HETTY_MESSAGE_FACTORY" />
+		<property name="requestParser" ref="HETTY_REQUEST_PARSER" />
+		<property name="readTimeoutMillisecs" value="0" />
+		<property name="writeTimeoutMillisecs" value="0" />
 		<property name="numWorkers" ref="_numWorkersRequestHandler" />
-		<property name="requestParser" ref="requestParser" />
 	</bean>
 
-	<bean id="_hazelcastUsername" class="java.lang.String">
-		<constructor-arg value="DzitAppServer"></constructor-arg>
-	</bean>
-	<bean id="_hazelcastPassword" class="java.lang.String">
-		<constructor-arg value="h2z3lc2st"></constructor-arg>
-	</bean>
-	<bean id="_hazelcastQueueName" class="java.lang.String">
-		<constructor-arg value="HETTY_REQUEST_QUEUE"></constructor-arg>
-	</bean>
-	<bean id="_hazelcastTopicName" class="java.lang.String">
-		<constructor-arg value="HETTY_RESPONSE_TOPIC"></constructor-arg>
-	</bean>
-	<bean id="_hazelcastServers" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>127.0.0.1:8700</value>
-			</list>
-		</constructor-arg>
-	</bean>
-	<bean id="_hazelcastClientFactory" class="ddth.dasp.common.hazelcast.HazelcastClientFactory"
-		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="hazelcastUsername" ref="_hazelcastUsername" />
-		<property name="hazelcastPassword" ref="_hazelcastPassword" />
-		<property name="hazelcastServers" ref="_hazelcastServers" />
-	</bean>
-
-	<!-- <bean id="responseService" class="ddth.dasp.hetty.qnt.inmem.GuavaResponseService" 
-		scope="singleton" init-method="init" destroy-method="destroy" /> <bean id="topicPublisher" 
-		class="ddth.dasp.hetty.qnt.inmem.GuavaTopicPublisher" scope="singleton" /> -->
-
-	<bean id="responseService" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastResponseService"
-		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
-		<property name="hazelcastTopicName" ref="_hazelcastTopicName" />
-		<property name="messageFactory" ref="messageFactory" />
-	</bean>
-	<bean id="topicPublisher" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastTopicPublisher"
-		scope="singleton">
-		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
-		<property name="hazelcastTopicName" ref="_hazelcastTopicName" />
-	</bean>
-	<!-- <bean id="queueReader" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue" 
-		scope="singleton" init-method="init" destroy-method="destroy"> <property 
-		name="hazelcastClientFactory" ref="_hazelcastClientFactory" /> <property 
-		name="hazelcastQueueName" ref="_hazelcastQueueName" /> </bean> <bean id="queueWriter" 
-		class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue" scope="singleton" init-method="init" 
-		destroy-method="destroy"> <property name="hazelcastClientFactory" ref="_hazelcastClientFactory" 
-		/> <property name="hazelcastQueueName" ref="_hazelcastQueueName" /> </bean> -->
-	<bean id="hazelcastQueue" class="ddth.dasp.hetty.qnt.hazelcast.HazelcastQueue"
-		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="hazelcastClientFactory" ref="_hazelcastClientFactory" />
-		<property name="hazelcastQueueName" ref="_hazelcastQueueName" />
-		<property name="queueSizeThreshold" ref="_queueSizeThreshold" />
-	</bean>
-	<bean id="messageFactory" class="ddth.dasp.hetty.message.protobuf.ProtoBufMessageFactory"
+	<bean id="HETTY_MESSAGE_FACTORY" class="ddth.dasp.hetty.message.protobuf.ProtoBufMessageFactory"
 		scope="singleton">
 	</bean>
 
-	<beans default-lazy-init="false">
-		<bean id="requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+	<beans default-lazy-init="false"><!-- non-production environments -->
+		<bean id="HETTY_REQUEST_PARSER" class="ddth.dasp.hetty.message.HettyRequestParser"
 			scope="singleton"></bean>
 		<bean id="_nettyReadTimeout" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="60000" />
@@ -104,19 +63,19 @@
 			<constructor-arg value="60000" />
 		</bean>
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="16" />
+			<constructor-arg value="2" />
 		</bean>
 		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
 			scope="singleton">
-			<constructor-arg value="2" />
+			<constructor-arg value="4" />
 		</bean>
 		<bean id="_queueSizeThreshold" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="10" />
 		</bean>
 	</beans>
 
-	<beans default-lazy-init="false" profile="prod,production">
-		<bean id="requestParser" class="ddth.dasp.hetty.message.DefaultRequestParser"
+	<beans default-lazy-init="false" profile="prod,production"><!-- production environment -->
+		<bean id="HETTY_REQUEST_PARSER" class="ddth.dasp.hetty.message.HettyRequestParser"
 			scope="singleton"></bean>
 		<bean id="_nettyReadTimeout" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="10000" />
@@ -125,11 +84,11 @@
 			<constructor-arg value="10000" />
 		</bean>
 		<bean id="_numWorkersConn" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="128" />
+			<constructor-arg value="4" />
 		</bean>
 		<bean id="_numWorkersRequestHandler" class="java.lang.Integer"
 			scope="singleton">
-			<constructor-arg value="4" />
+			<constructor-arg value="64" />
 		</bean>
 		<bean id="_queueSizeThreshold" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="1000" />

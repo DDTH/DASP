@@ -70,7 +70,7 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web-3.1.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/03.spring/org.springframework.web.servlet-3.1.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/slf4j-jcl-1.6.2.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jedis-2.2.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jedis-2.2.0-SNAPSHOT.jar" sourcepath="D:/Workspace/GitHub/jedis"/>
 	<classpathentry kind="lib" path="bundle_framework/lib/jboss-serialization-1.0.3.GA.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

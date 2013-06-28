@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+	default-lazy-init="false">
+
+	<!-- In-memory queue and pub/sub using Google's Guava library -->
+
+	<!-- Response service: Hetty Response service subscribes to topic, listens 
+		for response from Backend server and writes response to client -->
+	<bean id="_hettyResponseService" class="ddth.dasp.hetty.qnt.inmem.GuavaResponseService"
+		scope="singleton" init-method="init" destroy-method="destroy" />
+
+	<bean id="_inmemQueue" class="ddth.dasp.hetty.qnt.inmem.InMemoryQueue"
+		scope="singleton"></bean>
+	<bean id="HETTY_QUEUE_WRITER" parent="_inmemQueue" />
+	<bean id="HETTY_QUEUE_READER" parent="_inmemQueue" />
+
+	<bean id="HETTY_TOPIC_PUBLISHER" class="ddth.dasp.hetty.qnt.inmem.GuavaTopicPublisher"
+		scope="singleton" />
+</beans>
