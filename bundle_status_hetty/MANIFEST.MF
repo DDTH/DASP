@@ -5,15 +5,15 @@ Bundle-SymbolicName: ddth.dasp.statushetty
 Bundle-Version: 0.1.0
 Bundle-Activator: ddth.dasp.statushetty.osgi.DaspBundleActivator
 Bundle-ClassPath: .
-Require-Bundle: ddth.dasp.framework,
+Require-Bundle: ddth.dasp.framework;version:="[0.1.2,1.0.0)",
  ddth.dasp.hetty.mvc,
  org.apache.commons.lang3
-Import-Package: ddth.dasp.common,
- ddth.dasp.common.hazelcast,
+Import-Package: ddth.dasp.common;version:="[0.2.0,1.0.0)",
+ ddth.dasp.common.hazelcastex,
  ddth.dasp.common.id,
  ddth.dasp.common.osgi,
  ddth.dasp.common.utils,
- ddth.dasp.hetty,
+ ddth.dasp.hetty;version:="[0.2.0,1.0.0)",
  ddth.dasp.hetty.message,
  ddth.dasp.hetty.qnt,
  freemarker.cache,
