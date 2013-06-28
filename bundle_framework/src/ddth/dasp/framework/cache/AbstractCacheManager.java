@@ -11,12 +11,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
+
 import com.google.common.collect.MapMaker;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.id.IdGenerator;
 
-public abstract class AbstractCacheManager implements ICacheManager {
+public abstract class AbstractCacheManager implements ICacheManager, BundleContextAware {
 
     public final static String CACHE_PROP_CAPACITY = "cache.capacity";
     public final static String CACHE_PROP_EXPIRE_AFTER_WRITE = "cache.expireAfterWrite";
@@ -29,6 +32,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private Map<String, Properties> cacheProperties;
     private String cacheNamePrefix;
     private String ID = IdGenerator.getInstance(IdGenerator.getMacAddr()).generateId64Hex();
+    private BundleContext bundleContext;
 
     /**
      * {@inheritDoc}
@@ -243,4 +247,16 @@ public abstract class AbstractCacheManager implements ICacheManager {
      */
     protected abstract ICache createCacheInternal(String name, long capacity,
             long expireAfterWrite, long expireAfterAccess);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    protected BundleContext getBundleContext() {
+        return bundleContext;
+    }
 }
