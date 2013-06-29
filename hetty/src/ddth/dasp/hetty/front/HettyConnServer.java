@@ -2,14 +2,13 @@ package ddth.dasp.hetty.front;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerBossPool;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioWorkerPool;
@@ -19,17 +18,18 @@ import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.config.IConfigDao;
+import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.qnt.IQueueWriter;
+import ddth.dasp.hetty.utils.HettyControlPanelHttp;
+import ddth.dasp.hetty.utils.HettyUtils;
 import ddth.dasp.servlet.utils.NetUtils;
 
 public class HettyConnServer {
-    protected static ChannelGroup ALL_CHANNELS = new DefaultChannelGroup(
-            HettyConnServer.class.getCanonicalName());
     private final Logger LOGGER = LoggerFactory.getLogger(HettyConnServer.class);
 
-    // private static ConcurrentMap<String, IQueueWriter> hostQueueWriterMapping
-    // = new ConcurrentHashMap<String, IQueueWriter>();
     private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
     private long readTimeoutMillisecs = 10000, writeTimeoutMillisecs = 10000;
@@ -38,47 +38,28 @@ public class HettyConnServer {
 
     private Timer timer;
     private ServerBootstrap nettyServer;
+
     private static HettyPipelineFactory hettyPipelineFactory;
 
+    private static Map<String, Object> hostQueueNameMapping = new ConcurrentHashMap<String, Object>();
+
+    public static Map<String, Object> getHostQueueNameMapping() {
+        return hostQueueNameMapping;
+    }
+
+    public static void setHostQueueNameMapping(Map<String, Object> hostQueueNameMapping) {
+        HettyConnServer.hostQueueNameMapping = hostQueueNameMapping;
+    }
+
+    public static void addHostQueueNameMapping(String host, Object mapping) {
+        hostQueueNameMapping.put(host, mapping);
+    }
+
+    public static void deleteHostQueueNameMapping(String host) {
+        hostQueueNameMapping.remove(host);
+    }
+
     public HettyConnServer() {
-    }
-
-    /**
-     * Maps a host-queueWriter.
-     * 
-     * @param host
-     * @param queueWriter
-     */
-    public static void mapHostQueueWriter(String host, IQueueWriter queueWriter) {
-        // hostQueueWriterMapping.put(host, queueWriter);
-        if (hettyPipelineFactory != null) {
-            hettyPipelineFactory.mapHostQueueWriter(host, queueWriter);
-        }
-    }
-
-    /**
-     * Unmaps an existing host-queueWriter.
-     * 
-     * @param host
-     */
-    public static void unmapHostQueueWriter(String host) {
-        // hostQueueWriterMapping.remove(host);
-        if (hettyPipelineFactory != null) {
-            hettyPipelineFactory.unmapHostQueueWriter(host);
-        }
-    }
-
-    public Map<String, IQueueWriter> getHostQueueWriterMapping() {
-        return null;
-        // return hostQueueWriterMapping;
-    }
-
-    public HettyConnServer setHostQueueWriterMapping(
-            Map<String, IQueueWriter> hostQueueWriterMapping) {
-        if (hostQueueWriterMapping != null) {
-            // HettyConnServer.hostQueueWriterMapping.putAll(hostQueueWriterMapping);
-        }
-        return this;
     }
 
     public IQueueWriter getQueueWriter() {
@@ -135,7 +116,19 @@ public class HettyConnServer {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
+        IConfigDao configDao = DaspGlobal.getOsgiBootstrap().getService(IConfigDao.class);
+        hostQueueNameMapping = (Map<String, Object>) configDao.getConfig(
+                HettyControlPanelHttp.MODULE, HettyControlPanelHttp.CONFIG_KEY);
+        if (hostQueueNameMapping == null || hostQueueNameMapping.size() == 0) {
+            hostQueueNameMapping = new ConcurrentHashMap<String, Object>();
+            hostQueueNameMapping.put("127.0.0.1", HettyConstants.DEFAULT_HETTY_QUEUE);
+            hostQueueNameMapping.put("localhost", HettyConstants.DEFAULT_HETTY_QUEUE);
+            configDao.setConfig(HettyControlPanelHttp.MODULE, HettyControlPanelHttp.CONFIG_KEY,
+                    hostQueueNameMapping);
+        }
+
         Integer port = 8083;
         if (!StringUtils.isBlank(portStr)) {
             // find free port
@@ -204,7 +197,7 @@ public class HettyConnServer {
             LOGGER.warn(e.getMessage(), e);
         }
         try {
-            ALL_CHANNELS.close();
+            HettyUtils.ALL_CHANNELS.close();
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
         }

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import ddth.dasp.hetty.message.ICookie;
 import ddth.dasp.hetty.message.IResponse;
+import ddth.dasp.hetty.utils.HettyUtils;
 
 public abstract class AbstractHettyResponseService implements IHettyResponseService {
 
@@ -30,7 +31,7 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
     @Override
     public void writeResponse(IResponse response) {
         Integer channelId = response.getChannelId();
-        Channel channel = HettyConnServer.ALL_CHANNELS.find(channelId);
+        Channel channel = HettyUtils.ALL_CHANNELS.find(channelId);
         if (channel != null && response.getRequestId().equals(channel.getAttachment())) {
             HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatus());
             HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,

@@ -1,50 +1,44 @@
 package ddth.dasp.hetty.front;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
 import org.jboss.netty.handler.timeout.IdleStateEvent;
-import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.qnt.IQueueWriter;
+import ddth.dasp.hetty.utils.HettyControlPanelHttp;
+import ddth.dasp.hetty.utils.HettyUtils;
 
 public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     private static Logger LOGGER = LoggerFactory.getLogger(HettyHttpHandler.class);
     private HttpRequest currentRequest;
     private ByteArrayOutputStream currentRequestContent = new ByteArrayOutputStream(4096);
 
-    private Map<String, Object> hostQueueNameMapping = new ConcurrentHashMap<String, Object>();
     private IQueueWriter queueWriter;
     private IMessageFactory messageFactory;
 
     public HettyHttpHandler(IQueueWriter queueWriter, IMessageFactory messageFactory) {
         this.queueWriter = queueWriter;
         this.messageFactory = messageFactory;
-        hostQueueNameMapping.put("127.0.0.1", HettyConstants.DEFAULT_HETTY_QUEUE);
-        hostQueueNameMapping.put("localhost", HettyConstants.DEFAULT_HETTY_QUEUE);
     }
 
     /**
@@ -52,7 +46,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
      */
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        HettyConnServer.ALL_CHANNELS.add(e.getChannel());
+        HettyUtils.ALL_CHANNELS.add(e.getChannel());
     }
 
     protected void validateHttpChunk(HttpChunk httpChunk) {
@@ -76,54 +70,25 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     protected void handleRequest(HttpRequest httpRequest, byte[] requestContent, Channel userChannel)
             throws Exception {
         String uri = httpRequest.getUri();
-        if (uri.startsWith("/status/") || uri.startsWith("/status?") || uri.equals("/status")) {
-            StringBuilder content = new StringBuilder();
-            content.append("Connections: " + HettyConnServer.ALL_CHANNELS.size());
-
-            HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.OK);
-            response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
-            response.setContent(ChannelBuffers.copiedBuffer(content.toString(), CharsetUtil.UTF_8));
-            userChannel.write(response).addListener(new ChannelFutureListener() {
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    future.getChannel().close();
-                }
-            });
-            return;
-        }
-
-        IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
-                requestContent);
-        String host = request.getDomain();
-        String queueName = lookupQueueName(host, hostQueueNameMapping);
-        if (queueName != null) {
-            userChannel.setAttachment(request.getId());
-            if (!queueWriter.queueWrite(queueName, request.serialize())) {
-                StringBuilder content = new StringBuilder();
-                content.append("No request queue for [" + host + "], or queue is full!");
-                HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                        HttpResponseStatus.BAD_GATEWAY);
-                response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
-                response.setContent(ChannelBuffers.copiedBuffer(content.toString(),
-                        CharsetUtil.UTF_8));
-                userChannel.write(response).addListener(new ChannelFutureListener() {
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        future.getChannel().close();
-                    }
-                });
-            }
+        if (uri.startsWith("/hetty/") || uri.startsWith("/hetty?") || uri.equals("/hetty")) {
+            IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
+                    requestContent);
+            HettyControlPanelHttp.handleRequest(request, requestContent, userChannel);
         } else {
-            StringBuilder content = new StringBuilder();
-            content.append("Host [" + host + "] is not mapped!");
-            HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.BAD_REQUEST);
-            response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
-            response.setContent(ChannelBuffers.copiedBuffer(content.toString(), CharsetUtil.UTF_8));
-            userChannel.write(response).addListener(new ChannelFutureListener() {
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    future.getChannel().close();
+            IRequest request = messageFactory.buildRequest(httpRequest, userChannel.getId(),
+                    requestContent);
+            String host = request.getDomain();
+            String queueName = lookupQueueName(host, HettyConnServer.getHostQueueNameMapping());
+            if (queueName != null) {
+                userChannel.setAttachment(request.getId());
+                if (!queueWriter.queueWrite(queueName, request.serialize())) {
+                    HettyUtils.responseText(userChannel, HttpResponseStatus.BAD_GATEWAY,
+                            "No request queue for [" + host + "], or queue is full!");
                 }
-            });
+            } else {
+                HettyUtils.responseText(userChannel, HttpResponseStatus.BAD_REQUEST, "Host ["
+                        + host + "] is not mapped!");
+            }
         }
     }
 
@@ -150,7 +115,19 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
             processMessage = !currentRequest.isChunked();
         }
         if (processMessage) {
-            handleRequest(currentRequest, currentRequestContent.toByteArray(), e.getChannel());
+            try {
+                handleRequest(currentRequest, currentRequestContent.toByteArray(), e.getChannel());
+            } catch (Exception ex) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                try {
+                    ExceptionUtils.printRootCauseStackTrace(ex, pw);
+                    HettyUtils.responseText(e.getChannel(),
+                            HttpResponseStatus.INTERNAL_SERVER_ERROR, sw.toString());
+                } finally {
+                    pw.close();
+                }
+            }
         }
     }
 
