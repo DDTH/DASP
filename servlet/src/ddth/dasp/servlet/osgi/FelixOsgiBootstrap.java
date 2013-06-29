@@ -494,8 +494,8 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
 
     public void init() throws Exception {
         initFelixFramework();
-        startAllBundles();
         initBundleConfigDao();
+        startAllBundles();
     }
 
     public void destroy() {
