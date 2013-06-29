@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ddth.dasp.framework.utils.RegExpUtils;
+import ddth.dasp.common.utils.RegExpUtils;
 import ddth.dasp.hetty.mvc.view.CacheViewResolver;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
