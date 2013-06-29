@@ -4,7 +4,6 @@
 	<classpathentry kind="src" output="bundle_hettymvc/classes" path="bundle_hettymvc/src"/>
 	<classpathentry kind="src" output="bundle_status_hetty/classes" path="bundle_status_hetty/src"/>
 	<classpathentry kind="src" output="hetty/classes" path="hetty/src"/>
-	<classpathentry kind="src" output="bundle_config/classes" path="bundle_config/src"/>
 	<classpathentry kind="src" output="bundle_springaop/classes" path="bundle_springaop/src"/>
 	<classpathentry kind="src" output="bundle_handlersocket/classes" path="bundle_handlersocket/src"/>
 	<classpathentry kind="src" output="bundle_springmvc/classes" path="bundle_springmvc/src"/>

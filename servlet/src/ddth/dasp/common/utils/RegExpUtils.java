@@ -1,4 +1,4 @@
-package ddth.dasp.framework.utils;
+package ddth.dasp.common.utils;
 
 /**
  * Regular Expression related utilities.

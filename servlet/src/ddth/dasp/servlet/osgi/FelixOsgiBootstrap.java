@@ -35,6 +35,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import ddth.dasp.common.DaspGlobal;
+import ddth.dasp.common.config.IConfigDao;
 import ddth.dasp.common.id.IdGenerator;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.OsgiUtils;
@@ -474,38 +475,37 @@ public class FelixOsgiBootstrap implements IOsgiBootstrap {
         }
     }
 
-    // @SuppressWarnings("unused")
-    // private void deployCustomBundles() {
-    // File dir = new File(renderOsgContainerLocation(), "/mybundles");
-    // if (LOGGER.isDebugEnabled()) {
-    // LOGGER.debug("Starting all bundles from [" + dir.getAbsolutePath()
-    // + "]...");
-    // }
-    // for (File file : dir.listFiles()) {
-    // if (file.isFile() && file.getName().endsWith(".jar")) {
-    // try {
-    // if (LOGGER.isDebugEnabled()) {
-    // LOGGER.debug("Deploying custom bundle [" + file
-    // + "]...");
-    // }
-    // Bundle bundle = deployBundle(file.getName(), file);
-    // startBundle(bundle);
-    // } catch (Exception e) {
-    // LOGGER.error(e.getMessage(), e);
-    // }
-    // }
-    // }
-    // }
+    private IConfigDao configDao;
+
+    @SuppressWarnings("unchecked")
+    protected void initBundleConfigDao() throws Exception {
+        BundleContext bundleContext = getBundleContext();
+        String daoClass = bundleContext.getProperty("osgi.dasp.config.dao.class");
+        Class<IConfigDao> clazz = (Class<IConfigDao>) Class.forName(daoClass);
+        configDao = clazz.newInstance();
+        configDao.init(bundleContext);
+
+        bundleContext.registerService(IConfigDao.class, configDao, null);
+    }
+
+    protected void destroyBundleConfigDao() throws Exception {
+        configDao.destroy(getBundleContext());
+    }
 
     public void init() throws Exception {
         initFelixFramework();
         startAllBundles();
-        // deployCustomBundles();
+        initBundleConfigDao();
     }
 
     public void destroy() {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Destroying Apache Felix Framework [" + osgiContainerLocation + "]...");
+        }
+        try {
+            destroyBundleConfigDao();
+        } catch (Exception e) {
+            LOGGER.error(FATAL, e.getMessage(), e);
         }
         try {
             if (framework != null) {
