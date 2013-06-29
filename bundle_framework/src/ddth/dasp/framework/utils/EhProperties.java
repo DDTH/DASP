@@ -9,6 +9,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ddth.dasp.common.utils.RegExpUtils;
+
 /**
  * A replacement for java.utils.Properties with enhanced functionality.
  * 
