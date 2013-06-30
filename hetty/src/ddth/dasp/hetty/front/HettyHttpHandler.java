@@ -140,9 +140,9 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         if (future != null) {
             e.getFuture().cancel();
         }
-        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.GATEWAY_TIMEOUT, "");
+        String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
+        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.GATEWAY_TIMEOUT, msg);
         if (LOGGER.isDebugEnabled()) {
-            String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
             LOGGER.debug(msg);
         }
     }
@@ -158,6 +158,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         if (future != null) {
             e.getFuture().cancel();
         }
-        e.getChannel().close();
+        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                t.getMessage());
     }
 }
