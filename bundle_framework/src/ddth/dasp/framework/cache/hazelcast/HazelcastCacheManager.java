@@ -5,6 +5,7 @@ import java.util.List;
 import org.osgi.framework.BundleContext;
 
 import ddth.dasp.common.hazelcastex.IHazelcastClientFactory;
+import ddth.dasp.common.hazelcastex.PoolConfig;
 import ddth.dasp.common.hazelcastex.impl.HazelcastClientFactory;
 import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.cache.AbstractCacheManager;
@@ -23,6 +24,7 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     private IHazelcastClientFactory hazelcastClientFactory;
     private List<String> hazelcastServers;
     private String hazelcastUsername, hazelcastPassword;
+    private PoolConfig poolConfig;
 
     public IHazelcastClientFactory getHazelcastClientFactory() {
         if (hazelcastClientFactory != null) {
@@ -88,6 +90,14 @@ public class HazelcastCacheManager extends AbstractCacheManager {
         return this;
     }
 
+    protected PoolConfig getPoolConfig() {
+        return poolConfig;
+    }
+
+    public void setPoolConfig(PoolConfig poolConfig) {
+        this.poolConfig = poolConfig;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -108,13 +118,13 @@ public class HazelcastCacheManager extends AbstractCacheManager {
     @Override
     protected HazelcastCache createCacheInternal(String name, long capacity, long expireAfterWrite,
             long expireAfterAccess) {
-        HazelcastCache cache = new HazelcastCache(hazelcastClientFactory, name);
+        HazelcastCache cache = new HazelcastCache(this, name);
         cache.setCapacity(capacity > 0 ? capacity : getDefaultCacheCapacity());
         cache.setExpireAfterAccess(expireAfterAccess);
         cache.setExpireAfterWrite(expireAfterWrite);
 
         cache.setHazelcastServer(hazelcastServers).setHazelcastUsername(hazelcastUsername)
-                .setHazelcastPassword(hazelcastPassword);
+                .setHazelcastPassword(hazelcastPassword).setPoolConfig(poolConfig);
 
         cache.init();
         return cache;

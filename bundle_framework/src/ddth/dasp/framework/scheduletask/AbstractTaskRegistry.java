@@ -39,7 +39,7 @@ public abstract class AbstractTaskRegistry implements ITaskRegistry {
             }
         };
         bufferWatcherThread.setPriority(Thread.MIN_PRIORITY);
-        bufferWatcherThread.setName(HazelcastLocalRunClusterStatusTaskRegistry.class.getName());
+        // bufferWatcherThread.setName(HazelcastLocalRunClusterStatusTaskRegistry.class.getName());
         bufferWatcherThread.setDaemon(true);
         bufferWatcherThread.start();
     }

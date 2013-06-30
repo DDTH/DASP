@@ -23,42 +23,34 @@ import ddth.dasp.framework.cache.ICache;
  */
 public class RedisCache extends AbstractCache implements ICache {
 
-    private IRedisClientFactory redisClientFactory;
+    private RedisCacheManager redisCacheManager;
     private String redisHost = "localhost", redisUsername, redisPassword;
     private int redisPort = IRedisClient.DEFAULT_REDIS_PORT;
     private PoolConfig poolConfig;
     private long timeToLiveSeconds = -1;
 
-    public RedisCache() {
+    public RedisCache(RedisCacheManager redisCacheManager) {
+        this.redisCacheManager = redisCacheManager;
     }
 
-    public RedisCache(IRedisClientFactory redisClientFactory) {
-        this.redisClientFactory = redisClientFactory;
-    }
-
-    public RedisCache(IRedisClientFactory redisClientFactory, String name) {
+    public RedisCache(RedisCacheManager redisCacheManager, String name) {
         super(name);
-        this.redisClientFactory = redisClientFactory;
+        this.redisCacheManager = redisCacheManager;
     }
 
-    public RedisCache(IRedisClientFactory redisClientFactory, String name, long capacity) {
+    public RedisCache(RedisCacheManager redisCacheManager, String name, long capacity) {
         super(name, capacity);
-        this.redisClientFactory = redisClientFactory;
+        this.redisCacheManager = redisCacheManager;
     }
 
-    public RedisCache(IRedisClientFactory redisClientFactory, String name, long capacity,
+    public RedisCache(RedisCacheManager redisCacheManager, String name, long capacity,
             long expireAfterWrite, long expireAfterAccess) {
         super(name, capacity, expireAfterWrite, expireAfterAccess);
-        this.redisClientFactory = redisClientFactory;
+        this.redisCacheManager = redisCacheManager;
     }
 
     protected IRedisClientFactory getRedisClientFactory() {
-        return redisClientFactory;
-    }
-
-    public RedisCache setRedisClientFactory(IRedisClientFactory redisClientFactory) {
-        this.redisClientFactory = redisClientFactory;
-        return this;
+        return redisCacheManager.getRedisClientFactory();
     }
 
     public String getRedisHost() {
@@ -157,21 +149,16 @@ public class RedisCache extends AbstractCache implements ICache {
         // EMPTY
     }
 
-    private IRedisClient redisClient;
-
-    synchronized protected IRedisClient getRedisClient() {
-        if (redisClient == null) {
-            redisClient = redisClientFactory.getRedisClient(redisHost, redisPort, redisUsername,
-                    redisPassword, poolConfig);
-        }
-        return redisClient;
+    private IRedisClient getRedisClient() {
+        IRedisClientFactory redisClientFactory = getRedisClientFactory();
+        return redisClientFactory != null ? redisClientFactory.getRedisClient(redisHost, redisPort,
+                redisUsername, redisPassword, poolConfig) : null;
     }
 
-    synchronized protected void returnRedisClient() {
+    private void returnRedisClient(IRedisClient redisClient) {
         if (redisClient != null) {
-            redisClientFactory.returnRedisClient(redisClient);
+            getRedisClientFactory().returnRedisClient(redisClient);
         }
-        redisClient = null;
     }
 
     /**
@@ -183,7 +170,7 @@ public class RedisCache extends AbstractCache implements ICache {
         try {
             return redisClient != null ? redisClient.hashSize(getName()) : -1;
         } finally {
-            returnRedisClient();
+            returnRedisClient(redisClient);
         }
     }
 
@@ -213,7 +200,7 @@ public class RedisCache extends AbstractCache implements ICache {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
-                returnRedisClient();
+                returnRedisClient(redisClient);
             }
         }
     }
@@ -239,7 +226,7 @@ public class RedisCache extends AbstractCache implements ICache {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
-                returnRedisClient();
+                returnRedisClient(redisClient);
             }
         } else {
             return null;
@@ -256,7 +243,7 @@ public class RedisCache extends AbstractCache implements ICache {
             try {
                 redisClient.hashDelete(getName(), key);
             } finally {
-                returnRedisClient();
+                returnRedisClient(redisClient);
             }
         }
     }
@@ -271,7 +258,7 @@ public class RedisCache extends AbstractCache implements ICache {
             try {
                 redisClient.delete(getName());
             } finally {
-                returnRedisClient();
+                returnRedisClient(redisClient);
             }
         }
     }
@@ -286,7 +273,7 @@ public class RedisCache extends AbstractCache implements ICache {
             try {
                 return redisClient.hashGet(getName(), key) != null;
             } finally {
-                returnRedisClient();
+                returnRedisClient(redisClient);
             }
         }
         return false;

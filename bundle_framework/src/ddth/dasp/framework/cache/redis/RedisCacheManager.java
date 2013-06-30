@@ -4,6 +4,7 @@ import org.osgi.framework.BundleContext;
 
 import ddth.dasp.common.redis.IRedisClient;
 import ddth.dasp.common.redis.IRedisClientFactory;
+import ddth.dasp.common.redis.PoolConfig;
 import ddth.dasp.common.redis.impl.jedis.RedisClientFactory;
 import ddth.dasp.common.utils.OsgiUtils;
 import ddth.dasp.framework.cache.AbstractCacheManager;
@@ -22,6 +23,7 @@ public class RedisCacheManager extends AbstractCacheManager {
     private IRedisClientFactory redisClientFactory;
     private String redisHost = "localhost", redisUsername, redisPassword;
     private int redisPort = IRedisClient.DEFAULT_REDIS_PORT;
+    private PoolConfig poolConfig;
 
     public IRedisClientFactory getRedisClientFactory() {
         if (redisClientFactory != null) {
@@ -95,6 +97,14 @@ public class RedisCacheManager extends AbstractCacheManager {
         return this;
     }
 
+    protected PoolConfig getPoolConfig() {
+        return poolConfig;
+    }
+
+    public void setPoolConfig(PoolConfig poolConfig) {
+        this.poolConfig = poolConfig;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -129,13 +139,13 @@ public class RedisCacheManager extends AbstractCacheManager {
     @Override
     protected RedisCache createCacheInternal(String name, long capacity, long expireAfterWrite,
             long expireAfterAccess) {
-        RedisCache cache = new RedisCache(redisClientFactory, name);
+        RedisCache cache = new RedisCache(this, name);
         cache.setCapacity(capacity > 0 ? capacity : getDefaultCacheCapacity());
         cache.setExpireAfterAccess(expireAfterAccess);
         cache.setExpireAfterWrite(expireAfterWrite);
 
         cache.setRedisHost(redisHost).setRedisPort(redisPort).setRedisUsername(redisUsername)
-                .setRedisPassword(redisPassword);
+                .setRedisPassword(redisPassword).setPoolConfig(poolConfig);
 
         cache.init();
         return cache;

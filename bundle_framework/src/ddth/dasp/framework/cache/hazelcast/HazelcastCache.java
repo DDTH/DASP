@@ -18,42 +18,34 @@ import ddth.dasp.framework.cache.ICache;
  */
 public class HazelcastCache extends AbstractCache implements ICache {
 
-    private IHazelcastClientFactory hazelcastClientFactory;
+    private HazelcastCacheManager hazelcastCacheManager;
     private List<String> hazelcastServers;
     private String hazelcastUsername, hazelcastPassword;
     private PoolConfig poolConfig;
     private long timeToLiveSeconds = -1;
 
-    public HazelcastCache() {
+    public HazelcastCache(HazelcastCacheManager hazelcastCacheManager) {
+        this.hazelcastCacheManager = hazelcastCacheManager;
     }
 
-    public HazelcastCache(IHazelcastClientFactory hazelcastClientFactory) {
-        this.hazelcastClientFactory = hazelcastClientFactory;
-    }
-
-    public HazelcastCache(IHazelcastClientFactory hazelcastClientFactory, String name) {
+    public HazelcastCache(HazelcastCacheManager hazelcastCacheManager, String name) {
         super(name);
-        this.hazelcastClientFactory = hazelcastClientFactory;
+        this.hazelcastCacheManager = hazelcastCacheManager;
     }
 
-    public HazelcastCache(IHazelcastClientFactory hazelcastClientFactory, String name, long capacity) {
+    public HazelcastCache(HazelcastCacheManager hazelcastCacheManager, String name, long capacity) {
         super(name, capacity);
-        this.hazelcastClientFactory = hazelcastClientFactory;
+        this.hazelcastCacheManager = hazelcastCacheManager;
     }
 
-    public HazelcastCache(IHazelcastClientFactory hazelcastClientFactory, String name,
-            long capacity, long expireAfterWrite, long expireAfterAccess) {
+    public HazelcastCache(HazelcastCacheManager hazelcastCacheManager, String name, long capacity,
+            long expireAfterWrite, long expireAfterAccess) {
         super(name, capacity, expireAfterWrite, expireAfterAccess);
-        this.hazelcastClientFactory = hazelcastClientFactory;
+        this.hazelcastCacheManager = hazelcastCacheManager;
     }
 
     protected IHazelcastClientFactory getHazelcastClientFactory() {
-        return hazelcastClientFactory;
-    }
-
-    public HazelcastCache setHazelcastClientFactory(IHazelcastClientFactory hazelcastClientFactory) {
-        this.hazelcastClientFactory = hazelcastClientFactory;
-        return this;
+        return hazelcastCacheManager.getHazelcastClientFactory();
     }
 
     protected List<String> getHazelcastServers() {
@@ -115,21 +107,15 @@ public class HazelcastCache extends AbstractCache implements ICache {
         // EMPTY
     }
 
-    private IHazelcastClient _hazelcastClient;
-
-    synchronized protected IHazelcastClient getHazelcastClient() {
-        if (_hazelcastClient == null) {
-            _hazelcastClient = hazelcastClientFactory.getHazelcastClient(hazelcastServers,
-                    hazelcastUsername, hazelcastPassword, poolConfig);
-        }
-        return _hazelcastClient;
+    private IHazelcastClient getHazelcastClient() {
+        IHazelcastClientFactory hazelcastClientFactory = getHazelcastClientFactory();
+        return hazelcastClientFactory != null ? hazelcastClientFactory.getHazelcastClient(
+                hazelcastServers, hazelcastUsername, hazelcastPassword, poolConfig) : null;
     }
 
-    synchronized protected void returnHazelcastClient() {
-        try {
-            hazelcastClientFactory.returnHazelcastClient(_hazelcastClient);
-        } finally {
-            _hazelcastClient = null;
+    private void returnHazelcastClient(IHazelcastClient hazelcastClient) {
+        if (hazelcastClient != null) {
+            getHazelcastClientFactory().returnHazelcastClient(hazelcastClient);
         }
     }
 
@@ -142,7 +128,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
         try {
             return hazelcastClient != null ? hazelcastClient.mapSize(getName()) : -1;
         } finally {
-            returnHazelcastClient();
+            returnHazelcastClient(hazelcastClient);
         }
     }
 
@@ -170,7 +156,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
             try {
                 hazelcastClient.mapSet(getName(), key, entry, (int) ttl);
             } finally {
-                returnHazelcastClient();
+                returnHazelcastClient(hazelcastClient);
             }
         }
     }
@@ -184,7 +170,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
         try {
             return hazelcastClient != null ? hazelcastClient.mapGet(getName(), key) : null;
         } finally {
-            returnHazelcastClient();
+            returnHazelcastClient(hazelcastClient);
         }
     }
 
@@ -198,7 +184,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
             try {
                 hazelcastClient.mapDelete(getName(), key);
             } finally {
-                returnHazelcastClient();
+                returnHazelcastClient(hazelcastClient);
             }
         }
     }
@@ -213,7 +199,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
             try {
                 hazelcastClient.mapDeleteAll(getName());
             } finally {
-                returnHazelcastClient();
+                returnHazelcastClient(hazelcastClient);
             }
         }
     }
@@ -227,7 +213,7 @@ public class HazelcastCache extends AbstractCache implements ICache {
         try {
             return hazelcastClient != null ? hazelcastClient.mapGet(getName(), key) != null : false;
         } finally {
-            returnHazelcastClient();
+            returnHazelcastClient(hazelcastClient);
         }
     }
 }
