@@ -11,7 +11,8 @@ public class HomeActionHandler extends BaseActionHandler {
     private String viewRedirect;
 
     @Override
-    protected Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher) {
+    protected Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher,
+            String topicName) {
         if (viewRedirect == null) {
             IUrlCreator urlCreator = getUrlCreator();
             String url = urlCreator.createUrl(new String[] { DaspBundleConstants.MODULE_NAME,

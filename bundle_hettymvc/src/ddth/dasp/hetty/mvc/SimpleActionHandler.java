@@ -11,7 +11,8 @@ public class SimpleActionHandler extends AbstractActionHandler {
      * {@inheritDoc}
      */
     @Override
-    protected Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher) {
+    protected Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher,
+            String topicName) {
         return getViewName();
     }
 }

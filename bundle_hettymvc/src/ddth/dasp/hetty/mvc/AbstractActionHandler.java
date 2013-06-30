@@ -138,7 +138,7 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
             return;
         }
 
-        Object view = internalHandleRequest(request, topicPublisher);
+        Object view = internalHandleRequest(request, topicPublisher, topicName);
 
         if (view == null) {
             postHandleRequest(request, null, null);
@@ -192,10 +192,11 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * 
      * @param request
      * @param topicPublisher
+     * @param topicName
      * @return
      */
-    protected abstract Object internalHandleRequest(IRequest request, ITopicPublisher topicPublisher)
-            throws Exception;
+    protected abstract Object internalHandleRequest(IRequest request,
+            ITopicPublisher topicPublisher, String topicName) throws Exception;
 
     /**
      * {@link #handleRequest(IRequest, ITopicPublisher)} calls this method after
