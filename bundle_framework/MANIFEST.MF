@@ -43,7 +43,8 @@ Export-Package: ddth.dasp.framework,
 Bundle-ClassPath: .,
  activemq-all-5.6.0.jar,
  jackson-core-lgpl-1.8.2.jar,
- jackson-mapper-lgpl-1.8.2.jar
+ jackson-mapper-lgpl-1.8.2.jar,
+ jboss-serialization-1.0.3.GA.jar
 Import-Package: com.hazelcast.client,
  com.hazelcast.core,
  com.hazelcast.security,
