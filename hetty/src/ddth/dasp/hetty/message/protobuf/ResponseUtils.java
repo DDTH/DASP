@@ -283,6 +283,68 @@ public class ResponseUtils {
         return response;
     }
 
+    private static String content503 = null;
+
+    /**
+     * Helper method to create a 503 response.
+     * 
+     * @param request
+     * @return
+     */
+    public static IResponse response503(IRequest request) {
+        return response503(request, null);
+    }
+
+    /**
+     * Helper method to create a 503 response.
+     * 
+     * @param request
+     * @param message
+     * @return
+     */
+    public static IResponse response503(IRequest request, String message) {
+        if (content503 == null) {
+            content503 = loadContent("/ddth/dasp/hetty/503.tpl");
+        }
+        String referer = request.getHeader("Referer");
+        String htmlContent = content503.replace("${referer}", referer != null ? referer : "")
+                .replace("${message}", message != null ? message : "");
+        IResponse response = newResponse(request).setStatus(500)
+                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+        return response;
+    }
+
+    private static String content504 = null;
+
+    /**
+     * Helper method to create a 504 response.
+     * 
+     * @param request
+     * @return
+     */
+    public static IResponse response504(IRequest request) {
+        return response504(request, null);
+    }
+
+    /**
+     * Helper method to create a 504 response.
+     * 
+     * @param request
+     * @param message
+     * @return
+     */
+    public static IResponse response504(IRequest request, String message) {
+        if (content504 == null) {
+            content504 = loadContent("/ddth/dasp/hetty/504.tpl");
+        }
+        String referer = request.getHeader("Referer");
+        String htmlContent = content504.replace("${referer}", referer != null ? referer : "")
+                .replace("${message}", message != null ? message : "");
+        IResponse response = newResponse(request).setStatus(500)
+                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+        return response;
+    }
+
     /**
      * Helper method to create a new empty response.
      * 
