@@ -140,7 +140,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
         if (future != null) {
             e.getFuture().cancel();
         }
-        e.getChannel().close();
+        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.GATEWAY_TIMEOUT, "");
         if (LOGGER.isDebugEnabled()) {
             String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
             LOGGER.debug(msg);
