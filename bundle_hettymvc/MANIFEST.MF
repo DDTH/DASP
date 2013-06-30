@@ -18,6 +18,7 @@ Export-Package: ddth.dasp.hetty.mvc,
 Bundle-ClassPath: .
 Import-Package: ddth.dasp.common,
  ddth.dasp.common.id,
+ ddth.dasp.common.utils,
  ddth.dasp.hetty,
  ddth.dasp.hetty.message,
  ddth.dasp.hetty.message.protobuf,

@@ -218,7 +218,7 @@ public class HettyRequestHandlerServer {
         public WorkerThread(HettyRequestHandlerServer requestHandler, IQueueReader queueReader,
                 String queueName, IMessageFactory messageFactory, ITopicPublisher topicPublisher,
                 String topicName, long readTimeoutMillisecs) {
-            setName("HRH-Worker-" + (COUNTER++));
+            setName("HRH-Worker/" + queueName + "/" + topicName + "/" + (COUNTER++));
             setDaemon(true);
 
             this.requestHandler = requestHandler;
