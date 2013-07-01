@@ -27,12 +27,12 @@ public class PoolConfig {
     /**
      * Default maximum number of idle connections.
      */
-    public final static int DEFAULT_MAX_IDLE = 4;
+    public final static int DEFAULT_MAX_IDLE = 1 + DEFAULT_MAX_ACTIVE / 2;
 
     /**
      * Default minimum number of idle connections.
      */
-    public final static int DEFAULT_MIN_IDLE = 1;
+    public final static int DEFAULT_MIN_IDLE = 1 + DEFAULT_MAX_ACTIVE / 4;
 
     private int maxActive = DEFAULT_MAX_ACTIVE, maxIdle = DEFAULT_MAX_IDLE,
             minIdle = DEFAULT_MIN_IDLE;

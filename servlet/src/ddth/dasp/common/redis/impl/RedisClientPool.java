@@ -80,6 +80,8 @@ public class RedisClientPool extends GenericObjectPool<AbstractRedisClient> impl
     @Override
     public AbstractRedisClient borrowObject() throws Exception {
         AbstractRedisClient redisClient = super.borrowObject();
+        // System.out.println("Borrow: " + getNumActive() + "+" + getNumIdle() +
+        // "/" + getMaxActive());
         if (redisClient != null) {
             redisClient.setRedisClientPool(this);
             activeClients.add(redisClient);
@@ -97,6 +99,9 @@ public class RedisClientPool extends GenericObjectPool<AbstractRedisClient> impl
         try {
             super.returnObject(redisClient);
             // super.invalidateObject(redisClient);
+            // System.out.println("Return: " + getNumActive() + "+" +
+            // getNumIdle() + "/"
+            // + getMaxActive());
         } finally {
             activeClients.remove(redisClient);
         }

@@ -31,6 +31,7 @@ public class PoolableRedisClient extends AbstractRedisClient {
             redisClient.auth(getRedisPassword());
         }
         redisClient.connect();
+        // System.out.println("\tNEW REDIS CLIENT");
     }
 
     /**
