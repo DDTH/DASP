@@ -56,7 +56,7 @@
 	<bean name="_dummy_pool_pubsub_config_" class="java.lang.String">
 		<constructor-arg>
 			<value><![CDATA[
-	        (Pool, Pub/Sub) Pool configuration:
+	        (Pool, Pub/Sub) Pool configuration (if you run everything in one box):
 	            max possible number of active connections (busy) := _numWorkersConn + _numWorkersRequestHandler*2 + 1
 	            min active connections (idle)                    := _numWorkersConn + _numWorkersRequestHandler + 1 
 	        where:
@@ -82,18 +82,15 @@
 			scope="singleton">
 			<constructor-arg value="2" />
 		</bean>
-		<bean id="_poolMaxActives" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="8" /><!-- "1+2*2+1+2" -->
-        </bean>
-        <bean id="_poolMinIdles" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="4" /><!-- "1+2+1" -->
-        </bean>
-        <bean id="_poolMaxIdles" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="6" /><!-- "1+2*2+1" -->
-        </bean>
+		<bean id="_poolMaxActives" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="8" /><!-- "1+2*2+1+2" -->
+		</bean>
+		<bean id="_poolMinIdles" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="4" /><!-- "1+2+1" -->
+		</bean>
+		<bean id="_poolMaxIdles" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="6" /><!-- "1+2*2+1" -->
+		</bean>
 		<bean id="_queueSizeThreshold" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="10" />
 		</bean>
@@ -115,18 +112,15 @@
 			scope="singleton">
 			<constructor-arg value="4" />
 		</bean>
-		      <bean id="_poolMaxActives" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="13" /><!-- 2+4*2+1+2 -->
-        </bean>
-        <bean id="_poolMinIdles" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="7" /><!-- 2+4+1 -->
-        </bean>
-        <bean id="_poolMaxIdles" class="java.lang.Integer"
-            scope="singleton">
-            <constructor-arg value="11" /><!-- 2+4*2+1 -->
-        </bean>
+		<bean id="_poolMaxActives" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="13" /><!-- 2+4*2+1+2 -->
+		</bean>
+		<bean id="_poolMinIdles" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="7" /><!-- 2+4+1 -->
+		</bean>
+		<bean id="_poolMaxIdles" class="java.lang.Integer" scope="singleton">
+			<constructor-arg value="11" /><!-- 2+4*2+1 -->
+		</bean>
 		<bean id="_queueSizeThreshold" class="java.lang.Integer" scope="singleton">
 			<constructor-arg value="1000" />
 		</bean>
