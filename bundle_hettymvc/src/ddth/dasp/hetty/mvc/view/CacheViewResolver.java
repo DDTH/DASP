@@ -62,9 +62,10 @@ public abstract class CacheViewResolver implements IViewResolver {
     }
 
     public void destroy() {
-        cache.cleanUp();
+        if (cache != null) {
+            cache.cleanUp();
+        }
         cache = null;
-
     }
 
     protected String calcCacheKey(String name, Map<String, String> replacements) {
