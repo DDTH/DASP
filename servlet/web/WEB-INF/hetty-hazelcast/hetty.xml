@@ -22,9 +22,9 @@
 		</constructor-arg>
 	</bean>
 	<bean id="_hazelcastPoolConfig" class="ddth.dasp.common.hazelcastex.PoolConfig">
-		<property name="maxActive" value="128" />
-		<property name="maxIdle" value="8" />
-		<property name="minIdle" value="2" />
+		<property name="maxActive" ref="_poolMaxActives" />
+		<property name="maxIdle" ref="_poolMaxIdles" />
+		<property name="minIdle" ref="_poolMinIdles" />
 		<property name="maxWaitTime" value="3000" />
 	</bean>
 	<bean id="_hazelcastClientFactory"
@@ -41,6 +41,7 @@
 		<property name="hazelcastServers" ref="_hazelcastServers" />
 		<property name="hazelcastUsername" ref="_hazelcastUsername" />
 		<property name="hazelcastPassword" ref="_hazelcastPassword" />
+		<property name="poolConfig" ref="_hazelcastPoolConfig" />
 		<property name="topicName">
 			<util:constant static-field="ddth.dasp.hetty.HettyConstants.DEFAULT_HETTY_TOPIC" />
 		</property>

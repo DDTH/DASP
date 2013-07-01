@@ -11,6 +11,10 @@ import ddth.dasp.hetty.front.AbstractHettyResponseService;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IResponse;
 
+/*
+ * TODO: what would happen if a message comes when onMessage() is busy?
+ * @see http://davidmarquis.wordpress.com/2013/01/03/reliable-delivery-message-queues-with-redis/
+ */
 public class RedisResponseService extends AbstractHettyResponseService implements IMessageListener {
 
     private IRedisClientFactory redisClientFactory;

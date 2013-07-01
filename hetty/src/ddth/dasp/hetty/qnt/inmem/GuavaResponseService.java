@@ -7,6 +7,9 @@ import ddth.dasp.hetty.front.AbstractHettyResponseService;
 import ddth.dasp.hetty.message.IResponse;
 import ddth.dasp.hetty.utils.GuavaUtils;
 
+/*
+ * TODO: what would happen if a message comes when onMessage() is busy?
+ */
 public class GuavaResponseService extends AbstractHettyResponseService {
     @Subscribe
     @AllowConcurrentEvents

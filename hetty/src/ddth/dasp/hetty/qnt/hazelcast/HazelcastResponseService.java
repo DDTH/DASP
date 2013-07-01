@@ -12,6 +12,9 @@ import ddth.dasp.hetty.front.AbstractHettyResponseService;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IResponse;
 
+/*
+ * TODO: what would happen if a message comes when onMessage() is busy?
+ */
 public class HazelcastResponseService extends AbstractHettyResponseService implements
         IMessageListener<Object> {
 
