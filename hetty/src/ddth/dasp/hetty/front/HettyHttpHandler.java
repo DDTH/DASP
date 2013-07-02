@@ -4,12 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -22,6 +22,7 @@ import org.jboss.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.message.IMessageFactory;
 import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.qnt.IQueueWriter;
@@ -47,6 +48,7 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         HettyUtils.ALL_CHANNELS.add(e.getChannel());
+        HettyUtils.CHANNEL_LOCAL.set(ctx.getChannel(), new ConcurrentHashMap<String, Object>());
     }
 
     protected void validateHttpChunk(HttpChunk httpChunk) {
@@ -80,7 +82,8 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
             String host = request.getDomain();
             String queueName = lookupQueueName(host, HettyConnServer.getHostQueueNameMapping());
             if (queueName != null) {
-                userChannel.setAttachment(request.getId());
+                HettyUtils.setChannelLocalAttribute(userChannel, HettyConstants.CHA_REQUEST_ID,
+                        request.getId());
                 if (!queueWriter.queueWrite(queueName, request.serialize())) {
                     HettyUtils.responseText(userChannel, HttpResponseStatus.BAD_GATEWAY,
                             "No request queue for [" + host + "], or queue is full!");
@@ -136,14 +139,16 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
      */
     @Override
     public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) {
-        ChannelFuture future = e.getFuture();
-        if (future != null) {
-            e.getFuture().cancel();
-        }
-        String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
-        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.GATEWAY_TIMEOUT, msg);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(msg);
+        Map<String, Object> channelLocalData = HettyUtils.CHANNEL_LOCAL.get(e.getChannel());
+        if (channelLocalData != null && !channelLocalData.containsKey("error_reported")) {
+            channelLocalData.put("error_reported", Boolean.TRUE);
+            String msg = "Timeout [" + e.getState() + "]: " + e.getChannel();
+            HettyUtils.responseText(e.getChannel(), HttpResponseStatus.GATEWAY_TIMEOUT, msg);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(msg);
+            }
+        } else {
+            e.getChannel().close();
         }
     }
 
@@ -154,11 +159,13 @@ public class HettyHttpHandler extends IdleStateAwareChannelHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         Throwable t = e.getCause();
         LOGGER.error(t.getMessage(), t);
-        ChannelFuture future = e.getFuture();
-        if (future != null) {
-            e.getFuture().cancel();
-        }
-        HettyUtils.responseText(e.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                t.getMessage());
+        e.getChannel().close();
+        // ChannelFuture future = e.getFuture();
+        // if (future != null) {
+        // e.getFuture().cancel();
+        // }
+        // HettyUtils.responseText(e.getChannel(),
+        // HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        // t.getMessage());
     }
 }
