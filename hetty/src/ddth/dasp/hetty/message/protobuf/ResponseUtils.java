@@ -1,8 +1,6 @@
 package ddth.dasp.hetty.message.protobuf;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -12,12 +10,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
+import ddth.dasp.hetty.HettyConstants;
 import ddth.dasp.hetty.message.ICookie;
 import ddth.dasp.hetty.message.IRequest;
 import ddth.dasp.hetty.message.IResponse;
+import ddth.dasp.hetty.utils.HettyUtils;
 
 /**
  * Response generator utility class.
@@ -30,8 +29,6 @@ public class ResponseUtils {
     static {
         DF_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
-    public final static String SERVER = "Hetty Server v0.1.0";
-    // private final static ByteString EMPTY_CONTENT = ByteString.EMPTY;
     private final static byte[] EMPTY_CONTENT = ArrayUtils.EMPTY_BYTE_ARRAY;
 
     /**
@@ -169,19 +166,6 @@ public class ResponseUtils {
         return response;
     }
 
-    private static String loadContent(String path) {
-        InputStream is = ResponseUtils.class.getResourceAsStream(path);
-        try {
-            return IOUtils.toString(is, "UTF-8");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-    }
-
-    private static String content404 = null;
-
     /**
      * Helper method to create a 404 response.
      * 
@@ -200,18 +184,41 @@ public class ResponseUtils {
      * @return
      */
     public static IResponse response404(IRequest request, String message) {
-        if (content404 == null) {
-            content404 = loadContent("/ddth/dasp/hetty/404.tpl");
-        }
+        String content = HettyUtils.loadContentInClasspath("/ddth/dasp/hetty/404.tpl");
         String referer = request.getHeader("Referer");
-        String htmlContent = content404.replace("${referer}", referer != null ? referer : "")
-                .replace("${message}", message != null ? message : "");
+        String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
+                "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(404)
                 .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 
-    private static String content500 = null;
+    /**
+     * Helper method to create a 403 response.
+     * 
+     * @param request
+     * @return
+     */
+    public static IResponse response403(IRequest request) {
+        return response403(request, "Access denied");
+    }
+
+    /**
+     * Helper method to create a 403 response.
+     * 
+     * @param request
+     * @param message
+     * @return
+     */
+    public static IResponse response403(IRequest request, String message) {
+        String content = HettyUtils.loadContentInClasspath("/ddth/dasp/hetty/403.tpl");
+        String referer = request.getHeader("Referer");
+        String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
+                "${message}", message != null ? message : "");
+        IResponse response = newResponse(request).setStatus(403)
+                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+        return response;
+    }
 
     /**
      * Helper method to create a 500 response.
@@ -243,9 +250,7 @@ public class ResponseUtils {
      * @return
      */
     public static IResponse response500(IRequest request, String message, Throwable t) {
-        if (content500 == null) {
-            content500 = loadContent("/ddth/dasp/hetty/500.tpl");
-        }
+        String content = HettyUtils.loadContentInClasspath("/ddth/dasp/hetty/500.tpl");
         String referer = request.getHeader("Referer");
         if (message == null && t != null) {
             message = t.getMessage();
@@ -275,15 +280,13 @@ public class ResponseUtils {
             } catch (UnsupportedEncodingException e) {
             }
         }
-        String htmlContent = content500.replace("${referer}", referer != null ? referer : "")
+        String htmlContent = content.replace("${referer}", referer != null ? referer : "")
                 .replace("${message}", message != null ? message : "")
                 .replace("${exception}", exception != null ? exception.toString() : "");
         IResponse response = newResponse(request).setStatus(500)
                 .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
-
-    private static String content503 = null;
 
     /**
      * Helper method to create a 503 response.
@@ -303,18 +306,14 @@ public class ResponseUtils {
      * @return
      */
     public static IResponse response503(IRequest request, String message) {
-        if (content503 == null) {
-            content503 = loadContent("/ddth/dasp/hetty/503.tpl");
-        }
+        String content = HettyUtils.loadContentInClasspath("/ddth/dasp/hetty/503.tpl");
         String referer = request.getHeader("Referer");
-        String htmlContent = content503.replace("${referer}", referer != null ? referer : "")
-                .replace("${message}", message != null ? message : "");
+        String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
+                "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(500)
                 .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
-
-    private static String content504 = null;
 
     /**
      * Helper method to create a 504 response.
@@ -334,12 +333,10 @@ public class ResponseUtils {
      * @return
      */
     public static IResponse response504(IRequest request, String message) {
-        if (content504 == null) {
-            content504 = loadContent("/ddth/dasp/hetty/504.tpl");
-        }
+        String content = HettyUtils.loadContentInClasspath("/ddth/dasp/hetty/504.tpl");
         String referer = request.getHeader("Referer");
-        String htmlContent = content504.replace("${referer}", referer != null ? referer : "")
-                .replace("${message}", message != null ? message : "");
+        String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
+                "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(500)
                 .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
@@ -360,8 +357,9 @@ public class ResponseUtils {
                 .setChannelId(request.getChannelId()).setStatus(200);
         // .addHeaders(newHeader("Server", SERVER)).setContent(EMPTY_CONTENT)
         // .addHeaders(newHeader("Date", new Date()));
-        IResponse response = new ProtoBufResponse(responseBuilder).addHeader("Server", SERVER)
-                .addHeader("Date", new Date()).setContent(EMPTY_CONTENT);
+        IResponse response = new ProtoBufResponse(responseBuilder)
+                .addHeader("Server", HettyConstants.SERVER_SIGNATURE).addHeader("Date", new Date())
+                .setContent(EMPTY_CONTENT);
         return response;
     }
 }

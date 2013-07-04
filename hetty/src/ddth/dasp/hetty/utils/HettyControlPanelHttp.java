@@ -53,7 +53,10 @@ public class HettyControlPanelHttp {
             HettyConnServer.addHostQueueNameMapping(host, queue);
         }
         Map<String, Object> mapping = HettyConnServer.getHostQueueNameMapping();
-        HettyUtils.responseText(userChannel, HttpResponseStatus.OK, JsonUtils.toJson(mapping));
+        String content = HettyUtils
+                .loadContentInClasspath("/ddth/dasp/hetty/utils/hcp_mapping.tpl");
+        content = content.replace("${mapping}", JsonUtils.toJson(mapping));
+        HettyUtils.responseHtml(userChannel, HttpResponseStatus.OK, content);
     }
 
     private static <T> T getOsgiService(Class<T> clazz) {

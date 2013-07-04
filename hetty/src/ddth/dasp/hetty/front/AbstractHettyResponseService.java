@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.handler.codec.http.CookieEncoder;
 import org.jboss.netty.handler.codec.http.DefaultCookie;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -69,14 +68,13 @@ public abstract class AbstractHettyResponseService implements IHettyResponseServ
                 httpResponse.setHeader("Cookie", cookieEncoder.encode());
             }
 
-            // content
             if (response.getContent() != null) {
                 httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getContent()));
             } else {
                 httpResponse.setContent(ChannelBuffers.copiedBuffer("", CharsetUtil.UTF_8));
             }
 
-            channel.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+            HettyUtils.writeResponse(channel, httpResponse);
 
             if (LOGGER.isDebugEnabled()) {
                 long timestamp = System.nanoTime();

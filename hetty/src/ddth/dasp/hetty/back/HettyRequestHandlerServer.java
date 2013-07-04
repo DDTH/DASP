@@ -239,8 +239,8 @@ public class HettyRequestHandlerServer {
             }
             if (obj == null) {
                 try {
-                    // Thread.sleep(1);
-                    Thread.sleep(System.currentTimeMillis() & 0x7);
+                    Thread.sleep(1);
+                    // Thread.sleep(System.currentTimeMillis() & 0x7);
                     Thread.yield();
                 } catch (Exception e) {
                 }
