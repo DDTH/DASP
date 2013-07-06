@@ -12,6 +12,30 @@ public class DPathUtils {
     private final static Pattern PATTERN_INDEX = Pattern.compile("^\\[(\\d+)\\]$");
 
     /**
+     * Extracts a value from the target object using DPath expression (generic
+     * version).
+     * 
+     * @param target
+     * @param dPath
+     * @param clazz
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getValue(final Object target, final String dPath, final Class<T> clazz) {
+        Object temp = getValue(target, dPath);
+        if (temp == null) {
+            return null;
+        }
+        if (clazz.isAssignableFrom(temp.getClass())) {
+            return (T) temp;
+        }
+        if (clazz == String.class) {
+            return (T) temp.toString();
+        }
+        return null;
+    }
+
+    /**
      * Extracts a value from the target object using DPath expression.
      * 
      * @param target
