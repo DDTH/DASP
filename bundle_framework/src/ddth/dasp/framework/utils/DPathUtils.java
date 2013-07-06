@@ -58,7 +58,7 @@ public class DPathUtils {
      * @param value
      */
     @SuppressWarnings("unchecked")
-    public static void setSetValue(final Object target, final String dPath, final Object value) {
+    public static void setValue(final Object target, final String dPath, final Object value) {
         String[] paths = dPath.split("\\.");
         Object cursor = target;
         // "seek"to the correct position
@@ -117,7 +117,7 @@ public class DPathUtils {
 
         String path = "sqls.insert";
         System.out.println(getValue(data, path));
-        setSetValue(data, path, "INSERT INTO table_name (col1) VALUES (value1)");
+        setValue(data, path, "INSERT INTO table_name (col1) VALUES (value1)");
         System.out.println(getValue(data, path));
 
         System.out.println(data);
