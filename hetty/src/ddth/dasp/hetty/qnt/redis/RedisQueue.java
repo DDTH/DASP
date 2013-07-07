@@ -175,7 +175,8 @@ public class RedisQueue implements IQueueReader, IQueueWriter {
     public Object queueRead(String queueName, long timeout, TimeUnit timeUnit) {
         IRedisClient redisClient = getRedisClient();
         try {
-            return redisClient != null ? redisClient.listPopAsBinary(queueName) : null;
+            return redisClient != null ? redisClient.listPopAsBinary(queueName, true,
+                    (int) timeUnit.toSeconds(timeout)) : null;
         } finally {
             returnRedisClient(redisClient);
         }
