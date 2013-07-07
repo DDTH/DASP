@@ -150,7 +150,8 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
             view = resolveVew(request, viewName);
         }
         if (view instanceof IView) {
-            Map<String, Object> model = view instanceof RedirectView ? null : buildViewModel();
+            Map<String, Object> model = view instanceof RedirectView ? null
+                    : buildViewModel(request);
             postHandleRequest(request, model, (IView) view);
             ((IView) view).render(request, model, topicPublisher, topicName);
         } else {
@@ -164,9 +165,10 @@ public abstract class AbstractActionHandler implements IRequestActionHandler, IS
      * This method simply returns an empty {@link Map}. Sub-class overrides this
      * method to build its own model.
      * 
+     * @param request
      * @return
      */
-    protected Map<String, Object> buildViewModel() {
+    protected Map<String, Object> buildViewModel(IRequest request) {
         Map<String, Object> model = new HashMap<String, Object>();
         return model;
     }

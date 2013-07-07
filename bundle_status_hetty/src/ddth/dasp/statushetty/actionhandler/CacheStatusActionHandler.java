@@ -9,14 +9,15 @@ import java.util.Map.Entry;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.framework.cache.ICacheManager;
 import ddth.dasp.framework.cache.hazelcast.HazelcastCacheManager;
+import ddth.dasp.hetty.message.IRequest;
 
 public class CacheStatusActionHandler extends BaseActionHandler {
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Map<String, Object> buildViewModel() {
-        Map<String, Object> model = super.buildViewModel();
+    protected Map<String, Object> buildViewModel(IRequest request) {
+        Map<String, Object> model = super.buildViewModel(request);
         model.put("CACHE", buildModelCache());
         return model;
     }

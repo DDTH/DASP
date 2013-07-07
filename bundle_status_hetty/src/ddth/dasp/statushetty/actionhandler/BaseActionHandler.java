@@ -34,8 +34,8 @@ public class BaseActionHandler extends SimpleActionHandler {
      * {@inheritDoc}
      */
     @Override
-    protected Map<String, Object> buildViewModel() {
-        Map<String, Object> model = super.buildViewModel();
+    protected Map<String, Object> buildViewModel(IRequest request) {
+        Map<String, Object> model = super.buildViewModel(request);
         model.put("SKIN_ROOT", SKIN_ROOT);
         model.put("urlServerStatus", URL_SERVER_STATUS);
         model.put("urlOsgiStatus", URL_OSGI_STATUS);

@@ -3,13 +3,15 @@ package ddth.dasp.statushetty.actionhandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import ddth.dasp.hetty.message.IRequest;
+
 public class ServerStatusActionHandler extends BaseActionHandler {
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Map<String, Object> buildViewModel() {
-        Map<String, Object> model = super.buildViewModel();
+    protected Map<String, Object> buildViewModel(IRequest request) {
+        Map<String, Object> model = super.buildViewModel(request);
         model.put("SERVER", buildModelServer());
         return model;
     }

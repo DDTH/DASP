@@ -11,14 +11,15 @@ import org.osgi.framework.BundleContext;
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.common.osgi.IOsgiBootstrap;
 import ddth.dasp.common.utils.OsgiUtils;
+import ddth.dasp.hetty.message.IRequest;
 
 public class OsgiStatusActionHandler extends BaseActionHandler {
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Map<String, Object> buildViewModel() {
-        Map<String, Object> model = super.buildViewModel();
+    protected Map<String, Object> buildViewModel(IRequest request) {
+        Map<String, Object> model = super.buildViewModel(request);
         model.put("OSGI", buildModelOsgi());
         return model;
     }

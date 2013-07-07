@@ -8,14 +8,15 @@ import java.util.Map.Entry;
 
 import ddth.dasp.common.DaspGlobal;
 import ddth.dasp.framework.scheduletask.ITaskRegistry;
+import ddth.dasp.hetty.message.IRequest;
 
 public class TaskStatusActionHandler extends BaseActionHandler {
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Map<String, Object> buildViewModel() {
-        Map<String, Object> model = super.buildViewModel();
+    protected Map<String, Object> buildViewModel(IRequest request) {
+        Map<String, Object> model = super.buildViewModel(request);
         model.put("TASK_REGISTRY", buildModelTask());
         return model;
     }
