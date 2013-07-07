@@ -8,6 +8,7 @@ package ddth.dasp.common.redis;
 public interface IRedisClient {
 
     public final static int DEFAULT_REDIS_PORT = 6379;
+    public final static int DEFAULT_READ_TIMEOUT = 10;
 
     /**
      * Initializes this Redis client before use. The Redis client is not usable
@@ -188,9 +189,53 @@ public interface IRedisClient {
      * Pops a message from tail of a list.
      * 
      * @param listName
+     * @param block
+     *            block until data is available?
+     * @return
+     */
+    public String listPop(String listName, boolean block);
+
+    /**
+     * Pops a message from tail of a list.
+     * 
+     * @param listName
+     * @param block
+     *            block until data is available?
+     * @param timeout
+     *            timeout in seconds
+     * @return
+     */
+    public String listPop(String listName, boolean block, int timeout);
+
+    /**
+     * Pops a message from tail of a list.
+     * 
+     * @param listName
      * @return
      */
     public byte[] listPopAsBinary(String listName);
+
+    /**
+     * Pops a message from tail of a list.
+     * 
+     * @param listName
+     * @param block
+     *            block until data is available?
+     * @return
+     */
+    public byte[] listPopAsBinary(String listName, boolean block);
+
+    /**
+     * Pops a message from tail of a list.
+     * 
+     * @param listName
+     * @param block
+     *            block until data is available?
+     * @param timeout
+     *            timeout in seconds
+     * @return
+     */
+    public byte[] listPopAsBinary(String listName, boolean block, int timeout);
 
     /**
      * Gets a list's size.

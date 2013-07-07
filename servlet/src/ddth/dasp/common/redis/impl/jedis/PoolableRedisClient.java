@@ -1,6 +1,7 @@
 package ddth.dasp.common.redis.impl.jedis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -209,7 +210,27 @@ public class PoolableRedisClient extends AbstractRedisClient {
      */
     @Override
     public String listPop(String listName) {
-        return redisClient.rpop(listName);
+        return listPop(listName, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String listPop(String listName, boolean block) {
+        return listPop(listName, block, DEFAULT_READ_TIMEOUT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String listPop(String listName, boolean block, int timeout) {
+        if (!block) {
+            return redisClient.rpop(listName);
+        }
+        List<String> result = redisClient.brpop(timeout, listName);
+        return result != null && result.size() > 1 ? result.get(1) : null;
     }
 
     /**
@@ -217,7 +238,27 @@ public class PoolableRedisClient extends AbstractRedisClient {
      */
     @Override
     public byte[] listPopAsBinary(String listName) {
-        return redisClient.rpop(SafeEncoder.encode(listName));
+        return listPopAsBinary(listName, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] listPopAsBinary(String listName, boolean block) {
+        return listPopAsBinary(listName, block, DEFAULT_READ_TIMEOUT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] listPopAsBinary(String listName, boolean block, int timeout) {
+        if (!block) {
+            return redisClient.rpop(SafeEncoder.encode(listName));
+        }
+        List<byte[]> result = redisClient.brpop(timeout, SafeEncoder.encode(listName));
+        return result != null && result.size() > 1 ? result.get(1) : null;
     }
 
     /**
