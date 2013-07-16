@@ -1,11 +1,6 @@
 package ddth.dasp.framework.cache.redis;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import org.jboss.serial.io.JBossObjectInputStream;
-import org.jboss.serial.io.JBossObjectOutputStream;
 
 import ddth.dasp.common.redis.IRedisClient;
 import ddth.dasp.common.redis.IRedisClientFactory;
@@ -13,6 +8,7 @@ import ddth.dasp.common.redis.PoolConfig;
 import ddth.dasp.framework.cache.AbstractCache;
 import ddth.dasp.framework.cache.CacheEntry;
 import ddth.dasp.framework.cache.ICache;
+import ddth.dasp.framework.utils.SerializeUtils;
 
 /**
  * <a href="http://www.hazelcast.com/">Hazelcast</a> implementation of
@@ -98,32 +94,41 @@ public class RedisCache extends AbstractCache implements ICache {
         return this;
     }
 
+    /**
+     * Serializes an object to byte array.
+     * 
+     * @param obj
+     * @return
+     * @throws IOException
+     */
     protected byte[] serializeObject(Object obj) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JBossObjectOutputStream oos = new JBossObjectOutputStream(baos);
-        try {
-            oos.writeObject(obj);
-            return baos.toByteArray();
-        } finally {
-            oos.close();
-        }
+        return SerializeUtils.serialize(obj);
     }
 
+    /**
+     * Deserializes object from byte array.
+     * 
+     * @param byteArr
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     protected Object deserializeObject(byte[] byteArr) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(byteArr);
-        JBossObjectInputStream ois = new JBossObjectInputStream(bais);
-        try {
-            return ois.readObject();
-        } finally {
-            ois.close();
-        }
+        return SerializeUtils.deserialize(byteArr);
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Generic version of {@link #deserializeObject(byte[])}.
+     * 
+     * @param byteArr
+     * @param clazz
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     protected <T> T deserializeObject(byte[] byteArr, Class<T> clazz) throws IOException,
             ClassNotFoundException {
-        Object obj = deserializeObject(byteArr);
-        return (T) obj;
+        return SerializeUtils.deserialize(byteArr, clazz);
     }
 
     /**

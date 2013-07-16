@@ -92,7 +92,7 @@
 			<constructor-arg value="6" /><!-- "1+2*2+1" -->
 		</bean>
 		<bean id="_queueSizeThreshold" class="java.lang.Integer" scope="singleton">
-			<constructor-arg value="10" />
+			<constructor-arg value="100" />
 		</bean>
 	</beans>
 
