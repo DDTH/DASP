@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -29,9 +30,15 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractJdbcFactory.class);
 
     /**
-     * Stores established data-sources as a map of {key:datasource}.
+     * Stores established data-sources as a map of {key:DataSource}.
      */
-    private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
+    private Map<String, DataSource> dataSources = new ConcurrentHashMap<String, DataSource>();
+
+    /**
+     * Stores information of established data-sources as a map of
+     * {key:DataSourceInfo}
+     */
+    private Map<String, DataSourceInfo> dataSourceInfos = new ConcurrentHashMap<String, DataSourceInfo>();
 
     /**
      * Stores currently opened connections as a map of {connection:open
@@ -176,6 +183,25 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     }
 
     /**
+     * Get the validation query of different databases.
+     * 
+     * @param driverName
+     * @return
+     */
+    protected String getValidationQuery(String driverName) {
+        if (driverName.contains("mysql")) {
+            return "/* ping */ SELECT 1";
+        }
+        if (driverName.contains("postgresql") || driverName.contains("sqlserver")) {
+            return "SELECT 1";
+        }
+        if (driverName.contains("oracle")) {
+            return "SELECT 1 FROM DUAL";
+        }
+        return "";
+    }
+
+    /**
      * Builds a data-source with default connection pool settings.
      * 
      * @param driver
@@ -183,10 +209,10 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
      * @param username
      * @param password
      * @return
-     * @throws Exception
+     * @throws SQLException
      */
     protected abstract DataSource buildDataSource(String driver, String connUrl, String username,
-            String password) throws Exception;
+            String password) throws SQLException;
 
     /**
      * Builds a data-source with specified connection pool settings.
@@ -197,10 +223,10 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
      * @param password
      * @param dbcpInfo
      * @return
-     * @throws Exception
+     * @throws SQLException
      */
     protected abstract DataSource buildDataSource(String driver, String connUrl, String username,
-            String password, DbcpInfo dbcpInfo) throws Exception;
+            String password, DbcpInfo dbcpInfo) throws SQLException;
 
     /**
      * {@inheritDoc}
@@ -241,7 +267,7 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
             return null;
         }
 
-        /**
+        /*
          * Firstly, gets the connection from parent factory.
          */
         Connection conn = parentFactory != null ? parentFactory.getConnection(driver, connUrl,
@@ -250,23 +276,11 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
             return conn;
         }
 
-        String dsName = calcHash(driver, connUrl, username, password);
-        DataSource ds = getDataSource(dsName);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Datasource name [" + dsName + "]: "
-                    + (ds != null ? "already exists!" : "new!"));
-        }
-        if (ds == null) {
-            synchronized (dataSources) {
-                try {
-                    ds = buildDataSource(driver, connUrl, username, password, dbcpInfo);
-                } catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-                    throw new RuntimeException(e);
-                }
-                dataSources.put(dsName, ds);
-            }
-        }
+        /*
+         * Secondly, gets the connection from my ownfactory.
+         */
+        String dsName = calcHash(driver, connUrl, username, password, dbcpInfo);
+        DataSource ds = getDataSource(driver, connUrl, username, password, dbcpInfo, true);
         return getConnectionFromDataSource(dsName, ds, maxLifetime);
     }
 
@@ -319,7 +333,14 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
 
     protected abstract DataSourceInfo internalGetDataSourceInfo(String name, DataSource ds);
 
-    protected abstract DataSourceInfo internalGetDataSourceInfo(String name);
+    protected DataSourceInfo internalGetDataSourceInfo(String name) {
+        DataSourceInfo dsInfo = dataSourceInfos.get(name);
+        if (dsInfo == null) {
+            dsInfo = new DataSourceInfo(name);
+            dataSourceInfos.put(name, dsInfo);
+        }
+        return dsInfo;
+    }
 
     /**
      * {@inheritDoc}
@@ -336,14 +357,15 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     /**
      * {@inheritDoc}
      */
+    @Override
     public DataSourceInfo getDataSourceInfo(String driver, String connUrl, String username,
-            String password) {
-        String dsName = calcHash(driver, connUrl, username, password);
+            String password, DbcpInfo dbcpInfo) {
+        String dsName = calcHash(driver, connUrl, username, password, dbcpInfo);
         return getDataSourceInfo(dsName);
     }
 
     /**
-     * Gets a connection from a specified datasource.
+     * Gets a connection from a specified data source.
      * 
      * @param dataSourceName
      *            String
@@ -435,7 +457,8 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
     /**
      * Calculates a hash string for a JDBC connection.
      */
-    protected String calcHash(String driver, String connUrl, String username, String password) {
+    protected String calcHash(String driver, String connUrl, String username, String password,
+            DbcpInfo dbcpInfo) {
         StringBuilder sb = new StringBuilder();
         sb.append(driver != null ? driver : "NULL");
         sb.append(".");
@@ -443,11 +466,11 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
         sb.append(".");
         sb.append(username != null ? username : "NULL");
         sb.append(".");
-        // sb.append(password != null ? password : "NULL");
-        // sb.append(".");
-        // return String.valueOf(sb.toString().hashCode());
         int passwordHashcode = password != null ? password.hashCode() : "NULL".hashCode();
-        return sb.append(passwordHashcode).toString();
+        sb.append(passwordHashcode);
+        sb.append(".");
+        sb.append(dbcpInfo != null ? dbcpInfo.hashCode() : "NULL".hashCode());
+        return sb.toString();
     }
 
     /**
@@ -488,18 +511,42 @@ public abstract class AbstractJdbcFactory implements IJdbcFactory, IRequireClean
      */
     @Override
     public DataSource getDataSource(String dsName) {
-        synchronized (dataSources) {
-            return dataSources.get(dsName);
-        }
+        return dataSources.get(dsName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public DataSource getDataSource(String driver, String connUrl, String username, String password) {
-        String dsName = calcHash(driver, connUrl, username, password);
+    public DataSource getDataSource(String driver, String connUrl, String username,
+            String password, DbcpInfo dbcpInfo) {
+        String dsName = calcHash(driver, connUrl, username, password, dbcpInfo);
         return getDataSource(dsName);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws Exception
+     */
+    @Override
+    public DataSource getDataSource(String driver, String connUrl, String username,
+            String password, DbcpInfo dbcpInfo, boolean createIfNeeded) throws SQLException {
+        String dsName = calcHash(driver, connUrl, username, password, dbcpInfo);
+        if (!createIfNeeded) {
+            return getDataSource(dsName);
+        } else {
+            synchronized (dataSources) {
+                DataSource ds = getDataSource(dsName);
+                if (ds == null) {
+                    ds = buildDataSource(driver, connUrl, username, password, dbcpInfo);
+                    if (ds != null) {
+                        dataSources.put(dsName, ds);
+                    }
+                }
+                return ds;
+            }
+        }
     }
 
     /**

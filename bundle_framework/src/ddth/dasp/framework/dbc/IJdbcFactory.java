@@ -54,7 +54,7 @@ public interface IJdbcFactory {
     public DataSource getDataSource(String dsName);
 
     /**
-     * Gets an existing data source that matches a connection information.
+     * Gets an existing data source that matches connection parameters.
      * 
      * @param driver
      *            name of the JDBC drver
@@ -64,9 +64,31 @@ public interface IJdbcFactory {
      *            user to connect to database
      * @param password
      *            password to connect to database
+     * @param dbcpInfo
      * @return an existing data source, or <code>null</code> if not exists
      */
-    public DataSource getDataSource(String driver, String connUrl, String username, String password);
+    public DataSource getDataSource(String driver, String connUrl, String username,
+            String password, DbcpInfo dbcpInfo);
+
+    /**
+     * Gets an existing data source that matches connection parameters, or build
+     * a new one.
+     * 
+     * @param driver
+     *            name of the JDBC drver
+     * @param connUrl
+     *            connection string
+     * @param username
+     *            user to connect to database
+     * @param password
+     *            password to connect to database
+     * @param dbcpInfo
+     * @param createIfNeeded
+     * @return
+     * @throws SQLException
+     */
+    public DataSource getDataSource(String driver, String connUrl, String username,
+            String password, DbcpInfo dbcpInfo, boolean createIfNeeded) throws SQLException;
 
     /**
      * Gets information of a this factory's data source.
@@ -83,10 +105,11 @@ public interface IJdbcFactory {
      * @param connUrl
      * @param username
      * @param password
+     * @param dbcpInfo
      * @return
      */
     public DataSourceInfo getDataSourceInfo(String driver, String connUrl, String username,
-            String password);
+            String password, DbcpInfo dbcpInfo);
 
     /**
      * Gets active data sources as {name:DataSource}.

@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-dbcp-1.4.jar" sourcepath="/JavaSources/apache/commons/dbcp/1.4/commons-dbcp-1.4-sources.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-dbutils-1.4.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/osgi-container/bundles/01.apachecommons/commons-fileupload-1.2.2.jar"/>
@@ -71,5 +70,9 @@
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/slf4j-jcl-1.6.2.jar"/>
 	<classpathentry kind="lib" path="servlet/web/WEB-INF/lib/jedis-2.2.0-SNAPSHOT.jar" sourcepath="D:/Workspace/GitHub/jedis"/>
 	<classpathentry kind="lib" path="bundle_framework/lib/jboss-serialization-1.0.3.GA.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/c3p0-0.9.2.1.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/mchange-commons-java-0.2.3.4.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/bonecp-0.7.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="bundle_framework/lib/apache-commons-dbcp-1.4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

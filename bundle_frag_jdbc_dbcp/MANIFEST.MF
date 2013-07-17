@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DASP JDBC Drivers for Apache Commons DBCP
+Bundle-Name: DASP JDBC Drivers for ddth.dasp.framework
 Bundle-SymbolicName: ddth.dasp.osgi.jdbcdbcpfrag
 Bundle-Version: 0.1.0
-Fragment-Host: org.apache.commons.dbcp
+Fragment-Host: ddth.dasp.framework
 Bundle-ClassPath: .,
  jdbc-mysql-5.1.22-bin.jar,
  jdbc-mssql.jar,

@@ -1,8 +1,6 @@
 package ddth.dasp.framework.dbc;
 
 import java.sql.SQLException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
@@ -12,15 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This implementation of {@link IJdbcFactory} utilizes Apache's DBCP as the
+ * This implementation of {@link IJdbcFactory} utilizes Apache DBCP as the
  * connection pooling back-end.
+ * 
+ * Apache DBCP homepage: http://commons.apache.org/proper/commons-dbcp/
  * 
  * @author NBThanh <btnguyen2k@gmail.com>
  */
 public class DbcpJdbcFactory extends AbstractJdbcFactory {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DbcpJdbcFactory.class);
-    private ConcurrentMap<String, DataSourceInfo> cacheDsInfo = new ConcurrentHashMap<String, DataSourceInfo>();
 
     /**
      * {@inheritDoc}
@@ -36,26 +35,11 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
      * {@inheritDoc}
      */
     @Override
-    protected DataSourceInfo internalGetDataSourceInfo(String name) {
-        DataSourceInfo dsInfo = cacheDsInfo.get(name);
-        if (dsInfo == null) {
-            dsInfo = new DataSourceInfo(name);
-            cacheDsInfo.put(name, dsInfo);
-        }
-        return dsInfo;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected DataSourceInfo internalGetDataSourceInfo(String name, DataSource ds) {
         DataSourceInfo dsInfo = internalGetDataSourceInfo(name);
         if (ds instanceof BasicDataSource) {
             BasicDataSource basicDs = (BasicDataSource) ds;
-            dsInfo.setMaxActives(basicDs.getMaxActive()).setMaxIdles(basicDs.getMaxIdle())
-                    .setMaxWait(basicDs.getMaxWait()).setMinIdles(basicDs.getMinIdle())
-                    .setNumActives(basicDs.getNumActive()).setNumIdles(basicDs.getNumIdle());
+            dsInfo.setNumActives(basicDs.getNumActive()).setNumIdles(basicDs.getNumIdle());
         }
         return dsInfo;
     }
@@ -65,7 +49,7 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
      */
     @Override
     protected DataSource buildDataSource(String driver, String connUrl, String username,
-            String password) {
+            String password) throws SQLException {
         return buildDataSource(driver, connUrl, username, password, null);
     }
 
@@ -74,7 +58,7 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
      */
     @Override
     protected DataSource buildDataSource(String driver, String connUrl, String username,
-            String password, DbcpInfo dbcpInfo) {
+            String password, DbcpInfo dbcpInfo) throws SQLException {
         int maxActive = dbcpInfo != null ? dbcpInfo.getMaxActive() : DbcpInfo.DEFAULT_MAX_ACTIVE;
         long maxWaitTime = dbcpInfo != null ? dbcpInfo.getMaxWaitTime()
                 : DbcpInfo.DEFAULT_MAX_WAIT_TIME;
@@ -85,6 +69,14 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
                     + ";username:" + username + ";maxActive:" + maxActive + ";maxWait:"
                     + maxWaitTime + ";minIdle:" + minIdle + ";maxIdle:" + maxIdle + "}...");
         }
+        try {
+            /*
+             * Note: we load the driver class here!
+             */
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException(e);
+        }
         BasicDataSource ds = new BasicDataSource();
         ds.setTestOnBorrow(true);
         int maxConnLifetime = (int) (getMaxConnectionLifetime() / 1000);
@@ -92,11 +84,7 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
             ds.setRemoveAbandoned(true);
             ds.setRemoveAbandonedTimeout(maxConnLifetime + 100);
         }
-        // CombinedClassLoader cl = new CombinedClassLoader();
-        // cl.addLoader(DbcpJdbcFactory.class);
-        // cl.addLoader(BasicDataSource.class);
-        // ds.setDriverClassLoader(cl);
-        ds.setDriverClassName(driver);
+        // ds.setDriverClassName(driver);
         ds.setUrl(connUrl);
         ds.setUsername(username);
         ds.setPassword(password);
@@ -113,23 +101,12 @@ public class DbcpJdbcFactory extends AbstractJdbcFactory {
                 ds.setValidationQueryTimeout(1);
             }
         }
+        {
+            String dsName = calcHash(driver, connUrl, username, password, dbcpInfo);
+            DataSourceInfo dsInfo = internalGetDataSourceInfo(dsName);
+            dsInfo.setMaxActives(maxActive).setMaxIdles(maxIdle).setMaxWait(maxWaitTime)
+                    .setMinIdles(minIdle);
+        }
         return ds;
-    }
-
-    /**
-     * Get the validation query of different databases
-     * 
-     * @param driverName
-     * @return
-     */
-    protected String getValidationQuery(String driverName) {
-        if (driverName.contains("mysql") || driverName.contains("postgresql")
-                || driverName.contains("sqlserver")) {
-            return "SELECT 1";
-        }
-        if (driverName.contains("oracle")) {
-            return "SELECT 1 FROM DUAL";
-        }
-        return "";
     }
 }

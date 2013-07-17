@@ -1,4 +1,4 @@
-<project name="JdbcForDbcpFragment" basedir="." default="build-development">
+<project name="Fragment: JDBC driver for ddth.dasp.framework" basedir="." default="build-development">
 	<property name="dir.classes" value="classes" />
 	<property name="dir.lib" value="lib" />
 	<property name="dir.build" value="build" />
