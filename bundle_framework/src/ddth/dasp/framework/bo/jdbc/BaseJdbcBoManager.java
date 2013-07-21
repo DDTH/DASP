@@ -87,48 +87,72 @@ public abstract class BaseJdbcBoManager extends CacheBoManager implements IJdbcB
         return null;
     }
 
-    public void setJdbcFactory(IJdbcFactory jdbcFactory) {
+    public BaseJdbcBoManager setJdbcFactory(IJdbcFactory jdbcFactory) {
         this.jdbcFactory = jdbcFactory;
+        return this;
     }
 
-    public void setDbDriver(String dbDriver) {
+    protected String getDbDriver() {
+        return dbDriver;
+    }
+
+    public BaseJdbcBoManager setDbDriver(String dbDriver) {
         this.dbDriver = dbDriver;
+        return this;
     }
 
-    public void setDbConnUrl(String dbConnUrl) {
+    protected String getDbConnUrl() {
+        return dbConnUrl;
+    }
+
+    public BaseJdbcBoManager setDbConnUrl(String dbConnUrl) {
         this.dbConnUrl = dbConnUrl;
+        return this;
     }
 
-    public void setDbUsername(String dbUsername) {
+    protected String getDbUsername() {
+        return dbUsername;
+    }
+
+    public BaseJdbcBoManager setDbUsername(String dbUsername) {
         this.dbUsername = dbUsername;
+        return this;
     }
 
-    public void setDbPassword(String dbPassword) {
+    protected String getDbPassword() {
+        return dbPassword;
+    }
+
+    public BaseJdbcBoManager setDbPassword(String dbPassword) {
         this.dbPassword = dbPassword;
+        return this;
     }
 
-    public List<String> getSetupSqls() {
+    protected List<String> getSetupSqls() {
         return setupSqls;
     }
 
-    public void setSetupSqls(List<String> setupSqls) {
+    public BaseJdbcBoManager setSetupSqls(List<String> setupSqls) {
         this.setupSqls = setupSqls;
+        return this;
     }
 
-    public DbcpInfo getDbcpInfo() {
+    protected DbcpInfo getDbcpInfo() {
         return dbcpInfo;
     }
 
-    public void setDbcpInfo(DbcpInfo dbcpInfo) {
+    public BaseJdbcBoManager setDbcpInfo(DbcpInfo dbcpInfo) {
         this.dbcpInfo = dbcpInfo;
+        return this;
     }
 
-    public long getMaxConnectionLifetime() {
+    protected long getMaxConnectionLifetime() {
         return maxConnectionLifetime;
     }
 
-    public void setMaxConnectionLifetime(long maxConnectionLifetime) {
+    public BaseJdbcBoManager setMaxConnectionLifetime(long maxConnectionLifetime) {
         this.maxConnectionLifetime = maxConnectionLifetime;
+        return this;
     }
 
     /**
