@@ -6,7 +6,6 @@ import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.codec.http.HttpContentCompressor;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.timeout.IdleStateHandler;
@@ -56,8 +55,7 @@ public class HettyPipelineFactory implements ChannelPipelineFactory {
         // pipeline.addLast("aggregator", new HttpChunkAggregator(128 * 1024));
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("timeout", idleStateHandler);
-        // compression with minimum memory usage
-        pipeline.addLast("deflater", new HttpContentCompressor(1, 9, 1));
+        pipeline.addLast("deflater", new HettyHttpContentCompressor());
         pipeline.addLast("handler", new HettyHttpHandler(queueWriter, messageFactory));
         return pipeline;
     }

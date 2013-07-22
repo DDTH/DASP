@@ -31,7 +31,7 @@ public class HettyUtils {
     public static boolean writeResponse(Channel channel, HttpResponse httpResponse) {
         if (channel.isOpen() && channel.isWritable()
                 && getChannelLocalAttribute(channel, HettyConstants.CHA_HAS_REQUEST) != null) {
-            httpResponse.addHeader("Server", HettyConstants.SERVER_SIGNATURE);
+            httpResponse.setHeader("Server", HettyConstants.SERVER_SIGNATURE);
             channel.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
             removeChannelLocalAttribute(channel, HettyConstants.CHA_HAS_REQUEST);
             return true;

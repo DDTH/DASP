@@ -25,6 +25,7 @@ import ddth.dasp.hetty.utils.HettyUtils;
  */
 public class ResponseUtils {
 
+    public final static String HEADER_CONTENT_TYPE = "Content-Type";;
     public final static DateFormat DF_HEADER = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss z");
     static {
         DF_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -82,7 +83,7 @@ public class ResponseUtils {
     public static IResponse response200(IRequest request, String contentString, String contentType,
             Map<String, String> headers, ICookie[] cookies) {
         IResponse response = newResponse(request).setStatus(200);
-        response.addHeader("Content-Type", contentType);
+        response.addHeader(HEADER_CONTENT_TYPE, contentType);
         response.setContent(contentString);
         // headers
         if (headers != null) {
@@ -126,7 +127,7 @@ public class ResponseUtils {
     public static IResponse response200(IRequest request, byte[] contentBin, String contentType,
             Map<String, String> headers, ICookie[] cookies) {
         IResponse response = newResponse(request).setStatus(200);
-        response.addHeader("Content-Type", contentType);
+        response.addHeader(HEADER_CONTENT_TYPE, contentType);
         response.setContent(contentBin);
         // headers
         if (headers != null) {
@@ -189,7 +190,7 @@ public class ResponseUtils {
         String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
                 "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(404)
-                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+                .addHeader(HEADER_CONTENT_TYPE, "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 
@@ -216,7 +217,7 @@ public class ResponseUtils {
         String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
                 "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(403)
-                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+                .addHeader(HEADER_CONTENT_TYPE, "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 
@@ -284,7 +285,7 @@ public class ResponseUtils {
                 .replace("${message}", message != null ? message : "")
                 .replace("${exception}", exception != null ? exception.toString() : "");
         IResponse response = newResponse(request).setStatus(500)
-                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+                .addHeader(HEADER_CONTENT_TYPE, "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 
@@ -311,7 +312,7 @@ public class ResponseUtils {
         String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
                 "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(500)
-                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+                .addHeader(HEADER_CONTENT_TYPE, "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 
@@ -338,7 +339,7 @@ public class ResponseUtils {
         String htmlContent = content.replace("${referer}", referer != null ? referer : "").replace(
                 "${message}", message != null ? message : "");
         IResponse response = newResponse(request).setStatus(500)
-                .addHeader("Content-Type", "text/html; charset=UTF-8").setContent(htmlContent);
+                .addHeader(HEADER_CONTENT_TYPE, "text/html; charset=UTF-8").setContent(htmlContent);
         return response;
     }
 

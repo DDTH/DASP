@@ -147,8 +147,10 @@ public class BundleStaticResourceActionHandler implements IRequestActionHandler,
                 response = ResponseUtils.response304(request);
             } else {
                 String resourceMimeType = detectMimeType(path);
-                response = ResponseUtils.response200(request, resourceContent, resourceMimeType
-                        + "; charset=utf-8");
+                if (resourceMimeType != null && resourceMimeType.startsWith("text/")) {
+                    resourceMimeType += "; charset=utf-8";
+                }
+                response = ResponseUtils.response200(request, resourceContent, resourceMimeType);
             }
             // cache headers
             response.addHeader("ETag", etag).addHeader("Cache-control", "private")
