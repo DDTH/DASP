@@ -271,6 +271,137 @@ public class PoolableRedisClient extends AbstractRedisClient {
 
     /**
      * {@inheritDoc}
+     * 
+     * @param setName
+     * @param messages
+     */
+    @Override
+    public void setAdd(String setName, String... messages) {
+        setAdd(setName, 0, messages);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @param setName
+     * @param messages
+     */
+    @Override
+    public void setAdd(String setName, byte[]... messages) {
+        setAdd(setName, 0, messages);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAdd(String setName, int ttlSeconds, String... messages) {
+        redisClient.sadd(setName, messages);
+        expire(setName, ttlSeconds);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAdd(String setName, int ttlSeconds, byte[]... messages) {
+        redisClient.sadd(SafeEncoder.encode(setName), messages);
+        expire(setName, ttlSeconds);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @param setName
+     * @param value
+     * @return
+     */
+    @Override
+    public boolean setIsMember(String setName, String value) {
+        Boolean result = redisClient.sismember(setName, value);
+        return result != null ? result.booleanValue() : false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @param setName
+     * @param value
+     * @return
+     */
+    @Override
+    public boolean setIsMember(String setName, byte[] value) {
+        Boolean result = redisClient.sismember(SafeEncoder.encode(setName), value);
+        return result != null ? result.booleanValue() : false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @param setName
+     * @return
+     */
+    @Override
+    public String setPop(String setName) {
+        return redisClient.spop(setName);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @param setName
+     * @return
+     */
+    @Override
+    public byte[] setPopAsBinary(String setName) {
+        return redisClient.spop(SafeEncoder.encode(setName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> setMembers(String setName) {
+        Set<String> result = redisClient.smembers(setName);
+        return result != null ? result : new HashSet<String>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<byte[]> setMembersAsBinary(String setName) {
+        Set<byte[]> result = redisClient.smembers(SafeEncoder.encode(setName));
+        return result != null ? result : new HashSet<byte[]>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRemove(String setName, String... members) {
+        redisClient.srem(setName, members);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRemove(String setName, byte[]... members) {
+        redisClient.srem(SafeEncoder.encode(setName), members);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long setSize(String setName) {
+        Long size = redisClient.scard(setName);
+        return size != null ? size.longValue() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void publish(String channelName, String message) {

@@ -1,5 +1,7 @@
 package ddth.dasp.common.redis;
 
+import java.util.Set;
+
 /**
  * A Redis (http://redis.io) client API.
  * 
@@ -244,6 +246,114 @@ public interface IRedisClient {
      * @return
      */
     public long listSize(String listName);
+
+    /**
+     * Adds messages to a set.
+     * 
+     * @param setName
+     * @param messages
+     */
+    public void setAdd(String setName, String... messages);
+
+    /**
+     * Adds messages to a set.
+     * 
+     * @param setName
+     * @param messages
+     */
+    public void setAdd(String setName, byte[]... messages);
+
+    /**
+     * Adds messages to a set.
+     * 
+     * @param setName
+     * @param ttlSeconds
+     * @param messages
+     */
+    public void setAdd(String setName, int ttlSeconds, String... messages);
+
+    /**
+     * Adds messages to a set.
+     * 
+     * @param setName
+     * @param ttlSeconds
+     * @param messages
+     */
+    public void setAdd(String setName, int ttlSeconds, byte[]... messages);
+
+    /**
+     * Checks if a value is a member of a set.
+     * 
+     * @param setName
+     * @param value
+     * @return
+     */
+    public boolean setIsMember(String setName, String value);
+
+    /**
+     * Randomly removes and returns an element from a set.
+     * 
+     * @param setName
+     * @return
+     */
+    public String setPop(String setName);
+
+    /**
+     * Randomly removes and returns an element from a set as a binary string.
+     * 
+     * @param setName
+     * @return
+     */
+    public byte[] setPopAsBinary(String setName);
+
+    /**
+     * Gets all members of a set.
+     * 
+     * @param setName
+     * @return
+     */
+    public Set<String> setMembers(String setName);
+
+    /**
+     * Gets all members of a set as binary.
+     * 
+     * @param setName
+     * @return
+     */
+    public Set<byte[]> setMembersAsBinary(String setName);
+
+    /**
+     * Removes value(s) from a set.
+     * 
+     * @param setName
+     * @param members
+     */
+    public void setRemove(String setName, String... members);
+
+    /**
+     * Removes a value from a set.
+     * 
+     * @param setName
+     * @param members
+     */
+    public void setRemove(String setName, byte[]... members);
+
+    /**
+     * Checks if a value is a member of a set.
+     * 
+     * @param setName
+     * @param value
+     * @return
+     */
+    public boolean setIsMember(String setName, byte[] value);
+
+    /**
+     * Gets size of a set.
+     * 
+     * @param setName
+     * @return
+     */
+    public long setSize(String setName);
 
     /**
      * Publishes a message to a channel.
