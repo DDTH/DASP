@@ -192,7 +192,7 @@ public class PoolableRedisClient extends AbstractRedisClient {
      */
     @Override
     public void listPush(String listName, int ttlSeconds, String... messages) {
-        redisClient.lpush(listName, messages);
+        redisClient.rpush(listName, messages);
         expire(listName, ttlSeconds);
     }
 
@@ -201,7 +201,7 @@ public class PoolableRedisClient extends AbstractRedisClient {
      */
     @Override
     public void listPush(String listName, int ttlSeconds, byte[]... messages) {
-        redisClient.lpush(SafeEncoder.encode(listName), messages);
+        redisClient.rpush(SafeEncoder.encode(listName), messages);
         expire(listName, ttlSeconds);
     }
 
@@ -227,9 +227,9 @@ public class PoolableRedisClient extends AbstractRedisClient {
     @Override
     public String listPop(String listName, boolean block, int timeout) {
         if (!block) {
-            return redisClient.rpop(listName);
+            return redisClient.lpop(listName);
         }
-        List<String> result = redisClient.brpop(timeout, listName);
+        List<String> result = redisClient.blpop(timeout, listName);
         return result != null && result.size() > 1 ? result.get(1) : null;
     }
 
@@ -255,9 +255,9 @@ public class PoolableRedisClient extends AbstractRedisClient {
     @Override
     public byte[] listPopAsBinary(String listName, boolean block, int timeout) {
         if (!block) {
-            return redisClient.rpop(SafeEncoder.encode(listName));
+            return redisClient.lpop(SafeEncoder.encode(listName));
         }
-        List<byte[]> result = redisClient.brpop(timeout, SafeEncoder.encode(listName));
+        List<byte[]> result = redisClient.blpop(timeout, SafeEncoder.encode(listName));
         return result != null && result.size() > 1 ? result.get(1) : null;
     }
 
@@ -267,6 +267,26 @@ public class PoolableRedisClient extends AbstractRedisClient {
     public long listSize(String listName) {
         Long size = redisClient.llen(listName);
         return size != null ? size.longValue() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> listMembers(String listName) {
+        long listSize = listSize(listName);
+        List<String> result = redisClient.lrange(listName, 0, listSize - 1);
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<byte[]> listMembersAsBinary(String listName) {
+        long listSize = listSize(listName);
+        List<byte[]> result = redisClient.lrange(SafeEncoder.encode(listName), 0, listSize - 1);
+        return result;
     }
 
     /**

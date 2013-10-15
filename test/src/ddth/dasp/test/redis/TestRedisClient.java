@@ -1,6 +1,7 @@
 package ddth.dasp.test.redis;
 
 import java.io.IOException;
+import java.util.List;
 
 import ddth.dasp.common.redis.IRedisClient;
 import ddth.dasp.common.redis.IRedisClientFactory;
@@ -40,7 +41,16 @@ public class TestRedisClient {
                 IRedisClient.DEFAULT_REDIS_PORT, null, null);
         System.out.println(redisClient);
 
-        System.out.println(redisClient.listPopAsBinary("LIST-1", true, 10));
+        redisClient.listPush("LIST-1", 5, "A");
+        redisClient.listPush("LIST-1", 5, "B");
+        redisClient.listPush("LIST-1", 5, "C");
+
+        List<String> listMembers = redisClient.listMembers("LIST-1");
+        for (String member : listMembers) {
+            System.out.println(member);
+        }
+
+        // System.out.println(redisClient.listPopAsBinary("LIST-1", true, 10));
 
         redisClient.close();
     }

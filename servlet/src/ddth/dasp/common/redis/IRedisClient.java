@@ -1,5 +1,6 @@
 package ddth.dasp.common.redis;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -238,6 +239,22 @@ public interface IRedisClient {
      * @return
      */
     public byte[] listPopAsBinary(String listName, boolean block, int timeout);
+
+    /**
+     * Gets all list members.
+     * 
+     * @param listName
+     * @return
+     */
+    public List<String> listMembers(String listName);
+
+    /**
+     * Gets all list members.
+     * 
+     * @param listName
+     * @return
+     */
+    public List<byte[]> listMembersAsBinary(String listName);
 
     /**
      * Gets a list's size.
